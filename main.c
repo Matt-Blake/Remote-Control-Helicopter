@@ -15,7 +15,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-#define LED_BLINK_RATE      1000                                // (ms) Duration to suspend LED task
+#define LED_BLINK_RATE      400                                // (ms) Duration to suspend LED task
 #define LED_PIN_RED         1                                   // RED Led pin
 
 #define TASK_STACK_DEPTH    32
