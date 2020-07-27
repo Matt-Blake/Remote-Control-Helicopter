@@ -60,16 +60,6 @@ int main(void)
         while(1);               // Oh no! Must not have had enough memory to create the task.
     }
 
-    //
-    // Create the switch task.
-    //
-    if(SwitchTaskInit() != 0)
-    {
-
-        while(1)
-        {
-        }
-    }
 
 
     vTaskStartScheduler();      // Start FreeRTOS!!
