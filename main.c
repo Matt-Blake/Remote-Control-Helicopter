@@ -32,7 +32,7 @@ void BlinkLED(void *pvParameters)
 
     uint8_t currentValue = 0;
 
-    while (1)
+    while (1) //test
     {
         currentValue ^= whichBit;                               // XOR keeps flipping the bit on / off alternately each time this runs.
         GPIOPinWrite(GPIO_PORTF_BASE, whichBit, currentValue);
