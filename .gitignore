@@ -1,0 +1,7 @@
+/Debug/
+/FreeRTOS/
+/tm4c123gh6pm*
+/.settings/
+/.launches/
+/.*project
+/.DS_Store
