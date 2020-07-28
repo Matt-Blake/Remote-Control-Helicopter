@@ -43,9 +43,11 @@ void BlinkLED(void *pvParameters)
 
 int main(void)
 {
-    static uint8_t led = LED_PIN_RED;                           // LED pin number - static preserves the value while the task is running
+    // LED pin number - static preserves the value while the task is running
+    static uint8_t led = LED_PIN_RED;
 
-    SysCtlClockSet (SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);  // Set the clock rate to 80 MHz
+    // Set the clock rate to 80 MHz
+    SysCtlClockSet (SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
 
     // For LED blinky task - initialize GPIO port F and then pin #1 (red) for output
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);                // activate internal bus clocking for GPIO port F
