@@ -41,13 +41,25 @@ void BlinkLED(void *pvParameters)
     // No way to kill this blinky task unless another task has an xTaskHandle reference to it and can use vTaskDelete() to purge it.
 }
 
+void initClk(void)
+{
+    // Set the clock rate to 80 MHz
+    SysCtlClockSet (SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
+}
+
+void init(void)
+{
+    initClk();
+}
+
+
+
 int main(void)
 {
     // LED pin number - static preserves the value while the task is running
     static uint8_t led = LED_PIN_RED;
 
-    // Set the clock rate to 80 MHz
-    SysCtlClockSet (SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
+    init();
 
     // For LED blinky task - initialize GPIO port F and then pin #1 (red) for output
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);                // activate internal bus clocking for GPIO port F
@@ -57,13 +69,17 @@ int main(void)
     GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_1, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD);    // doesn't need too much drive strength as the RGB LEDs on the TM4C123 launchpad are switched via N-type transistors
     GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1, 0);               // off by default
 
+
+    // Continues if task creation is successful, blocks if failed
     if (pdTRUE != xTaskCreate(BlinkLED, "Blinker", TASK_STACK_DEPTH, (void *) &led, TASK_PRIORITY, NULL))
     {
-        while(1);               // Oh no! Must not have had enough memory to create the task.
+        while(1);
     }
 
-    vTaskStartScheduler();      // Start FreeRTOS!!
+    // Start FreeRTOS!!
+    vTaskStartScheduler();
 
-    while(1);                   // Should never get here since the RTOS should never "exit".
+    // Should never get here since the RTOS should never "exit".
+    while(1);
 }
 
