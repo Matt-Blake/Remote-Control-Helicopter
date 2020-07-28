@@ -15,7 +15,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-#define LED_BLINK_RATE      400                                // (ms) Duration to suspend LED task
+#define LED_BLINK_RATE      1000                                // (ms) Duration to suspend LED task
 #define LED_PIN_RED         1                                   // RED Led pin
 
 #define TASK_STACK_DEPTH    32
@@ -32,7 +32,7 @@ void BlinkLED(void *pvParameters)
 
     uint8_t currentValue = 0;
 
-    while (1) //test
+    while (1)
     {
         currentValue ^= whichBit;                               // XOR keeps flipping the bit on / off alternately each time this runs.
         GPIOPinWrite(GPIO_PORTF_BASE, whichBit, currentValue);
@@ -69,25 +69,15 @@ int main(void)
     GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_1, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD);    // doesn't need too much drive strength as the RGB LEDs on the TM4C123 launchpad are switched via N-type transistors
     GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1, 0);               // off by default
 
-<<<<<<< HEAD
 
     // Continues if task creation is successful, blocks if failed
     if (pdTRUE != xTaskCreate(BlinkLED, "Blinker", TASK_STACK_DEPTH, (void *) &led, TASK_PRIORITY, NULL))
-=======
-    if (pdTRUE != xTaskCreate(BlinkLED, "Blinker", TASK_STACK_DEPTH, (void *) &led, TASK_PRIORITY, NULL)) //create blinker task?
->>>>>>> branch 'master' of https://eng-git.canterbury.ac.nz/ence464-2020/group2.git
     {
         while(1);
     }
 
-<<<<<<< HEAD
     // Start FreeRTOS!!
     vTaskStartScheduler();
-=======
-
-
-    vTaskStartScheduler();      // Start FreeRTOS!!
->>>>>>> branch 'master' of https://eng-git.canterbury.ac.nz/ence464-2020/group2.git
 
     // Should never get here since the RTOS should never "exit".
     while(1);
