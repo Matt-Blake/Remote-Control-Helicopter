@@ -48,6 +48,8 @@ void BlinkLED(void *pvParameters)
     {
         currentValue ^= whichBit;                               // XOR keeps flipping the bit on / off alternately each time this runs.
         GPIOPinWrite(GPIO_PORTF_BASE, whichBit, currentValue);
+        xQueueSend(xOLEDQueue, &value, 0 );
+        value++;
         vTaskDelay(LED_BLINK_RATE / portTICK_RATE_MS);              // Suspend this task (so others may run) for BLINK_RATE (or as close as we can get with the current RTOS tick setting).
     }
     // No way to kill this blinky task unless another task has an xTaskHandle reference to it and can use vTaskDelete() to purge it.
@@ -61,10 +63,10 @@ static void
 OLEDDisplay (void *pvParameters)
 {
     char cMessage[17];
-    xQueueReceive(xOLEDQueue, &cMessage, portMAX_DELAY);
+    int  num_flashes;
+    xQueueReceive(xOLEDQueue, &num_flashes, portMAX_DELAY);
 
-    value++;
-    usnprintf(cMessage, sizeof(cMessage), "Default %d", value, '%');
+    usnprintf(cMessage, sizeof(cMessage), "%d flashes", num_flashes);
     OLEDStringDraw(cMessage, 0, 0);
 }
 
