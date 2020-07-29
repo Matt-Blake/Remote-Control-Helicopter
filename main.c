@@ -12,6 +12,9 @@
 #include "driverlib/pin_map.h"
 #include "driverlib/sysctl.h"
 
+#include "OrbitOLED/OrbitOLEDInterface.h"
+#include "utils/ustdlib.h"
+
 #include "FreeRTOS.h"
 #include "task.h"
 
@@ -41,6 +44,14 @@ void BlinkLED(void *pvParameters)
     // No way to kill this blinky task unless another task has an xTaskHandle reference to it and can use vTaskDelete() to purge it.
 }
 
+void OLEDDisplay(void) {
+    char string[17];                                                            // Initialise string of 16 characters + end char
+
+    usnprintf(string, sizeof(string), "Hi Gang! = %3d%c   ", 100, '%');
+    OLEDStringDraw(string, 0, 0);
+
+}
+
 void initClk(void)
 {
     // Set the clock rate to 80 MHz
@@ -50,8 +61,8 @@ void initClk(void)
 void init(void)
 {
     initClk();
+    OLEDInitialise();
 }
-
 
 
 int main(void)
