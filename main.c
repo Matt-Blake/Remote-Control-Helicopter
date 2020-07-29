@@ -22,19 +22,16 @@
 /*
  * DEFINITIONS
  */
-#define LED_BLINK_RATE      100                                // (ms) Duration to suspend LED task
+#define LED_BLINK_RATE      500                                // (ms) Duration to suspend LED task
 #define OLED_REFRESH_RATE   200
 #define LED_PIN_RED         1                                   // RED Led pin
-#define LED_PIN_BLUE        1                                   // BLUE Led pin
-#define LED_PIN_GREEN       1                                   // GREEN Led pin
-
 
 #define TASK_STACK_DEPTH    32
 #define LED_TASK_PRIORITY   4
 #define OLED_TASK_PRIORITY  5
 
 xQueueHandle xOLEDQueue;
-int value = 0;
+int value = 1;
 
 /*
  * BLINKY FUNCTION
@@ -50,9 +47,10 @@ void BlinkLED(void *pvParameters)
     for (;;)
     {
         currentValue ^= whichBit;                               // XOR keeps flipping the bit on / off alternately each time this runs.
-        GPIOPinWrite(GPIO_PORTF_BASE, 7, currentValue);
+        //GPIOPinWrite(GPIO_PORTF_BASE, 14, currentValue);
+        GPIOPinWrite(GPIO_PORTF_BASE, whichBit, currentValue);
         xQueueSend(xOLEDQueue, &value, 0);
-        if(currentValue > 0){value++;}
+        if(currentValue == 0){value++;}
         vTaskDelay(LED_BLINK_RATE / portTICK_RATE_MS);              // Suspend this task (so others may run) for BLINK_RATE (or as close as we can get with the current RTOS tick setting).
     }
     // No way to kill this blinky task unless another task has an xTaskHandle reference to it and can use vTaskDelete() to purge it.
@@ -93,15 +91,6 @@ void initGPIO(void)
     GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_1);         // PF_1 as output
     GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_1, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD);    // Doesn't need too much drive strength as the RGB LEDs on the TM4C123 launchpad are switched via N-type transistors
     GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1, 0);               // Off by default
-/*
-    GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_2);         // PF_1 as output
-    GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD);    // Doesn't need too much drive strength as the RGB LEDs on the TM4C123 launchpad are switched via N-type transistors
-    GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, 0);               // Off by default
-
-    GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_3);         // PF_1 as output
-    GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_3, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD);    // Doesn't need too much drive strength as the RGB LEDs on the TM4C123 launchpad are switched via N-type transistors
-    GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 0);               // Off by default
-*/
 }
 
 void init(void)
@@ -116,8 +105,8 @@ void createTasks(void)
     // LED pin number - static preserves the value while the task is running
     static uint8_t led = LED_PIN_RED;
 
-    xTaskCreate(BlinkLED,       "Blinker",  TASK_STACK_DEPTH, (void *) &led,        LED_TASK_PRIORITY,  NULL);
-    xTaskCreate(OLEDDisplay,    "Screen",   TASK_STACK_DEPTH, NULL, OLED_TASK_PRIORITY, NULL);
+    xTaskCreate(BlinkLED,       "Blinker",  TASK_STACK_DEPTH, (void *) &led,    LED_TASK_PRIORITY,  NULL);
+    xTaskCreate(OLEDDisplay,    "Screen",   TASK_STACK_DEPTH, NULL,             OLED_TASK_PRIORITY, NULL);
 }
 
 
