@@ -19,6 +19,7 @@
 #include "task.h"
 
 #define LED_BLINK_RATE      1000                                // (ms) Duration to suspend LED task
+#define OLED_REFRESH_RATE   200
 #define LED_PIN_RED         1                                   // RED Led pin
 
 #define TASK_STACK_DEPTH    32
@@ -44,11 +45,12 @@ void BlinkLED(void *pvParameters)
     // No way to kill this blinky task unless another task has an xTaskHandle reference to it and can use vTaskDelete() to purge it.
 }
 
-void OLEDDisplay(void) {
+void OLEDDisplay(void *pvParameters) {
     char string[17];                                                            // Initialise string of 16 characters + end char
 
     usnprintf(string, sizeof(string), "Hi Gang! = %3d%c   ", 100, '%');
     OLEDStringDraw(string, 0, 0);
+    //vTaskDelay(OLED_REFRESH_RATE / portTICK_RATE_MS);
 
 }
 
@@ -83,6 +85,10 @@ int main(void)
 
     // Continues if task creation is successful, blocks if failed
     if (pdTRUE != xTaskCreate(BlinkLED, "Blinker", TASK_STACK_DEPTH, (void *) &led, TASK_PRIORITY, NULL))
+    {
+        while(1);
+    }
+    if (pdTRUE != xTaskCreate(OLEDDisplay, "Screen", TASK_STACK_DEPTH, NULL, 0, NULL))
     {
         while(1);
     }
