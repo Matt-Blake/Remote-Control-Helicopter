@@ -44,11 +44,11 @@ void BlinkLED(void *pvParameters)
                                                                 // Alternately, we could have passed the bitmask into pvParameters instead of a simple number.
     uint8_t currentValue = 0;
 
-    while (1)
+    for (;;)
     {
         currentValue ^= whichBit;                               // XOR keeps flipping the bit on / off alternately each time this runs.
         GPIOPinWrite(GPIO_PORTF_BASE, whichBit, currentValue);
-        xQueueSend(xOLEDQueue, &value, 0 );
+        xQueueSend(xOLEDQueue, &value, 0);
         value++;
         vTaskDelay(LED_BLINK_RATE / portTICK_RATE_MS);              // Suspend this task (so others may run) for BLINK_RATE (or as close as we can get with the current RTOS tick setting).
     }
@@ -64,10 +64,13 @@ OLEDDisplay (void *pvParameters)
 {
     char cMessage[17];
     int  num_flashes;
-    xQueueReceive(xOLEDQueue, &num_flashes, portMAX_DELAY);
+    for (;;)
+    {
+        xQueueReceive(xOLEDQueue, &num_flashes, 10);
 
-    usnprintf(cMessage, sizeof(cMessage), "%d flashes", num_flashes);
-    OLEDStringDraw(cMessage, 0, 0);
+        usnprintf(cMessage, sizeof(cMessage), "%d flashes", num_flashes);
+        OLEDStringDraw(cMessage, 0, 0);
+    }
 }
 
 
@@ -102,18 +105,21 @@ void createTasks(void)
     static uint8_t led = LED_PIN_RED;
 
     xTaskCreate(BlinkLED,       "Blinker",  TASK_STACK_DEPTH, (void *) &led,        LED_TASK_PRIORITY,  NULL);
-    xTaskCreate(OLEDDisplay,    "Screen",   TASK_STACK_DEPTH, (void *) &xOLEDQueue, OLED_TASK_PRIORITY, NULL);
+    xTaskCreate(OLEDDisplay,    "Screen",   TASK_STACK_DEPTH, NULL, OLED_TASK_PRIORITY, NULL);
 }
+
 
 void createQueues(void)
 {
     xOLEDQueue = xQueueCreate(1, sizeof( uint32_t ) );
 }
 
+
 int main(void)
 {
     init();
     createTasks();
+    createQueues();
 
 
     vTaskStartScheduler();
