@@ -114,23 +114,7 @@ int main(void)
     createTasks();
 
 
-<<<<<<< HEAD
-=======
-    // Continues if task creation is successful, blocks if failed
-    if (pdTRUE != xTaskCreate(BlinkLED, "Blinker", TASK_STACK_DEPTH, (void *) &led, LED_TASK_PRIORITY, NULL))
-    {
-        while(1);
-    }
-
-
-    if (pdTRUE != xTaskCreate(OLEDDisplay, "Screen", TASK_STACK_DEPTH, NULL, OLED_TASK_PRIORITY, NULL))
-    {
-        while(1);
-    }
-
-    // Start FreeRTOS!!
->>>>>>> branch 'master' of https://eng-git.canterbury.ac.nz/ence464-2020/group2.git
     vTaskStartScheduler();
     while(1);
 }
-
+//End
