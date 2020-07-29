@@ -22,7 +22,7 @@
 /*
  * DEFINITIONS
  */
-#define LED_BLINK_RATE      1000                                // (ms) Duration to suspend LED task
+#define LED_BLINK_RATE      100                                // (ms) Duration to suspend LED task
 #define OLED_REFRESH_RATE   200
 #define LED_PIN_RED         1                                   // RED Led pin
 
@@ -49,7 +49,7 @@ void BlinkLED(void *pvParameters)
         currentValue ^= whichBit;                               // XOR keeps flipping the bit on / off alternately each time this runs.
         GPIOPinWrite(GPIO_PORTF_BASE, whichBit, currentValue);
         xQueueSend(xOLEDQueue, &value, 0);
-        value++;
+        if(currentValue > 0){value++;}
         vTaskDelay(LED_BLINK_RATE / portTICK_RATE_MS);              // Suspend this task (so others may run) for BLINK_RATE (or as close as we can get with the current RTOS tick setting).
     }
     // No way to kill this blinky task unless another task has an xTaskHandle reference to it and can use vTaskDelete() to purge it.
