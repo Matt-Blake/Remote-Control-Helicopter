@@ -230,7 +230,7 @@ void createTasks(void)
 
 void createQueues(void)
 {
-    xOLEDQueue = xQueueCreate(5, sizeof( uint32_t ) );
+    xOLEDQueue = xQueueCreate(1, sizeof( uint32_t ) );
     xButtonQueue = xQueueCreate(5, sizeof( uint32_t ) );
 }
 
