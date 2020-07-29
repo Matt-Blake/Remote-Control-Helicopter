@@ -89,6 +89,8 @@ int main(void)
     {
         while(1);
     }
+
+
     if (pdTRUE != xTaskCreate(OLEDDisplay, "Screen", TASK_STACK_DEPTH, NULL, OLED_TASK_PRIORITY, NULL))
     {
         while(1);
