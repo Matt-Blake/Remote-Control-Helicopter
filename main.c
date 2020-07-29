@@ -190,9 +190,6 @@ OLEDDisplay (void *pvParameters)
     }
 }
 
-
-
-
 void initClk(void)
 {
     // Set the clock rate to 80 MHz
