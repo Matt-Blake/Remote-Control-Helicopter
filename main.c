@@ -12,8 +12,8 @@
 #include "driverlib/pin_map.h"
 #include "driverlib/sysctl.h"
 
-#include "OrbitOLED/OrbitOLEDInterface.h"
 #include "utils/ustdlib.h"
+#include "OrbitOLED/OrbitOLEDInterface.h"
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -65,7 +65,7 @@ void init(void)
 }
 
 
-int main(void)
+int mainBlock(void)
 {
     // LED pin number - static preserves the value while the task is running
     static uint8_t led = LED_PIN_RED;
