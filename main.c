@@ -65,7 +65,7 @@ void init(void)
 }
 
 
-int mainBlock(void)
+int main(void)
 {
     // LED pin number - static preserves the value while the task is running
     static uint8_t led = LED_PIN_RED;
