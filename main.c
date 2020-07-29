@@ -22,19 +22,18 @@
 #include "buttons.h"
 #include "inc/hw_gpio.h"
 
+
 /*
  * DEFINITIONS
  */
-                            // (ms) Duration to suspend LED task
-#define OLED_REFRESH_RATE   200
-#define LED_PIN_RED         1                                   // RED Led pin
-
-#define TASK_STACK_DEPTH    32
-#define LED_TASK_PRIORITY   4
-#define OLED_TASK_PRIORITY  5
-
-#define SWITCHTASKSTACKSIZE   128         // Stack size in words
-#define PRIORITY_SWITCH_TASK  3
+#define OLED_REFRESH_RATE       200     // OLED Screen refresh rate (I think)
+#define LED_PIN_RED             1       // RED LED pin
+#define BLINK_STACK_DEPTH       32
+#define OLED_STACK_DEPTH        32
+#define SWITCH_STACK_DEPTH      128     // Stack size in words
+#define LED_TASK_PRIORITY       4       // Blinky priority
+#define OLED_TASK_PRIORITY      5       // OLED priority
+#define SWITCH_TASK_PRIORITY    3       // Switch task priority
 
 xQueueHandle xOLEDQueue;
 xQueueHandle xButtonQueue;
@@ -44,7 +43,8 @@ int value = 1;
 /*
  * BLINKY FUNCTION
  */
-void BlinkLED(void *pvParameters)
+static void
+BlinkLED(void *pvParameters)
 {
     uint8_t whichLed = *((uint8_t *)pvParameters);              // pvParameters is a pointer to an unsigned 8 bit integer - the LED pin number
 
@@ -53,7 +53,7 @@ void BlinkLED(void *pvParameters)
     uint8_t currentValue = 0;
     uint16_t led_blink_rate = 500;
 
-    for (;;)
+    while(1)
     {
         xQueueReceive(xButtonQueue, &led_blink_rate, 10);
 
@@ -63,10 +63,24 @@ void BlinkLED(void *pvParameters)
         xQueueSend(xOLEDQueue, &value, 0);
         if(currentValue == 0){value++;}
         vTaskDelay(led_blink_rate / portTICK_RATE_MS);              // Suspend this task (so others may run) for BLINK_RATE (or as close as we can get with the current RTOS tick setting).
-    }
-
-    // No way to kill this blinky task unless another task has an xTaskHandle reference to it and can use vTaskDelete() to purge it.
+    }// No way to kill this blinky task unless another task has an xTaskHandle reference to it and can use vTaskDelete() to purge it.
 }
+
+
+static void
+OLEDDisplay (void *pvParameters)
+{
+    char cMessage[17];
+    int  num_flashes;
+    while(1)
+    {
+        xQueueReceive(xOLEDQueue, &num_flashes, 10);
+
+        usnprintf(cMessage, sizeof(cMessage), "%d flashes", num_flashes);
+        OLEDStringDraw(cMessage, 0, 0);
+    }
+}
+
 
 static void
 SwitchTask(void *pvParameters)
@@ -78,32 +92,21 @@ SwitchTask(void *pvParameters)
 
     ui8CurButtonState = ui8PrevButtonState = 0;
 
-    //
     // Get the current tick count.
-    //
     ui16LastTime = xTaskGetTickCount();
 
-    //
     // Loop forever.
-    //
     while(1)
     {
-        //
         // Poll the debounced state of the buttons.
-        //
         ui8CurButtonState = ButtonsPoll(0, 0);
 
-        //
         // Check if previous debounced state is equal to the current state.
-        //
         if(ui8CurButtonState != ui8PrevButtonState)
         {
             ui8PrevButtonState = ui8CurButtonState;
 
-            //
-            // Check to make sure the change in state is due to button press
-            // and not due to button release.
-            //
+            // Check to make sure the change in state is due to button press and not due to button release.
             if((ui8CurButtonState & ALL_BUTTONS) != 0)
             {
                 if((ui8CurButtonState & ALL_BUTTONS) == LEFT_BUTTON)
@@ -111,47 +114,32 @@ SwitchTask(void *pvParameters)
                     if (led_blink_rate < 1000) {
                         led_blink_rate += 100;
                     }
-
                 }
                 else if((ui8CurButtonState & ALL_BUTTONS) == RIGHT_BUTTON)
                 {
-
                     if (led_blink_rate > 0) {
                         led_blink_rate -= 100;
                     }
-
                 }
 
-                //
                 // Pass the value of the button pressed to LEDTask.
-                //
-                if(xQueueSend(xButtonQueue, &led_blink_rate, portMAX_DELAY) !=
-                   pdPASS)
-                {
-                    //
-                    // Error. The queue should never be full. If so print the
-                    // error message on UART and wait for ever.
-                    //
-                    while(1)
-                    {
-                    }
+                if(xQueueSend(xButtonQueue, &led_blink_rate, portMAX_DELAY) != pdPASS) {
+                    // Error. The queue should never be full. If so print the error message on UART and wait for ever.
+                    while(1){}
                 }
             }
         }
 
-        //
         // Wait for the required amount of time to check back.
-        //
         vTaskDelayUntil(&ui16LastTime, ui32SwitchDelay / portTICK_RATE_MS);
     }
 }
 
+
 uint32_t
 SwitchTaskInit(void)
 {
-    //
     // Unlock the GPIO LOCK register for Right button to work.
-    //
     HWREG(GPIO_PORTF_BASE + GPIO_O_LOCK) = GPIO_LOCK_KEY;
     HWREG(GPIO_PORTF_BASE + GPIO_O_CR) = 0xFF;
 
@@ -159,46 +147,21 @@ SwitchTaskInit(void)
     // Initialize the buttons
     //
     ButtonsInit();
-    //
-    // Create the switch task.
-    //
-    /*
-    if(xTaskCreate(SwitchTask, (const portCHAR *)"Switch",
-                   TASK_STACK_DEPTH, NULL, tskIDLE_PRIORITY +
-                   PRIORITY_SWITCH_TASK, NULL) != pdTRUE)
-    {
-        return(1);
-    }
-    */
-    //
-    // Success.
-    //
+
     return(1);
 }
 
-static void
-OLEDDisplay (void *pvParameters)
-{
-    char cMessage[17];
-    int  num_flashes;
-    for (;;)
-    {
-        xQueueReceive(xOLEDQueue, &num_flashes, 10);
 
-        usnprintf(cMessage, sizeof(cMessage), "%d flashes", num_flashes);
-        OLEDStringDraw(cMessage, 0, 0);
-    }
-}
-
-void initClk(void)
+void
+initClk(void)
 {
     // Set the clock rate to 80 MHz
     SysCtlClockSet (SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
 }
 
-void initGPIO(void)
+void
+initGPIO(void)
 {
-    // For LED blinky task - initialize GPIO port F and then pin #1 (Red) for output
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);                // Activate internal bus clocking for GPIO port F
     while (!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOF));        // Busy-wait until GPIOF's bus clock is ready
     GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_1);         // PF_1 as output
@@ -206,7 +169,8 @@ void initGPIO(void)
     GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1, 0);               // Off by default
 }
 
-void init(void)
+void
+init(void)
 {
     initClk();
     initGPIO();
@@ -214,25 +178,28 @@ void init(void)
     SwitchTaskInit();
 }
 
-void createTasks(void)
+void
+createTasks(void)
 {
     // LED pin number - static preserves the value while the task is running
     static uint8_t led = LED_PIN_RED;
 
-    xTaskCreate(BlinkLED,       "Blinker",  TASK_STACK_DEPTH, (void *) &led,    LED_TASK_PRIORITY,  NULL);
-    xTaskCreate(OLEDDisplay,    "Screen",   TASK_STACK_DEPTH, NULL,             OLED_TASK_PRIORITY, NULL);
-    xTaskCreate(SwitchTask,     "Switch",   SWITCHTASKSTACKSIZE, NULL,             PRIORITY_SWITCH_TASK, NULL);
+    xTaskCreate(BlinkLED,       "Blinker",  BLINK_STACK_DEPTH,  (void *) &led,      LED_TASK_PRIORITY,      NULL);
+    xTaskCreate(OLEDDisplay,    "Screen",   OLED_STACK_DEPTH,   NULL,               OLED_TASK_PRIORITY,     NULL);
+    xTaskCreate(SwitchTask,     "Switch",   SWITCH_STACK_DEPTH, NULL,               SWITCH_TASK_PRIORITY,   NULL);
 }
 
 
-void createQueues(void)
+void
+createQueues(void)
 {
     xOLEDQueue = xQueueCreate(1, sizeof( uint32_t ) );
     xButtonQueue = xQueueCreate(5, sizeof( uint32_t ) );
 }
 
 
-int main(void)
+int
+main(void)
 {
     init();
     createTasks();
