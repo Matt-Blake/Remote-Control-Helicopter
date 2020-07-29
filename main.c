@@ -23,7 +23,8 @@
 #define LED_PIN_RED         1                                   // RED Led pin
 
 #define TASK_STACK_DEPTH    32
-#define TASK_PRIORITY       4
+#define LED_TASK_PRIORITY   4
+#define OLED_TASK_PRIORITY  4
 
 // Blinky function
 void BlinkLED(void *pvParameters)
@@ -84,11 +85,11 @@ int main(void)
 
 
     // Continues if task creation is successful, blocks if failed
-    if (pdTRUE != xTaskCreate(BlinkLED, "Blinker", TASK_STACK_DEPTH, (void *) &led, TASK_PRIORITY, NULL))
+    if (pdTRUE != xTaskCreate(BlinkLED, "Blinker", TASK_STACK_DEPTH, (void *) &led, LED_TASK_PRIORITY, NULL))
     {
         while(1);
     }
-    if (pdTRUE != xTaskCreate(OLEDDisplay, "Screen", TASK_STACK_DEPTH, NULL, 0, NULL))
+    if (pdTRUE != xTaskCreate(OLEDDisplay, "Screen", TASK_STACK_DEPTH, NULL, OLED_TASK_PRIORITY, NULL))
     {
         while(1);
     }
