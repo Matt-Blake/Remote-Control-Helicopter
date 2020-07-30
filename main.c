@@ -66,13 +66,14 @@ BlinkLED(void *pvParameters)
 
     while(1)
     {
+        xSemaphoreTake(xTokenMutex, portTICK_PERIOD_MS);
         xQueueReceive(xButtonQueue, &led_blink_rate, 10);
-
         currentValue ^= whichBit;                               // XOR keeps flipping the bit on / off alternately each time this runs.
         //GPIOPinWrite(GPIO_PORTF_BASE, 14, currentValue);
         GPIOPinWrite(GPIO_PORTF_BASE, whichBit, currentValue);
         xQueueSend(xOLEDQueue, &value, 0);
         if(currentValue == 0){value++;}
+        xSemaphoreGive(xTokenMutex);
         vTaskDelay(led_blink_rate / portTICK_RATE_MS);              // Suspend this task (so others may run) for BLINK_RATE (or as close as we can get with the current RTOS tick setting).
     }// No way to kill this blinky task unless another task has an xTaskHandle reference to it and can use vTaskDelete() to purge it.
 }
@@ -134,7 +135,7 @@ createTasks(void)
 void
 createQueues(void)
 {
-    xOLEDQueue = xQueueCreate(1, sizeof( uint32_t ) );
+    xOLEDQueue = xQueueCreate(5, sizeof( uint32_t ) );
     xButtonQueue = xQueueCreate(5, sizeof( uint32_t ) );
 }
 

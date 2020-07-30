@@ -19,6 +19,7 @@
 
 #include "FreeRTOS.h"
 #include "queue.h"
+#include "semphr.h"
 
 #include "buttons.h"
 #include "inc/hw_gpio.h"
@@ -55,6 +56,8 @@ SwitchTask(void *pvParameters)
     // Loop forever.
     while(1)
     {
+        xSemaphoreTake(xTokenMutex, portTICK_PERIOD_MS);
+
         // Poll the debounced state of the buttons.
         ui8CurButtonState = ButtonsPoll(0, 0);
 
@@ -86,7 +89,7 @@ SwitchTask(void *pvParameters)
                 }
             }
         }
-
+        xSemaphoreGive(xTokenMutex);
         // Wait for the required amount of time to check back.
         vTaskDelayUntil(&ui16LastTime, ui32SwitchDelay / portTICK_RATE_MS);
     }
