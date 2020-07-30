@@ -86,8 +86,7 @@ initialiseMainRotorPWM (void)
     GPIOPinConfigure(PWM_MAIN_GPIO_CONFIG);
     GPIOPinTypePWM(PWM_MAIN_GPIO_BASE, PWM_MAIN_GPIO_PIN);
 
-    PWMGenConfigure(PWM_MAIN_BASE, PWM_MAIN_GEN,
-                    PWM_GEN_MODE_UP_DOWN | PWM_GEN_MODE_NO_SYNC);
+    PWMGenConfigure(PWM_MAIN_BASE, PWM_MAIN_GEN, PWM_GEN_MODE_UP_DOWN | PWM_GEN_MODE_NO_SYNC);
     // Set the initial PWM parameters
     setMainRotorPWM (PWM_MAIN_FIXED_DUTY);
 
