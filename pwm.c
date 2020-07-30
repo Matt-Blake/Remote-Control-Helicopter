@@ -79,10 +79,25 @@
 // Function to set the freq, duty cycle of M0PWM7.
 //********************************************************
 void
-setMainRotorPWM (uint32_t ui32Duty)
+setRotorPWM (uint32_t ui32Duty, uint8_t set_main_rotor)
 {
     // Calculate the PWM period corresponding to the freq.
-    uint32_t ui32Period = SysCtlClockGet() / PWM_DIVIDER / PWM_MAIN_START_RATE_HZ;
+    uint32_t ui32Period =
+        SysCtlClockGet() / PWM_DIVIDER / PWM_START_RATE_HZ;
+
+    if (set_main_rotor == 1) // Perform PWM of the main rotor
+    {
+        PWMGenPeriodSet(PWM_MAIN_BASE, PWM_MAIN_GEN, ui32Period);
+        PWMPulseWidthSet(PWM_MAIN_BASE, PWM_MAIN_OUTNUM,
+                         ui32Period * ui32Duty / 100);
+    }
+    else // Perform PWM of the tail rotor
+    {
+        PWMGenPeriodSet(PWM_TAIL_BASE, PWM_TAIL_GEN, ui32Period);
+        PWMPulseWidthSet(PWM_TAIL_BASE, PWM_TAIL_OUTNUM,
+                         ui32Period * ui32Duty / 100);
+
+    }
 }
 
 
@@ -101,7 +116,7 @@ initialiseMainRotorPWM (void)
 
     PWMGenConfigure(PWM_MAIN_BASE, PWM_MAIN_GEN, PWM_GEN_MODE_UP_DOWN | PWM_GEN_MODE_NO_SYNC);
     // Set the initial PWM parameters
-    setMainRotorPWM (PWM_MAIN_FIXED_DUTY);
+    setRotorPWM (PWM_FIXED_DUTY, 1);
 
     PWMGenEnable(PWM_MAIN_BASE, PWM_MAIN_GEN);
 
@@ -126,38 +141,12 @@ initialiseTailRotorPWM (void)
     PWMGenConfigure(PWM_TAIL_BASE, PWM_TAIL_GEN,
                     PWM_GEN_MODE_UP_DOWN | PWM_GEN_MODE_NO_SYNC);
     // Set the initial PWM parameters
-    setTailPWM(PWM_TAIL_FIXED_DUTY);
+    setRotorPWM(PWM_FIXED_DUTY, 0);
 
     PWMGenEnable(PWM_TAIL_BASE, PWM_TAIL_GEN);
 
     // Disable the output.  Repeat this call with 'true' to turn O/P on.
     PWMOutputState(PWM_TAIL_BASE, PWM_TAIL_OUTBIT, false);
-}
-
-
-//********************************************************
-// Function to set the freq, duty cycle of M0PWM7.
-//********************************************************
-void
-setRotorPWM (uint32_t ui32Duty, uint8_t set_main_rotor)
-{
-    // Calculate the PWM period corresponding to the freq.
-    uint32_t ui32Period =
-        SysCtlClockGet() / PWM_DIVIDER / PWM_START_RATE_HZ;
-
-    if (set_main_rotor == 1) // Perform PWM of the main rotor
-    {
-        PWMGenPeriodSet(PWM_MAIN_BASE, PWM_MAIN_GEN, ui32Period);
-        PWMPulseWidthSet(PWM_MAIN_BASE, PWM_MAIN_OUTNUM,
-                         ui32Period * ui32Duty / 100);
-    }
-    else // Perform PWM of the tail rotor
-    {
-        PWMGenPeriodSet(PWM_TAIL_BASE, PWM_TAIL_GEN, ui32Period);
-        PWMPulseWidthSet(PWM_TAIL_BASE, PWM_TAIL_OUTNUM,
-                         ui32Period * ui32Duty / 100);
-
-    }
 }
 
 

@@ -28,6 +28,13 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+//********************************************************
+// Function to set the freq, duty cycle of M0PWM7.
+//********************************************************
+void
+setRotorPWM (uint32_t ui32Duty);
+
+
 //******************************************************
 // initialise PWM for the main rotor.
 // M0PWM7 (J4-05, PC5) is used for the main rotor motor
@@ -35,32 +42,27 @@
 void
 initialiseMainRotorPWM (void);
 
+
 //******************************************************
 // initialisePWM for tail rotor.
 // M0PWM7 (PF1, J4-05) is used for the tail rotor motor.
 //******************************************************
 void
-initialiseTailRotorPWM (void)
+initialiseTailRotorPWM (void);
 
-//********************************************************
-// Function to set the freq, duty cycle of M0PWM7.
-//********************************************************
-void
-setRotorPWM (uint32_t ui32Duty);
 
 //*********************************************************
 //Turns on the main rotor so a duty cycle can be passed to it
 //*********************************************************
 void
-turnOnMainPWM(void);
-#endif /* PWMMAINGEN_H_ */
+turnOnMainPWM (void);
+
 
 //******************************************************
 // Turns on the tail rotor so a duty cycle can be passed to it
 //******************************************************
 void
-turnOnTailPWM(void)
-{
-    PWMOutputState(PWM_TAIL_BASE, PWM_TAIL_OUTBIT, true);
-}
+turnOnTailPWM (void);
 
+
+#endif // __PWM_H__
