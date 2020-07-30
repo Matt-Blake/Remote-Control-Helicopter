@@ -59,7 +59,7 @@ int value = 1;
 static void
 BlinkLED(void *pvParameters)
 {
-    uint8_t whichLed = *((uint8_t *)pvParameters);              // pvParameters is a pointer to an unsigned 8 bit integer - the LED pin number
+    //uint8_t whichLed = *((uint8_t *)pvParameters);              // pvParameters is a pointer to an unsigned 8 bit integer - the LED pin number
     static uint8_t on = 0;
     //const uint8_t whichBit = 1 << whichLed;                     // TivaWare GPIO calls require the pin# as a binary bitmask, not a simple number.
                                                                 // Alternately, we could have passed the bitmask into pvParameters instead of a simple number.

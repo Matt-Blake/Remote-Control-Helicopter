@@ -31,6 +31,7 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "OrbitOLED/OrbitOLEDInterface.h"
+#include "uart.h"
 #include "yaw.h"
 
 //********************************************************
@@ -60,14 +61,11 @@ volatile uint8_t slowTick = false;
 void
 initialiseUSB_UART (void)
 {
-    //
     // Enable GPIO port A which is used for UART0 pins.
-    //
     SysCtlPeripheralEnable(UART_USB_PERIPH_UART);
     SysCtlPeripheralEnable(UART_USB_PERIPH_GPIO);
-    //
+
     // Select the alternate (UART) function for these pins.
-    //
     GPIOPinTypeUART(UART_USB_GPIO_BASE, UART_USB_GPIO_PINS);
     GPIOPinConfigure (GPIO_PA0_U0RX);
     GPIOPinConfigure (GPIO_PA1_U0TX);
