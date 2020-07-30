@@ -76,4 +76,4 @@ void
 turnOnTailPWM (void);
 
 
-#endif // __PWM_H__
+#endif /* _PWM_H_ */
