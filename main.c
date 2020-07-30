@@ -60,7 +60,7 @@ static void
 BlinkLED(void *pvParameters)
 {
     uint8_t whichLed = *((uint8_t *)pvParameters);              // pvParameters is a pointer to an unsigned 8 bit integer - the LED pin number
-
+    static uint8_t on = 0;
     const uint8_t whichBit = 1 << whichLed;                     // TivaWare GPIO calls require the pin# as a binary bitmask, not a simple number.
                                                                 // Alternately, we could have passed the bitmask into pvParameters instead of a simple number.
     uint8_t currentValue = 0;
@@ -71,10 +71,15 @@ BlinkLED(void *pvParameters)
         xSemaphoreTake(xTokenMutex, portTICK_PERIOD_MS);
         xQueueReceive(xButtonQueue, &led_blink_rate, 10);
         currentValue ^= whichBit;                               // XOR keeps flipping the bit on / off alternately each time this runs.
-        //GPIOPinWrite(GPIO_PORTF_BASE, 14, currentValue);
-        GPIOPinWrite(GPIO_PORTF_BASE, whichBit, currentValue);
+        if (on){
+            on = 0;
+        }else{
+            on = 1;
+        }
+        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1, currentValue);
         xQueueSend(xOLEDQueue, &value, 0);
-        if(currentValue == 0){value++;}
+        //if(currentValue == 0){value++;}
+        if(on){value++;}
         xSemaphoreGive(xTokenMutex);
         vTaskDelay(led_blink_rate / portTICK_RATE_MS);              // Suspend this task (so others may run) for BLINK_RATE (or as close as we can get with the current RTOS tick setting).
     }// No way to kill this blinky task unless another task has an xTaskHandle reference to it and can use vTaskDelete() to purge it.
