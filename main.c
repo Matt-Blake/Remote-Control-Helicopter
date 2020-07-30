@@ -1,4 +1,11 @@
 /*
+ * TODO:
+ *      - Figure out what the stack sizes should be
+ *      -
+ */
+
+
+/*
  * INCLUDES
  */
 #include <stdbool.h>
@@ -18,6 +25,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
+#include "semphr.h"
 
 #include "SwitchTask.h"
 #include "pwm.h"
@@ -36,8 +44,11 @@
 #define OLED_TASK_PRIORITY      5       // OLED priority
 #define SWITCH_TASK_PRIORITY    3       // Switch task priority
 
-xQueueHandle xOLEDQueue;
-xQueueHandle xButtonQueue;
+QueueHandle_t xOLEDQueue;
+QueueHandle_t xButtonQueue;
+
+SemaphoreHandle_t xTokenMutex;
+
 int value = 1;
 
 /*
@@ -127,6 +138,12 @@ createQueues(void)
     xButtonQueue = xQueueCreate(5, sizeof( uint32_t ) );
 }
 
+void
+createSemaphores(void)
+{
+    xTokenMutex = xSemaphoreCreateMutex();
+}
+
 
 int
 main(void)
@@ -134,6 +151,7 @@ main(void)
     init();
     createTasks();
     createQueues();
+    createSemaphores();
 
 
     vTaskStartScheduler();
