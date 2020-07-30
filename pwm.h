@@ -22,7 +22,11 @@
 // Last modified: 09/05/2019
 //
 // pwm.c - This code was based off the pwmMainGen.c code from ENCE361.
+<<<<<<< HEAD
 //      This code has been changed to incopretate PWM of the tail rotor.
+=======
+//      This code has been changed to incorporate PWM of the tail rotor.
+>>>>>>> branch 'master' of https://mjb409@eng-git.canterbury.ac.nz/ence464-2020/group2.git
 //      This is part of ENCE464 Assignment 1.
 
 // ENCE464 Assignment 1 Group 2
