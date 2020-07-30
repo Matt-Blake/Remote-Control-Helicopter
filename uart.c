@@ -32,7 +32,6 @@
 #include "stdlib.h"
 #include "OrbitOLED/OrbitOLEDInterface.h"
 #include "yaw.h"
-#include "clock.h"
 
 //********************************************************
 // Constants
