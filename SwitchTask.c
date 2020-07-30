@@ -2,7 +2,7 @@
  * SwitchTask.c
  *
  *  Created on: 30/07/2020
- *      Author: grayson-uc
+ *      Author: grayson
  */
 #include <stdbool.h>
 #include <stdint.h>
