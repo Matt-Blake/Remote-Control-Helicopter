@@ -70,7 +70,7 @@ BlinkLED(void *pvParameters)
     {
         xSemaphoreTake(xTokenMutex, portTICK_PERIOD_MS);
         xQueueReceive(xButtonQueue, &led_blink_rate, 10);
-        currentValue ^= whichBit;                               // XOR keeps flipping the bit on / off alternately each time this runs.
+        currentValue ^= 2;                               // XOR keeps flipping the bit on / off alternately each time this runs.
         GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1, currentValue);
         xQueueSend(xOLEDQueue, &value, 0);
         //if(currentValue == 0){value++;}
