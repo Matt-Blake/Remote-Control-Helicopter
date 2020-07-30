@@ -20,7 +20,7 @@
 #include "driverlib/sysctl.h"
 #include "utils/ustdlib.h"
 #include "driverlib/pin_map.h"
-#include "circBufT.h"
+#include "OrbitOLED/circBufT.h"
 #include "ADC.h"
 
 // ************************* GLOBALS *******************************
