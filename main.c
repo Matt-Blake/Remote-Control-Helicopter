@@ -66,7 +66,6 @@ BlinkLED(void *pvParameters)
     }// No way to kill this blinky task unless another task has an xTaskHandle reference to it and can use vTaskDelete() to purge it.
 }
 
-
 static void
 OLEDDisplay (void *pvParameters)
 {
@@ -80,7 +79,6 @@ OLEDDisplay (void *pvParameters)
         OLEDStringDraw(cMessage, 0, 0);
     }
 }
-
 
 void
 initClk(void)
@@ -119,14 +117,12 @@ createTasks(void)
     xTaskCreate(SwitchTask,     "Switch",   SWITCH_STACK_DEPTH, NULL,               SWITCH_TASK_PRIORITY,   NULL);
 }
 
-
 void
 createQueues(void)
 {
     xOLEDQueue = xQueueCreate(1, sizeof( uint32_t ) );
     xButtonQueue = xQueueCreate(5, sizeof( uint32_t ) );
 }
-
 
 int
 main(void)

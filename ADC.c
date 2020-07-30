@@ -22,11 +22,14 @@
 #include "driverlib/pin_map.h"
 #include "circBufT.h"
 #include "ADC.h"
-#include "UART.h"
-#include "DEFINES.h"
 
 // ************************* GLOBALS *******************************
 circBuf_t g_inBuffer;
+
+// ** Analog-Digital Conversion ***********************************
+#define BUF_SIZE 20
+#define SAMPLE_RATE_HZ 200
+
 
 // ********************** ADC FUNCTIONS ****************************
 /* Handles the ADC Interrupts (Occur Every SysTick) */
