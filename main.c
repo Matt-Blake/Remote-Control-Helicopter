@@ -22,6 +22,7 @@
 //#include "buttons.h"
 //#include "inc/hw_gpio.h"
 #include "SwitchTask.h"
+#include "pwm.h"
 
 
 /*
@@ -80,9 +81,6 @@ OLEDDisplay (void *pvParameters)
         OLEDStringDraw(cMessage, 0, 0);
     }
 }
-
-
-
 
 
 void
