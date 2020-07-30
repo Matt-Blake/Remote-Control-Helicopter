@@ -56,40 +56,39 @@ SwitchTask(void *pvParameters)
     // Loop forever.
     while(1)
     {
-        xSemaphoreTake(xTokenMutex, 0);
+        if(xSemaphoreTake(xTokenMutex, 200/portTICK_RATE_MS) == pdPASS){
 
-        // Poll the debounced state of the buttons.
-        ui8CurButtonState = ButtonsPoll(0, 0);
+            // Poll the debounced state of the buttons.
+            ui8CurButtonState = ButtonsPoll(0, 0);
 
-        // Check if previous debounced state is equal to the current state.
-        if(ui8CurButtonState != ui8PrevButtonState)
-        {
-            ui8PrevButtonState = ui8CurButtonState;
-
-            // Check to make sure the change in state is due to button press and not due to button release.
-            if((ui8CurButtonState & ALL_BUTTONS) != 0)
+            // Check if previous debounced state is equal to the current state.
+            if(ui8CurButtonState != ui8PrevButtonState)
             {
-                if((ui8CurButtonState & ALL_BUTTONS) == LEFT_BUTTON)
+                ui8PrevButtonState = ui8CurButtonState;
+                // Check to make sure the change in state is due to button press and not due to button release.
+                if((ui8CurButtonState & ALL_BUTTONS) != 0)
                 {
-                    if (led_blink_rate < 1000) {
-                        led_blink_rate += 100;
+                    if((ui8CurButtonState & ALL_BUTTONS) == LEFT_BUTTON)
+                    {
+                        if (led_blink_rate < 1000) {
+                            led_blink_rate += 100;
+                        }
                     }
-                }
-                else if((ui8CurButtonState & ALL_BUTTONS) == RIGHT_BUTTON)
-                {
-                    if (led_blink_rate > 0) {
-                        led_blink_rate -= 100;
+                    else if((ui8CurButtonState & ALL_BUTTONS) == RIGHT_BUTTON)
+                    {
+                        if (led_blink_rate > 0) {
+                            led_blink_rate -= 100;
+                        }
                     }
-                }
-
-                // Pass the value of the button pressed to LEDTask.
-                if(xQueueSend(xButtonQueue, &led_blink_rate, portMAX_DELAY) != pdPASS) {
-                    // Error. The queue should never be full. If so print the error message on UART and wait for ever.
-                    while(1){}
+                    // Pass the value of the button pressed to LEDTask.
+                    if(xQueueSend(xButtonQueue, &led_blink_rate, portMAX_DELAY) != pdPASS) {
+                        // Error. The queue should never be full. If so print the error message on UART and wait for ever.
+                        while(1){}
+                    }
                 }
             }
+            xSemaphoreGive(xTokenMutex);
         }
-        xSemaphoreGive(xTokenMutex);
         // Wait for the required amount of time to check back.
         vTaskDelayUntil(&ui16LastTime, ui32SwitchDelay / portTICK_RATE_MS);
     }
