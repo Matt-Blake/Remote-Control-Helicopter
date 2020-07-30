@@ -42,17 +42,14 @@
 //******************************************************
 
 // PWM configuration
-<<<<<<< HEAD
 #define PWM_START_RATE_HZ  200
 #define PWM_FIXED_DUTY     0
 #define PWM_DIVIDER_CODE   SYSCTL_PWMDIV_4
 #define PWM_DIVIDER        1
-=======
 #define PWM_MAIN_START_RATE_HZ  200
 #define PWM_MAIN_FIXED_DUTY     0
 #define PWM_DIVIDER_CODE        SYSCTL_PWMDIV_4
 #define PWM_DIVIDER             1
->>>>>>> branch 'master' of https://mjb409@eng-git.canterbury.ac.nz/ence464-2020/group2.git
 
 //  PWM Hardware Details M0PWM7 (gen 3)
 //  ---Main Rotor PWM: PC5, J4-05
@@ -66,7 +63,6 @@
 #define PWM_MAIN_GPIO_CONFIG    GPIO_PC5_M0PWM7
 #define PWM_MAIN_GPIO_PIN       GPIO_PIN_5
 
-<<<<<<< HEAD
 //  ---Tail Rotor PWM: PF1, J4-05
 #define PWM_TAIL_BASE        PWM1_BASE
 #define PWM_TAIL_GEN         PWM_GEN_2
@@ -77,7 +73,8 @@
 #define PWM_TAIL_GPIO_BASE   GPIO_PORTF_BASE
 #define PWM_TAIL_GPIO_CONFIG GPIO_PF1_M1PWM5
 #define PWM_TAIL_GPIO_PIN    GPIO_PIN_1
-=======
+
+
 //********************************************************
 // Function to set the freq, duty cycle of M0PWM7.
 //********************************************************
@@ -86,7 +83,7 @@ setMainRotorPWM (uint32_t ui32Duty)
 {
     // Calculate the PWM period corresponding to the freq.
     uint32_t ui32Period = SysCtlClockGet() / PWM_DIVIDER / PWM_MAIN_START_RATE_HZ;
->>>>>>> branch 'master' of https://mjb409@eng-git.canterbury.ac.nz/ence464-2020/group2.git
+}
 
 
 //******************************************************
