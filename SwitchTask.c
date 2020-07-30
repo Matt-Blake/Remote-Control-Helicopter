@@ -2,7 +2,7 @@
  * SwitchTask.c
  *
  *  Created on: 30/07/2020
- *      Author: grayson-uc
+ *      Author: grayson
  */
 #include <stdbool.h>
 #include <stdint.h>
@@ -15,11 +15,9 @@
 #include "driverlib/pin_map.h"
 #include "driverlib/sysctl.h"
 
-//#include "utils/ustdlib.h"
 #include "OrbitOLED/OrbitOLEDInterface.h"
 
 #include "FreeRTOS.h"
-//#include "task.h"
 #include "queue.h"
 
 #include "buttons.h"

@@ -19,8 +19,6 @@
 #include "task.h"
 #include "queue.h"
 
-//#include "buttons.h"
-//#include "inc/hw_gpio.h"
 #include "SwitchTask.h"
 #include "pwm.h"
 #include "reset.h"
