@@ -56,7 +56,7 @@ SwitchTask(void *pvParameters)
     // Loop forever.
     while(1)
     {
-        xSemaphoreTake(xTokenMutex, portTICK_PERIOD_MS);
+        xSemaphoreTake(xTokenMutex, 0);
 
         // Poll the debounced state of the buttons.
         ui8CurButtonState = ButtonsPoll(0, 0);

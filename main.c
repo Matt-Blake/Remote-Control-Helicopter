@@ -42,7 +42,7 @@
 #define SWITCH_STACK_DEPTH      128     // Stack size in words
 #define LED_TASK_PRIORITY       4       // Blinky priority
 #define OLED_TASK_PRIORITY      5       // OLED priority
-#define SWITCH_TASK_PRIORITY    3       // Switch task priority
+#define SWITCH_TASK_PRIORITY    4       // Switch task priority
 
 QueueHandle_t xOLEDQueue;
 QueueHandle_t xButtonQueue;
