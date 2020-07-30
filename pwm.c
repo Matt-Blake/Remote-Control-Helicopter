@@ -44,20 +44,20 @@
 // PWM configuration
 #define PWM_MAIN_START_RATE_HZ  200
 #define PWM_MAIN_FIXED_DUTY     0
-#define PWM_DIVIDER_CODE   SYSCTL_PWMDIV_4
-#define PWM_DIVIDER        1
+#define PWM_DIVIDER_CODE        SYSCTL_PWMDIV_4
+#define PWM_DIVIDER             1
 
 //  PWM Hardware Details M0PWM7 (gen 3)
 //  ---Main Rotor PWM: PC5, J4-05
-#define PWM_MAIN_BASE        PWM0_BASE
-#define PWM_MAIN_GEN         PWM_GEN_3
-#define PWM_MAIN_OUTNUM      PWM_OUT_7
-#define PWM_MAIN_OUTBIT      PWM_OUT_7_BIT
-#define PWM_MAIN_PERIPH_PWM  SYSCTL_PERIPH_PWM0
-#define PWM_MAIN_PERIPH_GPIO SYSCTL_PERIPH_GPIOC
-#define PWM_MAIN_GPIO_BASE   GPIO_PORTC_BASE
-#define PWM_MAIN_GPIO_CONFIG GPIO_PC5_M0PWM7
-#define PWM_MAIN_GPIO_PIN    GPIO_PIN_5
+#define PWM_MAIN_BASE           PWM0_BASE
+#define PWM_MAIN_GEN            PWM_GEN_3
+#define PWM_MAIN_OUTNUM         PWM_OUT_7
+#define PWM_MAIN_OUTBIT         PWM_OUT_7_BIT
+#define PWM_MAIN_PERIPH_PWM     SYSCTL_PERIPH_PWM0
+#define PWM_MAIN_PERIPH_GPIO    SYSCTL_PERIPH_GPIOC
+#define PWM_MAIN_GPIO_BASE      GPIO_PORTC_BASE
+#define PWM_MAIN_GPIO_CONFIG    GPIO_PC5_M0PWM7
+#define PWM_MAIN_GPIO_PIN       GPIO_PIN_5
 
 //********************************************************
 // Function to set the freq, duty cycle of M0PWM7.
