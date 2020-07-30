@@ -30,6 +30,7 @@
 #include "SwitchTask.h"
 #include "pwm.h"
 #include "reset.h"
+#include "uart.h"
 
 
 /*
