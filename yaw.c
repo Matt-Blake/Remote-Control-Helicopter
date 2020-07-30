@@ -16,7 +16,6 @@
 #include "driverlib/gpio.h"
 #include "driverlib/sysctl.h"
 #include "inc/hw_memmap.h"
-#include "clock.h"
 
 //********************************************************
 // Constants
