@@ -17,6 +17,9 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "driverlib/gpio.h"
+#include "driverlib/sysctl.h"
+#include "inc/hw_memmap.h"
 
 //********************************************************
 // Converts reference yaw to degrees

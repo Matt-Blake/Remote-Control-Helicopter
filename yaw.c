@@ -19,23 +19,20 @@
 //******************************************************
 
 #include "yaw.h"
-#include "driverlib/gpio.h"
-#include "driverlib/sysctl.h"
-#include "inc/hw_memmap.h"
 
 //********************************************************
 // Constants
 //********************************************************
-#define MOUNTSLOTCOUNT 112
-#define DEGREES 180
-#define NEG_DEGREES_CIRCLE -360
+#define MOUNTSLOTCOUNT      112
+#define DEGREES             180
+//#define NEG_DEGREES_CIRCLE  -360
 
 #define YAW_GPIO_BASE       GPIO_PORTB_BASE //Sets the base for pins J1-03 (PB0, channel A) and J1-04 (PB1, channel B)
 #define YAW_PIN0_GPIO_PIN   GPIO_INT_PIN_0
 #define YAW_PIN1_GPIO_PIN   GPIO_INT_PIN_1
 
-#define YAW_REFERENCE_BASE GPIO_PORTC_BASE
-#define YAW_REFERENCE_PIN GPIO_INT_PIN_4
+#define YAW_REFERENCE_BASE  GPIO_PORTC_BASE
+#define YAW_REFERENCE_PIN   GPIO_INT_PIN_4
 
 //********************************************************
 // Globals
