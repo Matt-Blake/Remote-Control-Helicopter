@@ -24,7 +24,7 @@
 // pwm.c - This code was based off the pwmMainGen.c code from ENCE361.
 //      This code has been changed to incorporate PWM of the tail rotor.
 //      This is part of ENCE464 Assignment 1.
-
+//
 // ENCE464 Assignment 1 Group 2
 // Creators: Grayson Mynott      56353855
 //           Ryan Earwaker       12832870

@@ -10,6 +10,12 @@
 //           Sarah Kennelly      76389950
 //           Matt Blake          58979250
 // Last modified: 9/05/2019
+//
+// ENCE464 Assignment 1 Group 2
+// Creators: Grayson Mynott      56353855
+//           Ryan Earwaker       12832870
+//           Matt Blake          58979250
+// Last modified: 31/07/2020
 //******************************************************
 
 #include "yaw.h"
