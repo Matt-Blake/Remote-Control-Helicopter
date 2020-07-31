@@ -30,7 +30,7 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/rom.h"
 #include "driverlib/rom_map.h"
-#include "driverlib/pin_map.h"
+//#include "driverlib/pin_map.h"
 #include "driverlib/gpio.h"
 #include "buttons.h"
 

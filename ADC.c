@@ -12,15 +12,6 @@
  * Based off ADCdemo1.c - P.J. Bones, UCECE, 2018
  * ***************************************************************/
 
-#include <stdint.h>
-#include <stdbool.h>
-#include "inc/hw_memmap.h"
-#include "driverlib/adc.h"
-#include "driverlib/gpio.h"
-#include "driverlib/sysctl.h"
-#include "utils/ustdlib.h"
-#include "driverlib/pin_map.h"
-#include "OrbitOLED/circBufT.h"
 #include "ADC.h"
 
 // ************************* GLOBALS *******************************
