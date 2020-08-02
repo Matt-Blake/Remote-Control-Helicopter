@@ -101,6 +101,19 @@ void quadratureFSMInterrupt(void)
     // for readings 0 means 00 where MSB is pin 1 and LSB is pin 0 , 1 means 01, 2 means 10, 3 means 11
     int32_t newChannelReading = GPIOPinRead(GPIO_PORTB_BASE, YAW_PIN0_GPIO_PIN | YAW_PIN1_GPIO_PIN);
 
+    // Might as well try this. If it doesn't work, can just use the old code.
+    switch (currentChannelReading << 2 | newChannelReading){
+    // Might need to change these to binary values with 0bXXXX..
+        case (0001): yaw--;
+        case (0010): yaw++;
+        case (0100): yaw--;
+        case (0111): yaw++;
+        case (1101): yaw--;
+        case (1110): yaw++;
+        case (1011): yaw--;
+        case (1000): yaw++;
+    }
+    /*
     //inside each we would set old channel to current channel
     // current channel is 00
     if (currentChannelReading == STATE_00 && newChannelReading == STATE_01) {
@@ -137,6 +150,7 @@ void quadratureFSMInterrupt(void)
     if (currentChannelReading == STATE_10 && newChannelReading == STATE_00) {
         yaw++;
     }
+    */
 
     currentChannelReading = newChannelReading;
 

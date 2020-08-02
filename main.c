@@ -1,9 +1,12 @@
 /*
  * TODO:
+ *      - Suss UART
  *      - Figure out what the stack sizes should be
- *      -
+ *      - Suss interrupts
  */
 
+// Mutexes are for shared resources
+// Binary semaphores are used for interrupts
 
 /*
  * INCLUDES
