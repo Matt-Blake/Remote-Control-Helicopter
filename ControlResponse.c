@@ -15,9 +15,9 @@ int int_error;
 int control;
 
 
-void flightcontroller(int target, int input, int output) {
+void flightController(int target, int input, int output) {
 
-    //time_step = //get time step
+    int time_step = SysCtlClockGet() / 1000;   //get time step //xTaskGetTickCount()/80000 //gives 1ms?
 
     double error = target - input; //calculate the error
 
