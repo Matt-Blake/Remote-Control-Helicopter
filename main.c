@@ -6,7 +6,7 @@
  */
 
 // Mutexes are for shared resources
-// Binary semaphores are used for interrupts
+// Binary semaphores are used for interrupts I think
 
 /*
  * INCLUDES
