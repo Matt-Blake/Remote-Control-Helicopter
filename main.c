@@ -160,8 +160,6 @@ main(void)
     createTasks();
     createQueues();
     createSemaphores();
-
-
     vTaskStartScheduler();
     while(1);
 }
