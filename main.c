@@ -113,8 +113,7 @@ OLEDDisplay (void *pvParameters)
 void
 initClk(void)
 {
-    // Set the clock rate to 80 MHz
-    SysCtlClockSet (SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);                       // Set clock frequency
+    SysCtlClockSet (SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);                       // Set clock frequency to 80MHz
 }
 
 void
@@ -135,17 +134,15 @@ init(void)
     OLEDInitialise();
     initBtns();
     initialiseUSB_UART();
-
 }
 
 void
 createTasks(void)
 {
-    xTaskCreate(BlinkLED,       "Blinker",  BLINK_STACK_DEPTH,  NULL,               LED_TASK_PRIORITY,      NULL);
-    xTaskCreate(OLEDDisplay,    "Screen",   OLED_STACK_DEPTH,   NULL,               OLED_TASK_PRIORITY,     NULL);
-    xTaskCreate(ButtonsCheck,   "Switch",   SWITCH_STACK_DEPTH, NULL,               SWITCH_TASK_PRIORITY,   NULL);
+    xTaskCreate(BlinkLED,       "Blinker",  BLINK_STACK_DEPTH,      NULL,       LED_TASK_PRIORITY,      NULL);
+    xTaskCreate(OLEDDisplay,    "Screen",   OLED_STACK_DEPTH,       NULL,       OLED_TASK_PRIORITY,     NULL);
+    xTaskCreate(ButtonsCheck,   "Switch",   SWITCH_STACK_DEPTH,     NULL,       SWITCH_TASK_PRIORITY,   NULL);
 }
-
 
 void
 createQueues(void)
@@ -161,7 +158,6 @@ createSemaphores(void)
     xAltMutex = xSemaphoreCreateMutex();
     xYawMutex = xSemaphoreCreateMutex();
 }
-
 
 int
 main(void)

@@ -36,27 +36,27 @@
 enum butNames {UP = 0, DOWN, LEFT, RIGHT, NUM_BUTS};
 enum butStates {RELEASED = 0, PUSHED, NO_CHANGE};
 
-#define U_BTN_PERIPH       SYSCTL_PERIPH_GPIOE      // Up Peripheral
-#define U_BTN_PORT_BASE    GPIO_PORTE_BASE          // Up Port Base
-#define U_BTN_PIN          GPIO_PIN_0               // Up Pin
-#define U_BTN_NORMAL       false                    // Up Inactive State (Active HIGH)
+#define U_BTN_PERIPH        SYSCTL_PERIPH_GPIOE         // Up Peripheral
+#define U_BTN_PORT_BASE     GPIO_PORTE_BASE             // Up Port Base
+#define U_BTN_PIN           GPIO_PIN_0                  // Up Pin
+#define U_BTN_NORMAL        false                       // Up Inactive State (Active HIGH)
 
-#define D_BTN_PERIPH     SYSCTL_PERIPH_GPIOD        // Down Peripheral
-#define D_BTN_PORT_BASE  GPIO_PORTD_BASE            // Down Port Base
-#define D_BTN_PIN        GPIO_PIN_2                 // Down Pin
-#define D_BTN_NORMAL     false                      // Down Inactive State (Active HIGH)
+#define D_BTN_PERIPH        SYSCTL_PERIPH_GPIOD         // Down Peripheral
+#define D_BTN_PORT_BASE     GPIO_PORTD_BASE             // Down Port Base
+#define D_BTN_PIN           GPIO_PIN_2                  // Down Pin
+#define D_BTN_NORMAL        false                       // Down Inactive State (Active HIGH)
 
-#define L_BTN_PERIPH     SYSCTL_PERIPH_GPIOF        // Left Peripheral
-#define L_BTN_PORT_BASE  GPIO_PORTF_BASE            // Left Port Base
-#define L_BTN_PIN        GPIO_PIN_4                 // Left Pin
-#define L_BTN_NORMAL     true                       // Left Inactive State (Active LOW)
+#define L_BTN_PERIPH        SYSCTL_PERIPH_GPIOF         // Left Peripheral
+#define L_BTN_PORT_BASE     GPIO_PORTF_BASE             // Left Port Base
+#define L_BTN_PIN           GPIO_PIN_4                  // Left Pin
+#define L_BTN_NORMAL        true                        // Left Inactive State (Active LOW)
 
-#define R_BTN_PERIPH    SYSCTL_PERIPH_GPIOF         // Right Peripheral
-#define R_BTN_PORT_BASE GPIO_PORTF_BASE             // Right Port Base
-#define R_BTN_PIN       GPIO_PIN_0                  // Right Pin
-#define R_BTN_NORMAL    true                        // Right Inactive State (Active LOW)
+#define R_BTN_PERIPH        SYSCTL_PERIPH_GPIOF         // Right Peripheral
+#define R_BTN_PORT_BASE     GPIO_PORTF_BASE             // Right Port Base
+#define R_BTN_PIN           GPIO_PIN_0                  // Right Pin
+#define R_BTN_NORMAL        true                        // Right Inactive State (Active LOW)
 
-#define NUM_BTN_POLLS   3                           // Number Of Times To Poll The Buttons (For Debouncing)
+#define NUM_BTN_POLLS       3                           // Number Of Times To Poll The Buttons (For Debouncing)
 
 
 extern QueueHandle_t xAltBtnQueue;
