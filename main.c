@@ -47,7 +47,7 @@
 #define BLINK_STACK_DEPTH       32
 #define OLED_STACK_DEPTH        32
 #define SWITCH_STACK_DEPTH      128     // Stack size in words
-#define LED_TASK_PRIORITY       7       // Blinky priority
+#define LED_TASK_PRIORITY       5       // Blinky priority
 #define OLED_TASK_PRIORITY      5       // OLED priority
 #define SWITCH_TASK_PRIORITY    6       // Switch task priority
 
@@ -61,7 +61,7 @@ SemaphoreHandle_t xYawMutex;
 
 SemaphoreHandle_t xTokenMutex;
 
-int value = 0;
+uint32_t value = 0;
 
 /*
  * BLINKY FUNCTION
@@ -70,17 +70,18 @@ static void
 BlinkLED(void *pvParameters)
 {
     uint8_t currentValue = 0;
-    static uint16_t state = 0;
-    static uint16_t prev_state = 0;
+    static uint8_t state = 0;
+    static uint8_t prev_state = 0;
 
     while(1)
     {
-        if(xSemaphoreTake(xAltMutex, 100/portTICK_RATE_MS) == pdPASS){
+        if(xSemaphoreTake(xAltMutex, 0/portTICK_RATE_MS) == pdPASS){
+
             //UARTSend("Blink\n");
             xQueueReceive(xAltBtnQueue, &state, 10);
             if(state == 0){currentValue &= !2;}
             if(state == 1){currentValue |= 2;}
-            if(state != prev_state){
+            if(prev_state != state){
                 value++;
                 prev_state = state;
             }
@@ -90,8 +91,8 @@ BlinkLED(void *pvParameters)
 
             xSemaphoreGive(xAltMutex);
         }
-        vTaskDelay(200 / portTICK_RATE_MS);              // Suspend this task (so others may run) for BLINK_RATE (or as close as we can get with the current RTOS tick setting).
-    }// No way to kill this blinky task unless another task has an xTaskHandle reference to it and can use vTaskDelete() to purge it.
+        vTaskDelay(200 / portTICK_RATE_MS);
+    }
 }
 
 
@@ -99,7 +100,7 @@ static void
 OLEDDisplay (void *pvParameters)
 {
     char cMessage[17];
-    int  num_flashes;
+    uint32_t  num_flashes;
     while(1)
     {
         xQueueReceive(xOLEDQueue, &num_flashes, 10);
@@ -120,7 +121,7 @@ initClk(void)
 }
 
 void
-initGPIO(void)
+initLED(void)
 {
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);                // Activate internal bus clocking for GPIO port F
     while (!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOF));        // Busy-wait until GPIOF's bus clock is ready
@@ -133,11 +134,11 @@ void
 init(void)
 {
     initClk();
-    initGPIO();
+    initLED();
     OLEDInitialise();
     initBtns();
     initialiseUSB_UART();
-    //SwitchTaskInit();
+
 }
 
 void

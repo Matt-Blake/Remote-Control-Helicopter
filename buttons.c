@@ -183,7 +183,7 @@ ButtonsCheck(void *pvParameters)
 
     portTickType ui16LastTime;
     uint32_t ui32SwitchDelay = 25;
-    static uint16_t state = 0;
+    uint8_t state = 0;
 
 
     // Get the current tick count.
@@ -193,7 +193,7 @@ ButtonsCheck(void *pvParameters)
     while(1)
     {
         updateButtons();
-        if(xSemaphoreTake(xAltMutex, 10/portTICK_RATE_MS) == pdPASS){
+        if(xSemaphoreTake(xAltMutex, 0/portTICK_RATE_MS) == pdPASS){
 
             // Check to make sure the change in state is due to button press and not due to button release.
             if(checkButton(UP) == PUSHED)
