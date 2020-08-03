@@ -11,6 +11,7 @@
 #include "utils/ustdlib.h"
 #include "driverlib/pin_map.h"
 #include "OrbitOLED/circBufT.h"
+#include "uart.h"
 
 /* ****************************************************************
  * ADC.h

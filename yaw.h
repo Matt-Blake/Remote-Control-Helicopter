@@ -20,6 +20,7 @@
 #include "driverlib/gpio.h"
 #include "driverlib/sysctl.h"
 #include "inc/hw_memmap.h"
+#include "uart.h"
 
 //********************************************************
 // Converts reference yaw to degrees
