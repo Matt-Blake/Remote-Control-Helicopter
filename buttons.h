@@ -1,107 +1,101 @@
-//*****************************************************************************
-//
-// buttons.h - Prototypes for the evaluation board buttons driver.
-//
-// Copyright (c) 2012-2017 Texas Instruments Incorporated.  All rights reserved.
-// Software License Agreement
-// 
-// Texas Instruments (TI) is supplying this software for use solely and
-// exclusively on TI's microcontroller products. The software is owned by
-// TI and/or its suppliers, and is protected under applicable copyright
-// laws. You may not combine this software with "viral" open-source
-// software in order to form a larger program.
-// 
-// THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
-// NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
-// NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
-// CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
-// DAMAGES, FOR ANY REASON WHATSOEVER.
-// 
-// This is part of revision 2.1.4.178 of the EK-TM4C123GXL Firmware Package.
-//
-//*****************************************************************************
+#ifndef BUTTONS_H
+#define BUTTONS_H
 
-#ifndef __BUTTONS_H__
-#define __BUTTONS_H__
+/* ****************************************************************
+ * BUTTONS.h
+ *
+ * Header file for the buttons module
+ * Supports buttons on the Tiva/Orbit.
+ * Comprises of initialisers and button checks
+ *
+ * Author: P.J. Bones UCECE
+ * Edited: Derrick Edward, Grayson Mynott, Ryan Earwaker
+ * Thu AM Group 18
+ * Last modified:  29.05.2019
+ *
+ * ***************************************************************/
 
-//*****************************************************************************
-//
-// If building with a C++ compiler, make all of the definitions in this header
-// have a C binding.
-//
-//*****************************************************************************
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+#include <stdint.h>
+#include <stdbool.h>
+#include "inc/hw_memmap.h"
+#include "driverlib/gpio.h"
+#include "driverlib/sysctl.h"
+#include "inc/tm4c123gh6pm.h"  // Board specific defines (for PF0)
 
-//*****************************************************************************
-//
-// Defines for the hardware resources used by the pushbuttons.
-//
-// The switches are on the following ports/pins:
-//
-// PF4 - Left Button
-// PF0 - Right Button
-//
-// The switches tie the GPIO to ground, so the GPIOs need to be configured
-// with pull-ups, and a value of 0 means the switch is pressed.
-//
-//*****************************************************************************
-#define BUTTONS_GPIO_PERIPH     SYSCTL_PERIPH_GPIOF
-#define BUTTONS_GPIO_BASE       GPIO_PORTF_BASE
+#include "FreeRTOS.h"
+#include "queue.h"
+#include "semphr.h"
 
-#define NUM_BUTTONS             2
-#define LEFT_BUTTON             GPIO_PIN_4
-#define RIGHT_BUTTON            GPIO_PIN_0
+#include "uart.h"
 
-#define ALL_BUTTONS             (LEFT_BUTTON | RIGHT_BUTTON)
+// ****************************************************************
+// Constants
+// ****************************************************************
 
-//*****************************************************************************
-//
-// Useful macros for detecting button events.
-//
-//*****************************************************************************
-#define BUTTON_PRESSED(button, buttons, changed)                              \
-        (((button) & (changed)) && ((button) & (buttons)))
+// ** D-Pad Buttons ***********************************************
+enum butNames {UP = 0, DOWN, LEFT, RIGHT, NUM_BUTS};
+enum butStates {RELEASED = 0, PUSHED, NO_CHANGE};
 
-#define BUTTON_RELEASED(button, buttons, changed)                             \
-        (((button) & (changed)) && !((button) & (buttons)))
+#define U_BTN_PERIPH       SYSCTL_PERIPH_GPIOE      // Up Peripheral
+#define U_BTN_PORT_BASE    GPIO_PORTE_BASE          // Up Port Base
+#define U_BTN_PIN          GPIO_PIN_0               // Up Pin
+#define U_BTN_NORMAL       false                    // Up Inactive State (Active HIGH)
 
-//*****************************************************************************
-//
-// If building with a C++ compiler, make all of the definitions in this header
-// have a C binding.
-//
-//*****************************************************************************
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+#define D_BTN_PERIPH     SYSCTL_PERIPH_GPIOD        // Down Peripheral
+#define D_BTN_PORT_BASE  GPIO_PORTD_BASE            // Down Port Base
+#define D_BTN_PIN        GPIO_PIN_2                 // Down Pin
+#define D_BTN_NORMAL     false                      // Down Inactive State (Active HIGH)
 
-//*****************************************************************************
-//
-// Functions exported from buttons.c
-//
-//*****************************************************************************
-extern void ButtonsInit(void);
-extern uint8_t ButtonsPoll(uint8_t *pui8Delta,
-                             uint8_t *pui8Raw);
+#define L_BTN_PERIPH     SYSCTL_PERIPH_GPIOF        // Left Peripheral
+#define L_BTN_PORT_BASE  GPIO_PORTF_BASE            // Left Port Base
+#define L_BTN_PIN        GPIO_PIN_4                 // Left Pin
+#define L_BTN_NORMAL     true                       // Left Inactive State (Active LOW)
 
-//*****************************************************************************
-//
-// Mark the end of the C bindings section for C++ compilers.
-//
-//*****************************************************************************
-#ifdef __cplusplus
-}
-#endif
+#define R_BTN_PERIPH    SYSCTL_PERIPH_GPIOF         // Right Peripheral
+#define R_BTN_PORT_BASE GPIO_PORTF_BASE             // Right Port Base
+#define R_BTN_PIN       GPIO_PIN_0                  // Right Pin
+#define R_BTN_NORMAL    true                        // Right Inactive State (Active LOW)
 
-//*****************************************************************************
-//
-// Prototypes for the globals exported by this driver.
-//
-//*****************************************************************************
+#define NUM_BTN_POLLS 3                             // Number Of Times To Poll The Buttons (For Debouncing)
 
-#endif // __BUTTONS_H__
+
+extern QueueHandle_t xAltBtnQueue;
+extern QueueHandle_t xYawBtnQueue;
+
+extern SemaphoreHandle_t xAltMutex;
+extern SemaphoreHandle_t xYawMutex;
+
+//extern volatile int TARGET_YAW;     // Link the external variable TARGET_YAW
+//extern volatile int TARGET_ALT;     // Link the external variable TARGET_ALT
+
+// Debounce algorithm: A state machine is associated with each button.
+// A state change occurs only after NUM_BUT_POLLS consecutive polls have
+// read the pin in the opposite condition, before the state changes and
+// a flag is set.  Set NUM_BUT_POLLS according to the polling rate.
+
+// ****************************************************************
+// initButtons: Initialise the variables associated with the set of buttons
+// defined by the constants above.
+void initBtns (void);
+
+// ****************************************************************
+// updateButtons: Function designed to be called regularly. It polls all
+// buttons once and updates variables associated with the buttons if
+// necessary.  It is efficient enough to be part of an ISR, e.g. from
+// a SysTick interrupt.
+void updateButtons (void);
+
+// ****************************************************************
+// checkButton: Function returns the new button state if the button state
+// (PUSHED or RELEASED) has changed since the last call, otherwise returns
+// NO_CHANGE.  The argument butName should be one of constants in the
+// enumeration butStates, excluding 'NUM_BUTS'. Safe under interrupt.
+uint8_t checkButton (uint8_t butName);
+// @param   butname - Name of the button to compare the state of (UP/DOWN/LEFT/RIGHT)
+
+// ****************************************************************
+// buttonsCheck: checks if buttons associated with altitude and yaw have
+// been pushed and increments accordingly
+void ButtonsCheck(void *pvParameters);
+
+#endif /*BUTTONS_H*/

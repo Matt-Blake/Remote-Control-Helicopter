@@ -21,6 +21,7 @@
 #include "driverlib/interrupt.h"
 #include "driverlib/pin_map.h"
 #include "driverlib/sysctl.h"
+#include "driverlib/systick.h"
 
 #include "utils/ustdlib.h"
 #include "OrbitOLED/OrbitOLEDInterface.h"
@@ -35,22 +36,29 @@
 #include "reset.h"
 #include "yaw.h"
 #include "uart.h"
+#include "buttons.h"
 
 
 /*
  * DEFINITIONS
  */
 #define OLED_REFRESH_RATE       200     // OLED Screen refresh rate (I think)
+#define SAMPLE_RATE_HZ          200
 #define LED_PIN_RED             1       // RED LED pin
 #define BLINK_STACK_DEPTH       32
 #define OLED_STACK_DEPTH        32
 #define SWITCH_STACK_DEPTH      128     // Stack size in words
 #define LED_TASK_PRIORITY       4       // Blinky priority
 #define OLED_TASK_PRIORITY      5       // OLED priority
-#define SWITCH_TASK_PRIORITY    4       // Switch task priority
+#define SWITCH_TASK_PRIORITY    6       // Switch task priority
 
 QueueHandle_t xOLEDQueue;
-QueueHandle_t xButtonQueue;
+
+QueueHandle_t xYawBtnQueue;
+QueueHandle_t xAltBtnQueue;
+
+SemaphoreHandle_t xAltMutex;
+SemaphoreHandle_t xYawMutex;
 
 SemaphoreHandle_t xTokenMutex;
 
@@ -71,15 +79,15 @@ BlinkLED(void *pvParameters)
 
     while(1)
     {
-        if(xSemaphoreTake(xTokenMutex, 200/portTICK_RATE_MS) == pdPASS){
-            xQueueReceive(xButtonQueue, &led_blink_rate, 10);
+        if(xSemaphoreTake(xAltMutex, 200/portTICK_RATE_MS) == pdPASS){
+            xQueueReceive(xAltBtnQueue, &led_blink_rate, 10);
             currentValue ^= 2;                               // XOR keeps flipping the bit on / off alternately each time this runs.
             GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1, currentValue);
             xQueueSend(xOLEDQueue, &value, 0);
             //if(currentValue == 0){value++;}
             if(on){on = 0; value++;}else{on = 1;}
 
-            xSemaphoreGive(xTokenMutex);
+            xSemaphoreGive(xAltMutex);
         }
         vTaskDelay(led_blink_rate / portTICK_RATE_MS);              // Suspend this task (so others may run) for BLINK_RATE (or as close as we can get with the current RTOS tick setting).
     }// No way to kill this blinky task unless another task has an xTaskHandle reference to it and can use vTaskDelete() to purge it.
@@ -97,15 +105,17 @@ OLEDDisplay (void *pvParameters)
 
         usnprintf(cMessage, sizeof(cMessage), "%d flashes", num_flashes);
         OLEDStringDraw(cMessage, 0, 0);
+        vTaskDelay(100 / portTICK_RATE_MS);
     }
 }
+
 
 
 void
 initClk(void)
 {
     // Set the clock rate to 80 MHz
-    SysCtlClockSet (SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
+    SysCtlClockSet (SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);                       // Set clock frequency
 }
 
 void
@@ -124,7 +134,9 @@ init(void)
     initClk();
     initGPIO();
     OLEDInitialise();
-    SwitchTaskInit();
+    initBtns();
+    initialiseUSB_UART();
+    //SwitchTaskInit();
 }
 
 void
@@ -135,7 +147,8 @@ createTasks(void)
 
     xTaskCreate(BlinkLED,       "Blinker",  BLINK_STACK_DEPTH,  (void *) &led,      LED_TASK_PRIORITY,      NULL);
     xTaskCreate(OLEDDisplay,    "Screen",   OLED_STACK_DEPTH,   NULL,               OLED_TASK_PRIORITY,     NULL);
-    xTaskCreate(SwitchTask,     "Switch",   SWITCH_STACK_DEPTH, NULL,               SWITCH_TASK_PRIORITY,   NULL);
+    xTaskCreate(ButtonsCheck,   "Switch",   SWITCH_STACK_DEPTH, NULL,               SWITCH_TASK_PRIORITY,   NULL);
+    //xTaskCreate(SwitchTask,     "Switch",   SWITCH_STACK_DEPTH, NULL,               SWITCH_TASK_PRIORITY,   NULL);
 }
 
 
@@ -143,13 +156,17 @@ void
 createQueues(void)
 {
     xOLEDQueue = xQueueCreate(5, sizeof( uint32_t ) );
-    xButtonQueue = xQueueCreate(5, sizeof( uint32_t ) );
+
+    xAltBtnQueue = xQueueCreate(5, sizeof( uint32_t ) );
+    xYawBtnQueue = xQueueCreate(5, sizeof( uint32_t ) );
 }
 
 void
 createSemaphores(void)
 {
     xTokenMutex = xSemaphoreCreateMutex();
+    xAltMutex = xSemaphoreCreateMutex();
+    xYawMutex = xSemaphoreCreateMutex();
 }
 
 
@@ -160,6 +177,8 @@ main(void)
     createTasks();
     createQueues();
     createSemaphores();
+    UARTSend("Starting...\n");
+
     vTaskStartScheduler();
     while(1);
 }

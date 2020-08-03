@@ -36,6 +36,9 @@
 void
 initialiseUSB_UART (void);
 
+void
+UARTSend (char *pucBuffer);
+
 //********************************************************
 // Puts current yaw degrees, desired yaw degrees, current altitude,
 // desired altitude, main duty cycle, tail duty cycle and current state

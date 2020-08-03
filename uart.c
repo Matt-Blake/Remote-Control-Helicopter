@@ -53,7 +53,9 @@ initialiseUSB_UART (void)
 {
     // Enable GPIO port A which is used for UART0 pins.
     SysCtlPeripheralEnable(UART_USB_PERIPH_UART);
+    while(!SysCtlPeripheralReady(UART_USB_PERIPH_UART));
     SysCtlPeripheralEnable(UART_USB_PERIPH_GPIO);
+    while(!SysCtlPeripheralReady(UART_USB_PERIPH_GPIO));
 
     // Select the alternate (UART) function for these pins.
     GPIOPinTypeUART(UART_USB_GPIO_BASE, UART_USB_GPIO_PINS);

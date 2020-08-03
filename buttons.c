@@ -1,196 +1,239 @@
-//*****************************************************************************
-//
-// buttons.c - Evaluation board driver for push buttons.
-//
-// Copyright (c) 2012-2017 Texas Instruments Incorporated.  All rights reserved.
-// Software License Agreement
-// 
-// Texas Instruments (TI) is supplying this software for use solely and
-// exclusively on TI's microcontroller products. The software is owned by
-// TI and/or its suppliers, and is protected under applicable copyright
-// laws. You may not combine this software with "viral" open-source
-// software in order to form a larger program.
-// 
-// THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
-// NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
-// NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
-// CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
-// DAMAGES, FOR ANY REASON WHATSOEVER.
-// 
-// This is part of revision 2.1.4.178 of the EK-TM4C123GXL Firmware Package.
-//
-//*****************************************************************************
+/* ****************************************************************
+ * BUTTONS.c
+ *
+ * Module for the D-Pad Buttons (U/D/L/R)
+ * Supports buttons on the Tiva/Orbit.
+ * Comprises of initialisers and button checks
+ *
+ * Author: P.J. Bones UCECE
+ * Edited: Derrick Edward, Grayson Mynott, Ryan Earwaker
+ * Thu AM Group 18
+ * Last modified:  29.05.2019
+ *
+ * ***************************************************************/
 
-#include <stdbool.h>
-#include <stdint.h>
-#include "inc/hw_types.h"
-#include "inc/hw_memmap.h"
-#include "inc/hw_gpio.h"
-#include "driverlib/sysctl.h"
-#include "driverlib/rom.h"
-#include "driverlib/rom_map.h"
-//#include "driverlib/pin_map.h"
-#include "driverlib/gpio.h"
 #include "buttons.h"
 
-//*****************************************************************************
-//
-//! \addtogroup buttons_api
-//! @{
-//
-//*****************************************************************************
+// *******************************************************
+// Globals to module
+// *******************************************************
+static bool but_state[NUM_BUTS];	// Corresponds to the electrical state
+static uint8_t but_count[NUM_BUTS];
+static bool but_flag[NUM_BUTS];
+static bool but_normal[NUM_BUTS];   // Corresponds to the electrical state
 
-//*****************************************************************************
-//
-// Holds the current, debounced state of each button.  A 0 in a bit indicates
-// that that button is currently pressed, otherwise it is released.
-// We assume that we start with all the buttons released (though if one is
-// pressed when the application starts, this will be detected).
-//
-//*****************************************************************************
-static uint8_t g_ui8ButtonStates = ALL_BUTTONS;
-
-//*****************************************************************************
-//
-//! Polls the current state of the buttons and determines which have changed.
-//!
-//! \param pui8Delta points to a character that will be written to indicate
-//! which button states changed since the last time this function was called.
-//! This value is derived from the debounced state of the buttons.
-//! \param pui8RawState points to a location where the raw button state will
-//! be stored.
-//!
-//! This function should be called periodically by the application to poll the
-//! pushbuttons.  It determines both the current debounced state of the buttons
-//! and also which buttons have changed state since the last time the function
-//! was called.
-//!
-//! In order for button debouncing to work properly, this function should be
-//! caled at a regular interval, even if the state of the buttons is not needed
-//! that often.
-//!
-//! If button debouncing is not required, the the caller can pass a pointer
-//! for the \e pui8RawState parameter in order to get the raw state of the
-//! buttons.  The value returned in \e pui8RawState will be a bit mask where
-//! a 1 indicates the buttons is pressed.
-//!
-//! \return Returns the current debounced state of the buttons where a 1 in the
-//! button ID's position indicates that the button is pressed and a 0
-//! indicates that it is released.
-//
-//*****************************************************************************
-uint8_t
-ButtonsPoll(uint8_t *pui8Delta, uint8_t *pui8RawState)
+// *******************************************************
+// initButtons: Initialise the variables associated with the set of buttons
+// defined by the constants in the buttons2.h header file.
+void initBtns(void)
 {
-    uint32_t ui32Delta;
-    uint32_t ui32Data;
-    static uint8_t ui8SwitchClockA = 0;
-    static uint8_t ui8SwitchClockB = 0;
+    int i;
 
-    //
-    // Read the raw state of the push buttons.  Save the raw state
-    // (inverting the bit sense) if the caller supplied storage for the
-    // raw value.
-    //
-    ui32Data = (ROM_GPIOPinRead(BUTTONS_GPIO_BASE, ALL_BUTTONS));
-    if(pui8RawState)
+    // UP button (active HIGH)
+    SysCtlPeripheralEnable(U_BTN_PERIPH);
+    GPIOPinTypeGPIOInput(U_BTN_PORT_BASE, U_BTN_PIN);
+    GPIOPadConfigSet(U_BTN_PORT_BASE, U_BTN_PIN, GPIO_STRENGTH_2MA,
+                     GPIO_PIN_TYPE_STD_WPD);
+    but_normal[UP] = U_BTN_NORMAL;
+
+    // DOWN button (active HIGH)
+    SysCtlPeripheralEnable(D_BTN_PERIPH);
+    GPIOPinTypeGPIOInput(D_BTN_PORT_BASE, D_BTN_PIN);
+    GPIOPadConfigSet(D_BTN_PORT_BASE, D_BTN_PIN, GPIO_STRENGTH_2MA,
+                     GPIO_PIN_TYPE_STD_WPD);
+    but_normal[DOWN] = D_BTN_NORMAL;
+
+    // LEFT button (active LOW)
+    SysCtlPeripheralEnable(L_BTN_PERIPH);
+    GPIOPinTypeGPIOInput(L_BTN_PORT_BASE, L_BTN_PIN);
+    GPIOPadConfigSet(L_BTN_PORT_BASE, L_BTN_PIN, GPIO_STRENGTH_2MA,
+                     GPIO_PIN_TYPE_STD_WPU);
+    but_normal[LEFT] = L_BTN_NORMAL;
+
+    // RIGHT button (active LOW)
+    // Note that PF0 is one of a handful of GPIO pins that need to be
+    // "unlocked" before they can be reconfigured.  This also requires
+    //      #include "inc/tm4c123gh6pm.h"
+    SysCtlPeripheralEnable(R_BTN_PERIPH);
+    //---Unlock PF0 for the right button:
+    GPIO_PORTF_LOCK_R = GPIO_LOCK_KEY;
+    GPIO_PORTF_CR_R |= GPIO_PIN_0; //PF0 unlocked
+    GPIO_PORTF_LOCK_R = GPIO_LOCK_M;
+    GPIOPinTypeGPIOInput(R_BTN_PORT_BASE, R_BTN_PIN);
+    GPIOPadConfigSet(R_BTN_PORT_BASE, R_BTN_PIN, GPIO_STRENGTH_2MA,
+                     GPIO_PIN_TYPE_STD_WPU);
+    but_normal[RIGHT] = R_BTN_NORMAL;
+
+    for (i = 0; i < NUM_BUTS; i++)
     {
-        *pui8RawState = (uint8_t)~ui32Data;
+        but_state[i] = but_normal[i];
+        but_count[i] = 0;
+        but_flag[i] = false;
     }
-
-    //
-    // Determine the switches that are at a different state than the debounced
-    // state.
-    //
-    ui32Delta = ui32Data ^ g_ui8ButtonStates;
-
-    //
-    // Increment the clocks by one.
-    //
-    ui8SwitchClockA ^= ui8SwitchClockB;
-    ui8SwitchClockB = ~ui8SwitchClockB; 
-
-    //
-    // Reset the clocks corresponding to switches that have not changed state.
-    //
-    ui8SwitchClockA &= ui32Delta;
-    ui8SwitchClockB &= ui32Delta;
-
-    //
-    // Get the new debounced switch state.
-    //
-    g_ui8ButtonStates &= ui8SwitchClockA | ui8SwitchClockB;
-    g_ui8ButtonStates |= (~(ui8SwitchClockA | ui8SwitchClockB)) & ui32Data;
-
-    //
-    // Determine the switches that just changed debounced state.
-    //
-    ui32Delta ^= (ui8SwitchClockA | ui8SwitchClockB);
-
-    //
-    // Store the bit mask for the buttons that have changed for return to
-    // caller.
-    //
-    if(pui8Delta)
-    {
-        *pui8Delta = (uint8_t)ui32Delta;
-    }
-
-    //
-    // Return the debounced buttons states to the caller.  Invert the bit
-    // sense so that a '1' indicates the button is pressed, which is a
-    // sensible way to interpret the return value.
-    //
-    return(~g_ui8ButtonStates);
 }
 
-//*****************************************************************************
-//
-//! Initializes the GPIO pins used by the board pushbuttons.
-//!
-//! This function must be called during application initialization to
-//! configure the GPIO pins to which the pushbuttons are attached.  It enables
-//! the port used by the buttons and configures each button GPIO as an input
-//! with a weak pull-up.
-//!
-//! \return None.
-//
-//*****************************************************************************
+// *******************************************************
+// updateButtons: Function designed to be called regularly. It polls all
+// buttons once and updates variables associated with the buttons if
+// necessary.  It is efficient enough to be part of an ISR, e.g. from
+// a SysTick interrupt.
+// Debounce algorithm: A state machine is associated with each button.
+// A state change occurs only after NUM_BUT_POLLS consecutive polls have
+// read the pin in the opposite condition, before the state changes and
+// a flag is set.  Set NUM_BUT_POLLS according to the polling rate.
+void updateButtons(void)
+{
+    bool but_value[NUM_BUTS];
+    int i;
+
+    // Read the pins; true means HIGH, false means LOW
+    but_value[UP] =     (GPIOPinRead(U_BTN_PORT_BASE, U_BTN_PIN) == U_BTN_PIN);
+    but_value[DOWN] =   (GPIOPinRead(D_BTN_PORT_BASE, D_BTN_PIN) == D_BTN_PIN);
+    but_value[LEFT] =   (GPIOPinRead(L_BTN_PORT_BASE, L_BTN_PIN) == L_BTN_PIN);
+    but_value[RIGHT] =  (GPIOPinRead(R_BTN_PORT_BASE, R_BTN_PIN) == R_BTN_PIN);
+    // Iterate through the buttons, updating button variables as required
+    for (i = 0; i < NUM_BUTS; i++)
+    {
+        if (but_value[i] != but_state[i])
+        {
+            but_count[i]++;
+            if (but_count[i] >= NUM_BTN_POLLS)
+            {
+                but_state[i] = but_value[i];
+                but_flag[i] = true;	   // Reset by call to checkButton()
+                but_count[i] = 0;
+            }
+        }
+        else
+            but_count[i] = 0;
+    }
+}
+
+// *******************************************************
+// checkButton: Function returns the new button logical state if the button
+// logical state (PUSHED or RELEASED) has changed since the last call,
+// otherwise returns NO_CHANGE.
+uint8_t checkButton(uint8_t butName)
+{
+    if (but_flag[butName])
+    {
+        but_flag[butName] = false;
+        if (but_state[butName] == but_normal[butName])
+            return RELEASED;
+        else
+            return PUSHED;
+    }
+    return NO_CHANGE;
+}
+
+
 void
-ButtonsInit(void)
+ButtonsCheck(void *pvParameters)
 {
-    //
-    // Enable the GPIO port to which the pushbuttons are connected.
-    //
-    ROM_SysCtlPeripheralEnable(BUTTONS_GPIO_PERIPH);
 
-    //
-    // Unlock PF0 so we can change it to a GPIO input
-    // Once we have enabled (unlocked) the commit register then re-lock it
-    // to prevent further changes.  PF0 is muxed with NMI thus a special case.
-    //
-    HWREG(BUTTONS_GPIO_BASE + GPIO_O_LOCK) = GPIO_LOCK_KEY;
-    HWREG(BUTTONS_GPIO_BASE + GPIO_O_CR) |= 0x01;
-    HWREG(BUTTONS_GPIO_BASE + GPIO_O_LOCK) = 0;
+    /*
+     * For each button the following procedure is run:
+     *
+     * If Button State is PUSHED:
+     *      Update Target Altitude/Yaw accordingly
+     *      If Target Alt/Yaw is now beyond the limits:
+     *          Update targets to be at limit (0-100 for Alt, -180-180 for Yaw).
+     */
 
-    //
-    // Set each of the button GPIO pins as an input with a pull-up.
-    //
-    ROM_GPIODirModeSet(BUTTONS_GPIO_BASE, ALL_BUTTONS, GPIO_DIR_MODE_IN);
-    MAP_GPIOPadConfigSet(BUTTONS_GPIO_BASE, ALL_BUTTONS,
-                         GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);
+    /*
+    if (checkButton(UP) == PUSHED)
+    {
 
-    //
-    // Initialize the debounced button state with the current state read from
-    // the GPIO bank.
-    //
-    g_ui8ButtonStates = ROM_GPIOPinRead(BUTTONS_GPIO_BASE, ALL_BUTTONS);
+        TARGET_ALT += 10;
+        if (TARGET_ALT >= 100)
+        {
+            TARGET_ALT = 100;
+        }
+    }
+
+    if (checkButton(DOWN) == PUSHED)
+    {
+        TARGET_ALT -= 10;
+        if (TARGET_ALT <= 0)
+        {
+            TARGET_ALT = 0;
+        }
+    }
+
+    if (checkButton(RIGHT) == PUSHED)
+    {
+        TARGET_YAW += 15;
+        if (TARGET_YAW >= 180)
+        {
+            TARGET_YAW = -180;
+        }
+    }
+
+    if (checkButton(LEFT) == PUSHED)
+    {
+
+        TARGET_YAW -= 15;
+        if (TARGET_YAW <= -180)
+        {
+            TARGET_YAW = 180;
+        }
+
+    }
+    */
+
+    portTickType ui16LastTime;
+    uint32_t ui32SwitchDelay = 25;
+    uint16_t led_blink_rate = 500;
+
+
+    // Get the current tick count.
+    ui16LastTime = xTaskGetTickCount();
+
+    // Loop forever.
+    while(1)
+    {
+        if(xSemaphoreTake(xAltMutex, 10/portTICK_RATE_MS) == pdPASS){
+            updateButtons();
+
+            // Check to make sure the change in state is due to button press and not due to button release.
+            if(checkButton(UP) == PUSHED)
+            {
+                if (led_blink_rate < 1000) {
+                    led_blink_rate += 100;
+                }
+                UARTSend ("Up\n");
+            }
+
+            if(checkButton(DOWN) == PUSHED)
+            {
+
+                if (led_blink_rate > 100) {
+                    led_blink_rate -= 100;
+                }
+                UARTSend ("Down\n");
+            }
+            if(checkButton(LEFT) == PUSHED)
+            {
+                // LEFT PUSH
+                UARTSend ("Left\n");
+            }
+            if(checkButton(RIGHT) == PUSHED)
+            {
+                // RIGHT PUSH
+                UARTSend ("Right\n");
+            }
+            // Pass the value of the button pressed to LEDTask.
+            if(xQueueSend(xAltBtnQueue, &led_blink_rate, portMAX_DELAY) != pdPASS) {
+                // Error. The queue should never be full. If so print the error message on UART and wait for ever.
+                while(1){}
+            }
+
+            while(xSemaphoreGive(xAltMutex) != pdPASS){
+                UARTSend("Stuck\n");
+            }
+        }
+
+        // Wait for the required amount of time to check back.
+        vTaskDelayUntil(&ui16LastTime, ui32SwitchDelay / portTICK_RATE_MS);
+    }
 }
-
-//*****************************************************************************
-//
-// Close the Doxygen group.
-//! @}
-//
-//*****************************************************************************
