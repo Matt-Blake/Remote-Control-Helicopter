@@ -71,7 +71,7 @@ BlinkLED(void *pvParameters)
 {
     uint8_t currentValue = 0;
     static uint8_t state = 0;
-    static uint8_t prev_state = 0;
+    uint8_t prev_state = 0;
 
     while(1)
     {
@@ -81,7 +81,7 @@ BlinkLED(void *pvParameters)
             xQueueReceive(xAltBtnQueue, &state, 10);
             if(state == 0){currentValue &= !2;}
             if(state == 1){currentValue |= 2;}
-            if(prev_state != state){
+            if(prev_state == 0 && state == 1){
                 value++;
                 prev_state = state;
             }
