@@ -1,8 +1,9 @@
 /*
  * TODO:
- *      - Suss UART
+ *      - Switches are PA6 and PA7
  *      - Figure out what the stack sizes should be
  *      - Suss interrupts
+ *
  */
 
 // Mutexes are for shared resources
@@ -35,6 +36,7 @@
 #include "reset.h"
 #include "yaw.h"
 #include "uart.h"
+#include "ADC.h"
 #include "buttons.h"
 
 
@@ -50,6 +52,7 @@
 #define LED_TASK_PRIORITY       5       // Blinky priority
 #define OLED_TASK_PRIORITY      5       // OLED priority
 #define SWITCH_TASK_PRIORITY    6       // Switch task priority
+#define ADC_TASK_PRIORITY       7
 
 QueueHandle_t xOLEDQueue;
 QueueHandle_t xYawBtnQueue;
@@ -108,6 +111,14 @@ OLEDDisplay (void *pvParameters)
     }
 }
 
+void
+ADCInt (void *pvParameters)
+{
+    while(1){
+    ADCProcessorTrigger(ADC0_BASE, 3);
+    vTaskDelay(300/portTICK_RATE_MS);
+    }
+}
 
 
 void
@@ -134,6 +145,7 @@ init(void)
     OLEDInitialise();
     initBtns();
     initialiseUSB_UART();
+    initADC();
 }
 
 void
@@ -142,6 +154,7 @@ createTasks(void)
     xTaskCreate(BlinkLED,       "Blinker",  BLINK_STACK_DEPTH,      NULL,       LED_TASK_PRIORITY,      NULL);
     xTaskCreate(OLEDDisplay,    "Screen",   OLED_STACK_DEPTH,       NULL,       OLED_TASK_PRIORITY,     NULL);
     xTaskCreate(ButtonsCheck,   "Switch",   SWITCH_STACK_DEPTH,     NULL,       SWITCH_TASK_PRIORITY,   NULL);
+    xTaskCreate(ADCInt,         "ADC",      SWITCH_STACK_DEPTH,     NULL,       ADC_TASK_PRIORITY,      NULL);
 }
 
 void
