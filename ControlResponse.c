@@ -44,6 +44,6 @@ void flightController(void) {
     //update queue with control response
     xQueueSend(PWMQueue, &control, 0);
 
-    vTaskDelay(time_step); for 1ms
+    vTaskDelay(time_step); for 1ms hopefully
 }
 */
