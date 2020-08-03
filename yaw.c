@@ -103,15 +103,16 @@ void quadratureFSMInterrupt(void)
 
     // Might as well try this. If it doesn't work, can just use the old code.
     switch (currentChannelReading << 2 | newChannelReading){
-    // Might need to change these to binary values with 0bXXXX..
-        case (0001): yaw--;
-        case (0010): yaw++;
-        case (0100): yaw--;
-        case (0111): yaw++;
-        case (1101): yaw--;
-        case (1110): yaw++;
-        case (1011): yaw--;
-        case (1000): yaw++;
+    // Might need to change the 0bXXXX into the decimal values
+        case (0b0001): yaw--; // 1
+        case (0b0010): yaw++; // 2
+        case (0b0100): yaw--; // 4
+        case (0b0111): yaw++; // 7
+        case (0b1101): yaw--; // 13
+        case (0b1110): yaw++; // 14
+        case (0b1011): yaw--; // 11
+        case (0b1000): yaw++; // 8
+        default: UARTSend("QuadDecodeErr\n");
     }
     /*
     //inside each we would set old channel to current channel
