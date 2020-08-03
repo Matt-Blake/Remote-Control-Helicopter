@@ -84,7 +84,7 @@ BlinkLED(void *pvParameters)
             }
 
             GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1, currentValue);
-            xQueueSend(xOLEDQueue, &value, 0);
+            xQueueOverwrite(xOLEDQueue, &value);
 
             xSemaphoreGive(xAltMutex);
         }
@@ -150,9 +150,9 @@ createTasks(void)
 void
 createQueues(void)
 {
-    xOLEDQueue      = xQueueCreate(5, sizeof( uint32_t ) );
-    xAltBtnQueue    = xQueueCreate(5, sizeof( uint32_t ) );
-    xYawBtnQueue    = xQueueCreate(5, sizeof( uint32_t ) );
+    xOLEDQueue      = xQueueCreate(1, sizeof( uint32_t ) );
+    xAltBtnQueue    = xQueueCreate(1, sizeof( uint32_t ) );
+    xYawBtnQueue    = xQueueCreate(1, sizeof( uint32_t ) );
 }
 
 void

@@ -140,49 +140,8 @@ ButtonsCheck(void *pvParameters)
      *          Update targets to be at limit (0-100 for Alt, -180-180 for Yaw).
      */
 
-    /*
-    if (checkButton(UP) == PUSHED)
-    {
-
-        TARGET_ALT += 10;
-        if (TARGET_ALT >= 100)
-        {
-            TARGET_ALT = 100;
-        }
-    }
-
-    if (checkButton(DOWN) == PUSHED)
-    {
-        TARGET_ALT -= 10;
-        if (TARGET_ALT <= 0)
-        {
-            TARGET_ALT = 0;
-        }
-    }
-
-    if (checkButton(RIGHT) == PUSHED)
-    {
-        TARGET_YAW += 15;
-        if (TARGET_YAW >= 180)
-        {
-            TARGET_YAW = -180;
-        }
-    }
-
-    if (checkButton(LEFT) == PUSHED)
-    {
-
-        TARGET_YAW -= 15;
-        if (TARGET_YAW <= -180)
-        {
-            TARGET_YAW = 180;
-        }
-
-    }
-    */
-
     portTickType ui16LastTime;
-    uint32_t ui32SwitchDelay = 40;
+    uint32_t ui32SwitchDelay = 25;
     uint8_t state = 0;
 
 
@@ -195,25 +154,36 @@ ButtonsCheck(void *pvParameters)
         updateButtons();
         if(xSemaphoreTake(xAltMutex, 0/portTICK_RATE_MS) == pdPASS){
 
-            // Check to make sure the change in state is due to button press and not due to button release.
-            if(checkButton(UP) == PUSHED)
+            if(checkButton(UP) == PUSHED)               // INCREASE ALTITUDE
             {
-                // INCREASE ALTITUDE
                 state = 1;
                 UARTSend ("Up\n");
-                if(xQueueSend(xAltBtnQueue, &state, portMAX_DELAY) != pdPASS) {
+
+                //TARGET_ALT += 10;
+                //if (TARGET_ALT >= 100)
+                //{
+                //    TARGET_ALT = 100;
+                //}
+
+                if(xQueueOverwrite(xAltBtnQueue, &state) != pdPASS) {
                     // Error. The queue should never be full. If so print the error message on UART and wait for ever.
                     UARTSend("AltBtnQueue fucked out");
                     while(1){}
                 }
             }
 
-            if(checkButton(DOWN) == PUSHED)
+            if(checkButton(DOWN) == PUSHED)               // DECREASE ALTITUDE
             {
-                // DECREASE ALTITUDE
                 state = 0;
                 UARTSend ("Down\n");
-                if(xQueueSend(xAltBtnQueue, &state, portMAX_DELAY) != pdPASS) {
+
+                //TARGET_ALT -= 10;
+                //if (TARGET_ALT <= 0)
+                //{
+                //    TARGET_ALT = 0;
+                //}
+
+                if(xQueueOverwrite(xAltBtnQueue, &state) != pdPASS) {
                     // Error. The queue should never be full. If so print the error message on UART and wait for ever.
                     UARTSend("AltBtnQueue fucked out");
                     while(1){}
@@ -223,16 +193,40 @@ ButtonsCheck(void *pvParameters)
                 UARTSend("Couldn't give Alt Mutex\n");
             }
         }
-        if(xSemaphoreTake(xYawMutex, 10/portTICK_RATE_MS) == pdPASS){
+
+
+        if(xSemaphoreTake(xYawMutex, 0/portTICK_RATE_MS) == pdPASS){
             if(checkButton(LEFT) == PUSHED)
             {
                 // ROTATE ANTI-CLOCKWISE
                 UARTSend ("Left\n");
+                //TARGET_YAW += 15;
+                //if (TARGET_YAW >= 180)
+                //{
+                //    TARGET_YAW = -180;
+                //}
+
+                if(xQueueOverwrite(xYawBtnQueue, &state) != pdPASS) {
+                    // Error. The queue should never be full. If so print the error message on UART and wait for ever.
+                    UARTSend("YawBtnQueue fucked out");
+                    while(1){}
+                }
             }
             if(checkButton(RIGHT) == PUSHED)
             {
                 // ROTATE CLOCKWISE
                 UARTSend ("Right\n");
+                //TARGET_YAW -= 15;
+                //if (TARGET_YAW <= -180)
+                //{
+                //    TARGET_YAW = 180;
+                //}
+
+                if(xQueueOverwrite(xYawBtnQueue, &state) != pdPASS) {
+                    // Error. The queue should never be full. If so print the error message on UART and wait for ever.
+                    UARTSend("YawBtnQueue fucked out");
+                    while(1){}
+                }
             }
 
             while(xSemaphoreGive(xYawMutex) != pdPASS){
