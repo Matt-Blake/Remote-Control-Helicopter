@@ -17,9 +17,17 @@ int control;
 #define OUT_MAX; //need to find out max and min values
 #define OUT_MIN;
 
-void flightController(int target, int input, int output) {
+void flightController(void) {
+
+    static uint8_t target = 0;
+    static uint8_t input = 0;
 
     int time_step = SysCtlClockGet() / 1000;   //get time step //xTaskGetTickCount()/80000 //gives 1ms?
+
+    //read queue
+    xQueueReceive(xTargetQueue, &target, 10);
+    xQueueReceive(xinputQueue, &input, 10);
+
 
     double error = target - input; //calculate the error, critical section so disable ints etc
 
@@ -33,7 +41,8 @@ void flightController(int target, int input, int output) {
 
     if(control < OUT_MIN) {control = OUT_MIN;}
 
-    output = control;
+    //update queue with control response
+    xQueueSend(PWMQueue, &control, 0);
 
     vTaskDelay(time_step); for 1ms
 }
