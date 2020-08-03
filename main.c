@@ -31,7 +31,6 @@
 #include "queue.h"
 #include "semphr.h"
 
-#include "SwitchTask.h"
 #include "pwm.h"
 #include "reset.h"
 #include "yaw.h"
