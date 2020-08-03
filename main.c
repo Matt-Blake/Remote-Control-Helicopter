@@ -76,14 +76,13 @@ BlinkLED(void *pvParameters)
     while(1)
     {
         if(xSemaphoreTake(xAltMutex, 0/portTICK_RATE_MS) == pdPASS){
-
+            prev_state = state;
             //UARTSend("Blink\n");
             xQueueReceive(xAltBtnQueue, &state, 10);
             if(state == 0){currentValue &= !2;}
             if(state == 1){currentValue |= 2;}
             if(prev_state == 0 && state == 1){
                 value++;
-                prev_state = state;
             }
 
             GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1, currentValue);
