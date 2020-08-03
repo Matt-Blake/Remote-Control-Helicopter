@@ -182,7 +182,7 @@ ButtonsCheck(void *pvParameters)
     */
 
     portTickType ui16LastTime;
-    uint32_t ui32SwitchDelay = 25;
+    uint32_t ui32SwitchDelay = 40;
     uint8_t state = 0;
 
 

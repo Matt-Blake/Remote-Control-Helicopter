@@ -52,15 +52,13 @@
 #define SWITCH_TASK_PRIORITY    6       // Switch task priority
 
 QueueHandle_t xOLEDQueue;
-
 QueueHandle_t xYawBtnQueue;
 QueueHandle_t xAltBtnQueue;
 
 SemaphoreHandle_t xAltMutex;
 SemaphoreHandle_t xYawMutex;
 
-SemaphoreHandle_t xTokenMutex;
-
+// Just number of LED flashes
 uint32_t value = 0;
 
 /*
@@ -160,7 +158,6 @@ createQueues(void)
 void
 createSemaphores(void)
 {
-    xTokenMutex = xSemaphoreCreateMutex();
     xAltMutex = xSemaphoreCreateMutex();
     xYawMutex = xSemaphoreCreateMutex();
 }

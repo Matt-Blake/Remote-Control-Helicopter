@@ -56,7 +56,7 @@ enum butStates {RELEASED = 0, PUSHED, NO_CHANGE};
 #define R_BTN_PIN       GPIO_PIN_0                  // Right Pin
 #define R_BTN_NORMAL    true                        // Right Inactive State (Active LOW)
 
-#define NUM_BTN_POLLS 3                             // Number Of Times To Poll The Buttons (For Debouncing)
+#define NUM_BTN_POLLS   3                           // Number Of Times To Poll The Buttons (For Debouncing)
 
 
 extern QueueHandle_t xAltBtnQueue;
