@@ -48,7 +48,7 @@
 #define BLINK_STACK_DEPTH       32
 #define OLED_STACK_DEPTH        32
 #define SWITCH_STACK_DEPTH      128     // Stack size in words
-#define LED_TASK_PRIORITY       4       // Blinky priority
+#define LED_TASK_PRIORITY       7       // Blinky priority
 #define OLED_TASK_PRIORITY      5       // OLED priority
 #define SWITCH_TASK_PRIORITY    6       // Switch task priority
 
@@ -62,7 +62,7 @@ SemaphoreHandle_t xYawMutex;
 
 SemaphoreHandle_t xTokenMutex;
 
-int value = 1;
+int value = 0;
 
 /*
  * BLINKY FUNCTION
@@ -70,26 +70,25 @@ int value = 1;
 static void
 BlinkLED(void *pvParameters)
 {
-    //uint8_t whichLed = *((uint8_t *)pvParameters);              // pvParameters is a pointer to an unsigned 8 bit integer - the LED pin number
-    static uint8_t on = 0;
-    //const uint8_t whichBit = 1 << whichLed;                     // TivaWare GPIO calls require the pin# as a binary bitmask, not a simple number.
-                                                                // Alternately, we could have passed the bitmask into pvParameters instead of a simple number.
     uint8_t currentValue = 0;
-    uint16_t led_blink_rate = 500;
+    static uint16_t state = 0;
+    static uint16_t prev_state = 0;
 
     while(1)
     {
-        if(xSemaphoreTake(xAltMutex, 200/portTICK_RATE_MS) == pdPASS){
-            xQueueReceive(xAltBtnQueue, &led_blink_rate, 10);
-            currentValue ^= 2;                               // XOR keeps flipping the bit on / off alternately each time this runs.
+        if(xSemaphoreTake(xAltMutex, 100/portTICK_RATE_MS) == pdPASS){
+            //UARTSend("Blink\n");
+            xQueueReceive(xAltBtnQueue, &state, 10);
+            if(state == 0){currentValue &= !2;}
+            if(state == 1){currentValue |= 2;}
+
             GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1, currentValue);
             xQueueSend(xOLEDQueue, &value, 0);
-            //if(currentValue == 0){value++;}
-            if(on){on = 0; value++;}else{on = 1;}
+            if(state != prev_state){value++; prev_state = state;}
 
             xSemaphoreGive(xAltMutex);
         }
-        vTaskDelay(led_blink_rate / portTICK_RATE_MS);              // Suspend this task (so others may run) for BLINK_RATE (or as close as we can get with the current RTOS tick setting).
+        vTaskDelay(200 / portTICK_RATE_MS);              // Suspend this task (so others may run) for BLINK_RATE (or as close as we can get with the current RTOS tick setting).
     }// No way to kill this blinky task unless another task has an xTaskHandle reference to it and can use vTaskDelete() to purge it.
 }
 
@@ -148,7 +147,6 @@ createTasks(void)
     xTaskCreate(BlinkLED,       "Blinker",  BLINK_STACK_DEPTH,  (void *) &led,      LED_TASK_PRIORITY,      NULL);
     xTaskCreate(OLEDDisplay,    "Screen",   OLED_STACK_DEPTH,   NULL,               OLED_TASK_PRIORITY,     NULL);
     xTaskCreate(ButtonsCheck,   "Switch",   SWITCH_STACK_DEPTH, NULL,               SWITCH_TASK_PRIORITY,   NULL);
-    //xTaskCreate(SwitchTask,     "Switch",   SWITCH_STACK_DEPTH, NULL,               SWITCH_TASK_PRIORITY,   NULL);
 }
 
 
@@ -156,7 +154,6 @@ void
 createQueues(void)
 {
     xOLEDQueue = xQueueCreate(5, sizeof( uint32_t ) );
-
     xAltBtnQueue = xQueueCreate(5, sizeof( uint32_t ) );
     xYawBtnQueue = xQueueCreate(5, sizeof( uint32_t ) );
 }

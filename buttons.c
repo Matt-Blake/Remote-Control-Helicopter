@@ -183,7 +183,7 @@ ButtonsCheck(void *pvParameters)
 
     portTickType ui16LastTime;
     uint32_t ui32SwitchDelay = 25;
-    uint16_t led_blink_rate = 500;
+    uint16_t state = 0;
 
 
     // Get the current tick count.
@@ -198,19 +198,25 @@ ButtonsCheck(void *pvParameters)
             // Check to make sure the change in state is due to button press and not due to button release.
             if(checkButton(UP) == PUSHED)
             {
-                if (led_blink_rate < 1000) {
-                    led_blink_rate += 100;
-                }
+                state = 1;
                 UARTSend ("Up\n");
+                if(xQueueSend(xAltBtnQueue, &state, portMAX_DELAY) != pdPASS) {
+                    // Error. The queue should never be full. If so print the error message on UART and wait for ever.
+                    UARTSend("AltBtnQueue fucked out");
+                    while(1){}
+                }
             }
 
             if(checkButton(DOWN) == PUSHED)
             {
 
-                if (led_blink_rate > 100) {
-                    led_blink_rate -= 100;
-                }
+                state = 0;
                 UARTSend ("Down\n");
+                if(xQueueSend(xAltBtnQueue, &state, portMAX_DELAY) != pdPASS) {
+                    // Error. The queue should never be full. If so print the error message on UART and wait for ever.
+                    UARTSend("AltBtnQueue fucked out");
+                    while(1){}
+                }
             }
             if(checkButton(LEFT) == PUSHED)
             {
@@ -221,11 +227,6 @@ ButtonsCheck(void *pvParameters)
             {
                 // RIGHT PUSH
                 UARTSend ("Right\n");
-            }
-            // Pass the value of the button pressed to LEDTask.
-            if(xQueueSend(xAltBtnQueue, &led_blink_rate, portMAX_DELAY) != pdPASS) {
-                // Error. The queue should never be full. If so print the error message on UART and wait for ever.
-                while(1){}
             }
 
             while(xSemaphoreGive(xAltMutex) != pdPASS){
