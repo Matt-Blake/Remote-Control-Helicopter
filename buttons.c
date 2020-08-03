@@ -183,7 +183,7 @@ ButtonsCheck(void *pvParameters)
 
     portTickType ui16LastTime;
     uint32_t ui32SwitchDelay = 25;
-    uint16_t state = 0;
+    static uint16_t state = 0;
 
 
     // Get the current tick count.
@@ -192,12 +192,13 @@ ButtonsCheck(void *pvParameters)
     // Loop forever.
     while(1)
     {
+        updateButtons();
         if(xSemaphoreTake(xAltMutex, 10/portTICK_RATE_MS) == pdPASS){
-            updateButtons();
 
             // Check to make sure the change in state is due to button press and not due to button release.
             if(checkButton(UP) == PUSHED)
             {
+                // INCREASE ALTITUDE
                 state = 1;
                 UARTSend ("Up\n");
                 if(xQueueSend(xAltBtnQueue, &state, portMAX_DELAY) != pdPASS) {
@@ -209,7 +210,7 @@ ButtonsCheck(void *pvParameters)
 
             if(checkButton(DOWN) == PUSHED)
             {
-
+                // DECREASE ALTITUDE
                 state = 0;
                 UARTSend ("Down\n");
                 if(xQueueSend(xAltBtnQueue, &state, portMAX_DELAY) != pdPASS) {
@@ -218,19 +219,24 @@ ButtonsCheck(void *pvParameters)
                     while(1){}
                 }
             }
+            while(xSemaphoreGive(xAltMutex) != pdPASS){
+                UARTSend("Couldn't give Alt Mutex\n");
+            }
+        }
+        if(xSemaphoreTake(xYawMutex, 10/portTICK_RATE_MS) == pdPASS){
             if(checkButton(LEFT) == PUSHED)
             {
-                // LEFT PUSH
+                // ROTATE ANTI-CLOCKWISE
                 UARTSend ("Left\n");
             }
             if(checkButton(RIGHT) == PUSHED)
             {
-                // RIGHT PUSH
+                // ROTATE CLOCKWISE
                 UARTSend ("Right\n");
             }
 
-            while(xSemaphoreGive(xAltMutex) != pdPASS){
-                UARTSend("Stuck\n");
+            while(xSemaphoreGive(xYawMutex) != pdPASS){
+                UARTSend("Couldn't give Yaw Mutex\n");
             }
         }
 

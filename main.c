@@ -81,10 +81,13 @@ BlinkLED(void *pvParameters)
             xQueueReceive(xAltBtnQueue, &state, 10);
             if(state == 0){currentValue &= !2;}
             if(state == 1){currentValue |= 2;}
+            if(state != prev_state){
+                value++;
+                prev_state = state;
+            }
 
             GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1, currentValue);
             xQueueSend(xOLEDQueue, &value, 0);
-            if(state != prev_state){value++; prev_state = state;}
 
             xSemaphoreGive(xAltMutex);
         }
@@ -141,10 +144,7 @@ init(void)
 void
 createTasks(void)
 {
-    // LED pin number - static preserves the value while the task is running
-    static uint8_t led = LED_PIN_RED;
-
-    xTaskCreate(BlinkLED,       "Blinker",  BLINK_STACK_DEPTH,  (void *) &led,      LED_TASK_PRIORITY,      NULL);
+    xTaskCreate(BlinkLED,       "Blinker",  BLINK_STACK_DEPTH,  NULL,               LED_TASK_PRIORITY,      NULL);
     xTaskCreate(OLEDDisplay,    "Screen",   OLED_STACK_DEPTH,   NULL,               OLED_TASK_PRIORITY,     NULL);
     xTaskCreate(ButtonsCheck,   "Switch",   SWITCH_STACK_DEPTH, NULL,               SWITCH_TASK_PRIORITY,   NULL);
 }
@@ -153,9 +153,9 @@ createTasks(void)
 void
 createQueues(void)
 {
-    xOLEDQueue = xQueueCreate(5, sizeof( uint32_t ) );
-    xAltBtnQueue = xQueueCreate(5, sizeof( uint32_t ) );
-    xYawBtnQueue = xQueueCreate(5, sizeof( uint32_t ) );
+    xOLEDQueue      = xQueueCreate(5, sizeof( uint32_t ) );
+    xAltBtnQueue    = xQueueCreate(5, sizeof( uint32_t ) );
+    xYawBtnQueue    = xQueueCreate(5, sizeof( uint32_t ) );
 }
 
 void
