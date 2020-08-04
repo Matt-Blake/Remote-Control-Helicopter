@@ -33,12 +33,13 @@
 
 // ************************* GLOBALS ******************************
 extern circBuf_t g_inBuffer;        // Buffer of size BUF_SIZE integers (sample values)
+#define BUF_SIZE 20
 
 // *********************** PROTOTYPES *****************************
 // ****************************************************************
 // ADCIntHandler: The handler for the ADC conversion complete interrupt
 // Writes to the circular buffer.
-void ADCIntHandler(void *pvParameters);
+void ADCIntHandler(void);
 
 // ****************************************************************
 // initADC: Initializes Analog to Digital Conversion

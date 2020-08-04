@@ -39,7 +39,6 @@
 #include "ADC.h"
 #include "buttons.h"
 
-
 /*
  * DEFINITIONS
  */
@@ -116,6 +115,17 @@ OLEDDisplay (void *pvParameters)
     }
 }
 
+static void
+Cinge_ADC(void *pvParameters)
+{
+
+    while(1){
+        ADCProcessorTrigger(ADC0_BASE, 3); //maybe changing the trigger type we could sus it using a different event type
+        vTaskDelay(100 / portTICK_RATE_MS);
+    }
+
+}
+
 
 void
 initClk(void)
@@ -142,6 +152,7 @@ init(void)
     initBtns();
     initialiseUSB_UART();
     initADC();
+    initCircBuf (&g_inBuffer, BUF_SIZE); //this was in our previous code, not sure is relevant but added it while fucking around
 }
 
 void
@@ -150,7 +161,7 @@ createTasks(void)
     xTaskCreate(BlinkLED,       "LED Task",     LED_STACK_DEPTH,        NULL,       LED_TASK_PRIORITY,      NULL);
     xTaskCreate(OLEDDisplay,    "OLED Task",    OLED_STACK_DEPTH,       NULL,       OLED_TASK_PRIORITY,     NULL);
     xTaskCreate(ButtonsCheck,   "Btn Poll",     BTN_STACK_DEPTH,        NULL,       BTN_TASK_PRIORITY,      NULL);
-    xTaskCreate(ADCIntHandler,  "ADC Handler",  ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      NULL);
+    xTaskCreate(Cinge_ADC,  "ADC Handler",  ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      NULL);
 }
 
 void
