@@ -28,14 +28,17 @@ void
 ADCIntHandler (void *pvParameters)
 {
     portTickType ui16LastTime;
-    uint32_t ui32TaskDelay = 25;
+    uint32_t ui32TaskDelay = 100;
     while(1){
         ui16LastTime = xTaskGetTickCount();
         uint32_t ulValue;                                                   // Initialise variable to be used to store ADC value
 
         ADCSequenceDataGet(ADC0_BASE, 3, &ulValue);                         // Runs the A-D Conversion and stores the value in ulValue
         writeCircBuf(&g_inBuffer, ulValue);                                 // Writes the ADC value to the Circular Buffer
-        UARTSend("ADC go brrr\n");
+        //UARTSend("ADC sample.\n");
+        char cMessage[20];
+        usnprintf(cMessage, sizeof(cMessage), "%d\n", ulValue);
+        UARTSend(cMessage);
 
         vTaskDelayUntil(&ui16LastTime, ui32TaskDelay / portTICK_RATE_MS);
     }

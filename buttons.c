@@ -151,6 +151,7 @@ ButtonsCheck(void *pvParameters)
     uint8_t state = 0;
     uint16_t L_PREV = GPIOPinRead(SW_PORT_BASE, L_SW_PIN);
     uint16_t R_PREV = GPIOPinRead(SW_PORT_BASE, R_SW_PIN);
+    uint16_t TARGET_ALT;
 
     // Get the current tick count.
     ui16LastTime = xTaskGetTickCount();
@@ -165,16 +166,18 @@ ButtonsCheck(void *pvParameters)
             {
                 state = 1;
                 UARTSend ("Up\n");
+                TARGET_ALT += 10;
 
-                //TARGET_ALT += 10;
-                //if (TARGET_ALT >= 100)
-                //{
-                //    TARGET_ALT = 100;
-                //}
+                if (TARGET_ALT > 100)
+                {
+                    TARGET_ALT = 100;
+                }
+                char cMessage[5];
+                usnprintf(cMessage, sizeof(cMessage), "%d\n", TARGET_ALT);
+                UARTSend(cMessage);
 
                 if(xQueueOverwrite(xAltBtnQueue, &state) != pdPASS) {
-                    // Error. The queue should never be full. If so print the error message on UART and wait for ever.
-                    UARTSend("AltBtnQueue failed");
+                    UARTSend("AltBtnQueue failed.\n");
                     while(1){}
                 }
             }
@@ -192,7 +195,7 @@ ButtonsCheck(void *pvParameters)
 
                 if(xQueueOverwrite(xAltBtnQueue, &state) != pdPASS) {
                     // Error. The queue should never be full. If so print the error message on UART and wait for ever.
-                    UARTSend("AltBtnQueue fucked out");
+                    UARTSend("AltBtnQueue failed.\n");
                     while(1){}
                 }
             }
@@ -215,7 +218,7 @@ ButtonsCheck(void *pvParameters)
 
                 if(xQueueOverwrite(xYawBtnQueue, &state) != pdPASS) {
                     // Error. The queue should never be full. If so print the error message on UART and wait for ever.
-                    UARTSend("YawBtnQueue fucked out");
+                    UARTSend("YawBtnQueue failed.\n");
                     while(1){}
                 }
             }
@@ -231,7 +234,7 @@ ButtonsCheck(void *pvParameters)
 
                 if(xQueueOverwrite(xYawBtnQueue, &state) != pdPASS) {
                     // Error. The queue should never be full. If so print the error message on UART and wait for ever.
-                    UARTSend("YawBtnQueue fucked out");
+                    UARTSend("YawBtnQueue failed.\n");
                     while(1){}
                 }
             }

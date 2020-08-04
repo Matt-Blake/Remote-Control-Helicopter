@@ -43,8 +43,8 @@
 /*
  * DEFINITIONS
  */
-#define OLED_REFRESH_RATE       200     // OLED Screen refresh rate (I think)
-#define SAMPLE_RATE_HZ          200
+//#define OLED_REFRESH_RATE       200     // OLED Screen refresh rate (I think)
+//#define SAMPLE_RATE_HZ          200
 #define LED_PIN_RED             1       // RED LED pin
 
 #define LED_STACK_DEPTH         32
@@ -52,14 +52,16 @@
 #define BTN_STACK_DEPTH         128     // Stack size in words
 #define ADC_STACK_DEPTH         128     // Stack size in words
 
-#define LED_TASK_PRIORITY       5       // Blinky priority
+// Max priority is 8
+#define LED_TASK_PRIORITY       5       // LED task priority
 #define OLED_TASK_PRIORITY      5       // OLED priority
-#define BTN_TASK_PRIORITY       6       // Switch task priority
-#define ADC_TASK_PRIORITY       7
+#define BTN_TASK_PRIORITY       6       // Button polling task priority
+#define ADC_TASK_PRIORITY       7       // ADC sampling priority
 
 QueueHandle_t xOLEDQueue;
 QueueHandle_t xYawBtnQueue;
 QueueHandle_t xAltBtnQueue;
+QueueHandle_t xModeQueue;
 
 SemaphoreHandle_t xAltMutex;
 SemaphoreHandle_t xYawMutex;
@@ -157,6 +159,7 @@ createQueues(void)
     xOLEDQueue      = xQueueCreate(1, sizeof( uint32_t ) );
     xAltBtnQueue    = xQueueCreate(1, sizeof( uint32_t ) );
     xYawBtnQueue    = xQueueCreate(1, sizeof( uint32_t ) );
+    xModeQueue      = xQueueCreate(1, sizeof( uint32_t ) );
 }
 
 void
