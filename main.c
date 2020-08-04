@@ -126,6 +126,13 @@ Cringe_ADC(void *pvParameters)
 
 }
 
+static void
+Matt_B_YAW(void *pvParameters)
+{
+    while (1)
+    {}
+}
+
 
 void
 initClk(void)
