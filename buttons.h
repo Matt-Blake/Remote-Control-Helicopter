@@ -58,6 +58,11 @@ enum btnStates {RELEASED = 0, PUSHED, NO_CHANGE};
 
 #define NUM_BTN_POLLS       3                           // Number Of Times To Poll The Buttons (For Debouncing)
 
+#define SW_PERIPH           SYSCTL_PERIPH_GPIOA         // Switch Peripheral
+#define SW_PORT_BASE        GPIO_PORTA_BASE             // Switch Port Base
+#define L_SW_PIN            GPIO_PIN_6                  // Left Switch Pin
+#define R_SW_PIN            GPIO_PIN_7                  // Right Switch Pin
+
 
 extern QueueHandle_t xAltBtnQueue;
 extern QueueHandle_t xYawBtnQueue;

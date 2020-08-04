@@ -70,6 +70,12 @@ void initBtns(void)
         btn_count[i] = 0;
         btn_flag[i] = false;
     }
+
+    // Switches
+    SysCtlPeripheralEnable(SW_PERIPH);
+    GPIOPinTypeGPIOInput(SW_PORT_BASE, L_SW_PIN | R_SW_PIN);
+    GPIOPadConfigSet(SW_PORT_BASE, L_SW_PIN | R_SW_PIN, GPIO_STRENGTH_2MA,
+                     GPIO_PIN_TYPE_STD_WPD);
 }
 
 // *******************************************************
@@ -143,7 +149,8 @@ ButtonsCheck(void *pvParameters)
     portTickType ui16LastTime;
     uint32_t ui32SwitchDelay = 25;
     uint8_t state = 0;
-
+    uint16_t L_PREV = GPIOPinRead(SW_PORT_BASE, L_SW_PIN);
+    uint16_t R_PREV = GPIOPinRead(SW_PORT_BASE, R_SW_PIN);
 
     // Get the current tick count.
     ui16LastTime = xTaskGetTickCount();
@@ -232,6 +239,17 @@ ButtonsCheck(void *pvParameters)
             while(xSemaphoreGive(xYawMutex) != pdPASS){
                 UARTSend("Couldn't give Yaw Mutex\n");
             }
+        }
+
+        if(GPIOPinRead(SW_PORT_BASE, L_SW_PIN) != L_PREV)
+        {
+            L_PREV = GPIOPinRead(SW_PORT_BASE, L_SW_PIN);
+            UARTSend ("Left Switch\n");
+        }
+        if(GPIOPinRead(SW_PORT_BASE, R_SW_PIN) != R_PREV)
+        {
+            R_PREV = GPIOPinRead(SW_PORT_BASE, R_SW_PIN);
+            UARTSend ("Right Switch\n");
         }
 
         // Wait for the required amount of time to check back.
