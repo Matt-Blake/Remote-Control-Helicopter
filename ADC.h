@@ -11,6 +11,11 @@
 #include "utils/ustdlib.h"
 #include "driverlib/pin_map.h"
 #include "OrbitOLED/circBufT.h"
+
+#include "FreeRTOS.h"
+#include "queue.h"
+#include "semphr.h"
+
 #include "uart.h"
 
 /* ****************************************************************
@@ -33,7 +38,7 @@ extern circBuf_t g_inBuffer;        // Buffer of size BUF_SIZE integers (sample 
 // ****************************************************************
 // ADCIntHandler: The handler for the ADC conversion complete interrupt
 // Writes to the circular buffer.
-void ADCIntHandler(void);
+void ADCIntHandler(void *pvParameters);
 
 // ****************************************************************
 // initADC: Initializes Analog to Digital Conversion

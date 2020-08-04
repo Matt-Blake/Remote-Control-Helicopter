@@ -17,38 +17,38 @@
 // *******************************************************
 // Globals to module
 // *******************************************************
-static bool but_state[NUM_BUTS];	// Corresponds to the electrical state
-static uint8_t but_count[NUM_BUTS];
-static bool but_flag[NUM_BUTS];
-static bool but_normal[NUM_BUTS];   // Corresponds to the electrical state
+static bool btn_state[NUM_BTNS];	// Corresponds to the electrical state
+static uint8_t btn_count[NUM_BTNS];
+static bool btn_flag[NUM_BTNS];
+static bool btn_normal[NUM_BTNS];   // Corresponds to the electrical state
 
 // *******************************************************
 // initButtons: Initialise the variables associated with the set of buttons
 // defined by the constants in the buttons2.h header file.
 void initBtns(void)
 {
-    int i;
+    uint8_t i;
 
     // UP button (active HIGH)
     SysCtlPeripheralEnable(U_BTN_PERIPH);
     GPIOPinTypeGPIOInput(U_BTN_PORT_BASE, U_BTN_PIN);
     GPIOPadConfigSet(U_BTN_PORT_BASE, U_BTN_PIN, GPIO_STRENGTH_2MA,
                      GPIO_PIN_TYPE_STD_WPD);
-    but_normal[UP] = U_BTN_NORMAL;
+    btn_normal[UP] = U_BTN_NORMAL;
 
     // DOWN button (active HIGH)
     SysCtlPeripheralEnable(D_BTN_PERIPH);
     GPIOPinTypeGPIOInput(D_BTN_PORT_BASE, D_BTN_PIN);
     GPIOPadConfigSet(D_BTN_PORT_BASE, D_BTN_PIN, GPIO_STRENGTH_2MA,
                      GPIO_PIN_TYPE_STD_WPD);
-    but_normal[DOWN] = D_BTN_NORMAL;
+    btn_normal[DOWN] = D_BTN_NORMAL;
 
     // LEFT button (active LOW)
     SysCtlPeripheralEnable(L_BTN_PERIPH);
     GPIOPinTypeGPIOInput(L_BTN_PORT_BASE, L_BTN_PIN);
     GPIOPadConfigSet(L_BTN_PORT_BASE, L_BTN_PIN, GPIO_STRENGTH_2MA,
                      GPIO_PIN_TYPE_STD_WPU);
-    but_normal[LEFT] = L_BTN_NORMAL;
+    btn_normal[LEFT] = L_BTN_NORMAL;
 
     // RIGHT button (active LOW)
     // Note that PF0 is one of a handful of GPIO pins that need to be
@@ -62,13 +62,13 @@ void initBtns(void)
     GPIOPinTypeGPIOInput(R_BTN_PORT_BASE, R_BTN_PIN);
     GPIOPadConfigSet(R_BTN_PORT_BASE, R_BTN_PIN, GPIO_STRENGTH_2MA,
                      GPIO_PIN_TYPE_STD_WPU);
-    but_normal[RIGHT] = R_BTN_NORMAL;
+    btn_normal[RIGHT] = R_BTN_NORMAL;
 
-    for (i = 0; i < NUM_BUTS; i++)
+    for (i = 0; i < NUM_BTNS; i++)
     {
-        but_state[i] = but_normal[i];
-        but_count[i] = 0;
-        but_flag[i] = false;
+        btn_state[i] = btn_normal[i];
+        btn_count[i] = 0;
+        btn_flag[i] = false;
     }
 }
 
@@ -78,34 +78,34 @@ void initBtns(void)
 // necessary.  It is efficient enough to be part of an ISR, e.g. from
 // a SysTick interrupt.
 // Debounce algorithm: A state machine is associated with each button.
-// A state change occurs only after NUM_BUT_POLLS consecutive polls have
+// A state change occurs only after NUM_BTN_POLLS consecutive polls have
 // read the pin in the opposite condition, before the state changes and
-// a flag is set.  Set NUM_BUT_POLLS according to the polling rate.
+// a flag is set.  Set NUM_BTN_POLLS according to the polling rate.
 void updateButtons(void)
 {
-    bool but_value[NUM_BUTS];
+    bool btn_value[NUM_BTNS];
     int i;
 
     // Read the pins; true means HIGH, false means LOW
-    but_value[UP] =     (GPIOPinRead(U_BTN_PORT_BASE, U_BTN_PIN) == U_BTN_PIN);
-    but_value[DOWN] =   (GPIOPinRead(D_BTN_PORT_BASE, D_BTN_PIN) == D_BTN_PIN);
-    but_value[LEFT] =   (GPIOPinRead(L_BTN_PORT_BASE, L_BTN_PIN) == L_BTN_PIN);
-    but_value[RIGHT] =  (GPIOPinRead(R_BTN_PORT_BASE, R_BTN_PIN) == R_BTN_PIN);
+    btn_value[UP] =     (GPIOPinRead(U_BTN_PORT_BASE, U_BTN_PIN) == U_BTN_PIN);
+    btn_value[DOWN] =   (GPIOPinRead(D_BTN_PORT_BASE, D_BTN_PIN) == D_BTN_PIN);
+    btn_value[LEFT] =   (GPIOPinRead(L_BTN_PORT_BASE, L_BTN_PIN) == L_BTN_PIN);
+    btn_value[RIGHT] =  (GPIOPinRead(R_BTN_PORT_BASE, R_BTN_PIN) == R_BTN_PIN);
     // Iterate through the buttons, updating button variables as required
-    for (i = 0; i < NUM_BUTS; i++)
+    for (i = 0; i < NUM_BTNS; i++)
     {
-        if (but_value[i] != but_state[i])
+        if (btn_value[i] != btn_state[i])
         {
-            but_count[i]++;
-            if (but_count[i] >= NUM_BTN_POLLS)
+            btn_count[i]++;
+            if (btn_count[i] >= NUM_BTN_POLLS)
             {
-                but_state[i] = but_value[i];
-                but_flag[i] = true;	   // Reset by call to checkButton()
-                but_count[i] = 0;
+                btn_state[i] = btn_value[i];
+                btn_flag[i] = true;	   // Reset by call to checkbutton()
+                btn_count[i] = 0;
             }
         }
         else
-            but_count[i] = 0;
+            btn_count[i] = 0;
     }
 }
 
@@ -113,12 +113,12 @@ void updateButtons(void)
 // checkButton: Function returns the new button logical state if the button
 // logical state (PUSHED or RELEASED) has changed since the last call,
 // otherwise returns NO_CHANGE.
-uint8_t checkButton(uint8_t butName)
+uint8_t checkButton(uint8_t btnName)
 {
-    if (but_flag[butName])
+    if (btn_flag[btnName])
     {
-        but_flag[butName] = false;
-        if (but_state[butName] == but_normal[butName])
+        btn_flag[btnName] = false;
+        if (btn_state[btnName] == btn_normal[btnName])
             return RELEASED;
         else
             return PUSHED;
@@ -167,7 +167,7 @@ ButtonsCheck(void *pvParameters)
 
                 if(xQueueOverwrite(xAltBtnQueue, &state) != pdPASS) {
                     // Error. The queue should never be full. If so print the error message on UART and wait for ever.
-                    UARTSend("AltBtnQueue fucked out");
+                    UARTSend("AltBtnQueue failed");
                     while(1){}
                 }
             }

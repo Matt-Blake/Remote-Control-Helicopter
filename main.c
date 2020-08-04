@@ -46,12 +46,15 @@
 #define OLED_REFRESH_RATE       200     // OLED Screen refresh rate (I think)
 #define SAMPLE_RATE_HZ          200
 #define LED_PIN_RED             1       // RED LED pin
-#define BLINK_STACK_DEPTH       32
+
+#define LED_STACK_DEPTH         32
 #define OLED_STACK_DEPTH        32
-#define SWITCH_STACK_DEPTH      128     // Stack size in words
+#define BTN_STACK_DEPTH         128     // Stack size in words
+#define ADC_STACK_DEPTH         128     // Stack size in words
+
 #define LED_TASK_PRIORITY       5       // Blinky priority
 #define OLED_TASK_PRIORITY      5       // OLED priority
-#define SWITCH_TASK_PRIORITY    6       // Switch task priority
+#define BTN_TASK_PRIORITY       6       // Switch task priority
 #define ADC_TASK_PRIORITY       7
 
 QueueHandle_t xOLEDQueue;
@@ -111,15 +114,6 @@ OLEDDisplay (void *pvParameters)
     }
 }
 
-void
-ADCInt (void *pvParameters)
-{
-    while(1){
-    ADCProcessorTrigger(ADC0_BASE, 3);
-    vTaskDelay(300/portTICK_RATE_MS);
-    }
-}
-
 
 void
 initClk(void)
@@ -151,10 +145,10 @@ init(void)
 void
 createTasks(void)
 {
-    xTaskCreate(BlinkLED,       "Blinker",  BLINK_STACK_DEPTH,      NULL,       LED_TASK_PRIORITY,      NULL);
-    xTaskCreate(OLEDDisplay,    "Screen",   OLED_STACK_DEPTH,       NULL,       OLED_TASK_PRIORITY,     NULL);
-    xTaskCreate(ButtonsCheck,   "Switch",   SWITCH_STACK_DEPTH,     NULL,       SWITCH_TASK_PRIORITY,   NULL);
-    xTaskCreate(ADCInt,         "ADC",      SWITCH_STACK_DEPTH,     NULL,       ADC_TASK_PRIORITY,      NULL);
+    xTaskCreate(BlinkLED,       "LED Task",     LED_STACK_DEPTH,        NULL,       LED_TASK_PRIORITY,      NULL);
+    xTaskCreate(OLEDDisplay,    "OLED Task",    OLED_STACK_DEPTH,       NULL,       OLED_TASK_PRIORITY,     NULL);
+    xTaskCreate(ButtonsCheck,   "Btn Poll",     BTN_STACK_DEPTH,        NULL,       BTN_TASK_PRIORITY,      NULL);
+    xTaskCreate(ADCIntHandler,  "ADC Handler",  ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      NULL);
 }
 
 void

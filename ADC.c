@@ -25,6 +25,23 @@ circBuf_t g_inBuffer;
 // ********************** ADC FUNCTIONS ****************************
 /* Handles the ADC Interrupts (Occur Every SysTick) */
 void
+ADCIntHandler (void *pvParameters)
+{
+    portTickType ui16LastTime;
+    uint32_t ui32TaskDelay = 25;
+    while(1){
+        ui16LastTime = xTaskGetTickCount();
+        uint32_t ulValue;                                                   // Initialise variable to be used to store ADC value
+
+        ADCSequenceDataGet(ADC0_BASE, 3, &ulValue);                         // Runs the A-D Conversion and stores the value in ulValue
+        writeCircBuf(&g_inBuffer, ulValue);                                 // Writes the ADC value to the Circular Buffer
+        UARTSend("ADC go brrr\n");
+
+        vTaskDelayUntil(&ui16LastTime, ui32TaskDelay / portTICK_RATE_MS);
+    }
+}
+/*
+void
 ADCIntHandler(void)
 {
     uint32_t ulValue;                                                   // Initialise variable to be used to store ADC value
@@ -32,8 +49,9 @@ ADCIntHandler(void)
     ADCSequenceDataGet(ADC0_BASE, 3, &ulValue);                         // Runs the A-D Conversion and stores the value in ulValue
     writeCircBuf(&g_inBuffer, ulValue);                                 // Writes the ADC value to the Circular Buffer
     UARTSend("ADC go brrr\n");
-    ADCIntClear(ADC0_BASE, 3);                                          // Clears the interrupt
+    //ADCIntClear(ADC0_BASE, 3);                                          // Clears the interrupt
 }
+*/
 
 /* Initialises the ADC module */
 void initADC(void)
@@ -44,8 +62,8 @@ void initADC(void)
     ADCSequenceStepConfigure(ADC0_BASE, 3, 0,                           // Configures the module, sample sequence, step, and channel            // Change to CH9 for heli
                              ADC_CTL_CH0 | ADC_CTL_IE | ADC_CTL_END);
     ADCSequenceEnable(ADC0_BASE, 3);                                    // Enables Sequencing on ADC module
-    ADCIntRegister(ADC0_BASE, 3, ADCIntHandler);                        // Registers the interrupt and sets ADCIntHandler to handle the interrupt
-    ADCIntEnable(ADC0_BASE, 3);                                         // Enables interrupts on ADC module
+    //ADCIntRegister(ADC0_BASE, 3, ADCIntHandler);                        // Registers the interrupt and sets ADCIntHandler to handle the interrupt
+    //ADCIntEnable(ADC0_BASE, 3);                                         // Enables interrupts on ADC module
 }
 
 /* Calculates the mean value of the circular buffer */

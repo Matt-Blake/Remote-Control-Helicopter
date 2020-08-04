@@ -33,8 +33,8 @@
 // ****************************************************************
 
 // ** D-Pad Buttons ***********************************************
-enum butNames {UP = 0, DOWN, LEFT, RIGHT, NUM_BUTS};
-enum butStates {RELEASED = 0, PUSHED, NO_CHANGE};
+enum btnNames {UP = 0, DOWN, LEFT, RIGHT, NUM_BTNS};
+enum btnStates {RELEASED = 0, PUSHED, NO_CHANGE};
 
 #define U_BTN_PERIPH        SYSCTL_PERIPH_GPIOE         // Up Peripheral
 #define U_BTN_PORT_BASE     GPIO_PORTE_BASE             // Up Port Base
