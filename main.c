@@ -116,7 +116,7 @@ OLEDDisplay (void *pvParameters)
 }
 
 static void
-Cinge_ADC(void *pvParameters)
+Cringe_ADC(void *pvParameters)
 {
 
     while(1){
@@ -161,7 +161,7 @@ createTasks(void)
     xTaskCreate(BlinkLED,       "LED Task",     LED_STACK_DEPTH,        NULL,       LED_TASK_PRIORITY,      NULL);
     xTaskCreate(OLEDDisplay,    "OLED Task",    OLED_STACK_DEPTH,       NULL,       OLED_TASK_PRIORITY,     NULL);
     xTaskCreate(ButtonsCheck,   "Btn Poll",     BTN_STACK_DEPTH,        NULL,       BTN_TASK_PRIORITY,      NULL);
-    xTaskCreate(Cinge_ADC,  "ADC Handler",  ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      NULL);
+    xTaskCreate(Cringe_ADC,  "ADC Handler",  ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      NULL);
 }
 
 void
