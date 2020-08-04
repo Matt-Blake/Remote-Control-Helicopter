@@ -50,12 +50,15 @@
 #define OLED_STACK_DEPTH        32
 #define BTN_STACK_DEPTH         128     // Stack size in words
 #define ADC_STACK_DEPTH         128     // Stack size in words
+#define YAW_STACK_DEPTH         128     // Stack size in words
 
 // Max priority is 8
 #define LED_TASK_PRIORITY       5       // LED task priority
 #define OLED_TASK_PRIORITY      5       // OLED priority
 #define BTN_TASK_PRIORITY       6       // Button polling task priority
 #define ADC_TASK_PRIORITY       7       // ADC sampling priority
+#define YAW_TASK_PRIORITY       7       // Yaw tracker priority
+
 
 QueueHandle_t xOLEDQueue;
 QueueHandle_t xYawBtnQueue;
@@ -127,7 +130,7 @@ Cringe_ADC(void *pvParameters)
 }
 
 static void
-Matt_B_YAW(void *pvParameters)
+Matty_B_YAW(void *pvParameters)
 {
     while (1)
     {}
@@ -168,7 +171,8 @@ createTasks(void)
     xTaskCreate(BlinkLED,       "LED Task",     LED_STACK_DEPTH,        NULL,       LED_TASK_PRIORITY,      NULL);
     xTaskCreate(OLEDDisplay,    "OLED Task",    OLED_STACK_DEPTH,       NULL,       OLED_TASK_PRIORITY,     NULL);
     xTaskCreate(ButtonsCheck,   "Btn Poll",     BTN_STACK_DEPTH,        NULL,       BTN_TASK_PRIORITY,      NULL);
-    xTaskCreate(Cringe_ADC,  "ADC Handler",  ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      NULL);
+    xTaskCreate(Cringe_ADC,     "ADC Handler",  ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      NULL);
+    xTaskCreate(Matty_B_YAW,    "Yaw Tracker",  YAW_STACK_DEPTH,        NULL,       YAW_TASK_PRIORITY,      NULL);
 }
 
 void
