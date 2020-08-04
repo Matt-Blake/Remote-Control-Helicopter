@@ -1,8 +1,15 @@
 Hi team!
 
-Download the FreeRTOS folder and move to the same folder as all of this.
-Then import it into CCS.
+Heli components:
+	U/D/L/R Buttons		buttons.c
+	L/R Switches		buttons.c*
+	Quad Decode		yaw.c*
+	Serial Comm		uart.c
+	OLED Display		main.c
+	Tail/Main PWM		pwm.c
 
-Should work.
-
-<3
+TODO:
+	Reset button
+	Control response
+	Test quad decode
+	Test pwm gen
