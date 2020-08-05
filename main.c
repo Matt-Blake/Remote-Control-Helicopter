@@ -188,7 +188,7 @@ Set_Main_Duty(void *pvParameters)
 
             // Set PWM duty cycle of main rotor in order to hover to the desired altitude
             alt_error_signal = getErrorSignal(alt_desired, alt_meas); // Find the error between the desired altitude and the actual altitude
-            alt_PWM = getControlSignal(&alt_controller, alt_error_signal, true); // Use the error to calculate a PWM duty cycle for the main rotor
+            alt_PWM = getControlSignal(&alt_controller, alt_error_signal, false); // Use the error to calculate a PWM duty cycle for the main rotor
             setRotorPWM(alt_PWM, 0); // Set main rotor to calculated PWM
 
             xSemaphoreGive(xAltMutex); // Give alt mutex so other mutually exclusive altitude tasks can run
