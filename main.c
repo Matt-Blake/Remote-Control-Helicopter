@@ -129,20 +129,33 @@ OLEDDisplay (void *pvParameters)
 static void
 Cringe_ADC(void *pvParameters)
 {
+    while(1){
+        ADCProcessorTrigger(ADC0_BASE, 3); //maybe changing the trigger type we could sus it using a different event type
+
+        vTaskDelay(250 / portTICK_RATE_MS);
+    }
+
+}
+
+static void
+Mean_ADC(void *pvParameters)
+{
+    char cMessage[17];
     uint32_t mean;
     uint32_t altitude;
 
     int32_t ground = calculateMean();
 
     while(1){
-        ADCProcessorTrigger(ADC0_BASE, 3); //maybe changing the trigger type we could sus it using a different event type
-
         mean = calculateMean();
-        altitude = percentageHeight(ground, mean);
+        //altitude = percentageHeight(ground, mean);
 
-        xQueueOverwrite(xAltitudeQueue, &altitude);
+        usnprintf(cMessage, sizeof(cMessage), "Mean: %d\n", mean);
+        UARTSend(cMessage);
 
-        vTaskDelay(100 / portTICK_RATE_MS);
+        //xQueueOverwrite(xAltitudeQueue, &altitude);
+
+        vTaskDelay(500 / portTICK_RATE_MS);
     }
 
 }
@@ -203,7 +216,6 @@ init(void)
     initBtns();
     initialiseUSB_UART();
     initADC();
-    initCircBuf (&g_inBuffer, BUF_SIZE); //this was in our previous code, not sure is relevant but added it while fucking around
     initQuadrature();
     initReferenceYaw();
 }
@@ -218,6 +230,7 @@ createTasks(void)
     xTaskCreate(OLEDDisplay,    "OLED Task",    OLED_STACK_DEPTH,       NULL,       OLED_TASK_PRIORITY,     NULL);
     xTaskCreate(ButtonsCheck,   "Btn Poll",     BTN_STACK_DEPTH,        NULL,       BTN_TASK_PRIORITY,      NULL);
     xTaskCreate(Cringe_ADC,     "ADC Handler",  ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      NULL);
+    xTaskCreate(Mean_ADC,       "ADC Mean",     ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      NULL);
     xTaskCreate(Matty_B_YAW,    "Yaw Tracker",  YAW_STACK_DEPTH,        NULL,       YAW_TASK_PRIORITY,      NULL);
 }
 
