@@ -73,7 +73,7 @@ SemaphoreHandle_t xYawMutex;
 uint32_t value = 0;
 
 /*
- * BLINKY FUNCTION
+ * RTOS task that toggles LED state based off button presses
  */
 static void
 BlinkLED(void *pvParameters)
@@ -103,7 +103,9 @@ BlinkLED(void *pvParameters)
     }
 }
 
-
+/*
+ * RTOS task that displays number of LED flashes on the OLED display. - Remove in final version.
+ */
 static void
 OLEDDisplay (void *pvParameters)
 {
@@ -119,10 +121,12 @@ OLEDDisplay (void *pvParameters)
     }
 }
 
+/*
+ * RTOS task that periodically triggers the ADC interrupt. - Aim to merge the ADC handler into this.
+ */
 static void
 Cringe_ADC(void *pvParameters)
 {
-
     while(1){
         ADCProcessorTrigger(ADC0_BASE, 3); //maybe changing the trigger type we could sus it using a different event type
         vTaskDelay(100 / portTICK_RATE_MS);
@@ -130,6 +134,9 @@ Cringe_ADC(void *pvParameters)
 
 }
 
+/*
+ * MATTY B YAW
+ */
 static void
 Matty_B_YAW(void *pvParameters)
 {
@@ -137,13 +144,21 @@ Matty_B_YAW(void *pvParameters)
     {}
 }
 
-
+/*
+ * Initialize the main clock.
+ */
 void
 initClk(void)
 {
-    SysCtlClockSet (SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);                       // Set clock frequency to 80MHz
+    /*
+     * Initialize clock frequency to 80MHz
+     */
+    SysCtlClockSet (SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
 }
 
+/*
+ * Initialize the LED pin and peripherals.
+ */
 void
 initLED(void)
 {
@@ -154,6 +169,9 @@ initLED(void)
     GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1, 0);               // Off by default
 }
 
+/*
+ * Collection of all initialize functions.
+ */
 void
 init(void)
 {
@@ -166,6 +184,9 @@ init(void)
     initCircBuf (&g_inBuffer, BUF_SIZE); //this was in our previous code, not sure is relevant but added it while fucking around
 }
 
+/*
+ * Create all of the RTOS tasks.
+ */
 void
 createTasks(void)
 {
@@ -176,6 +197,9 @@ createTasks(void)
     //xTaskCreate(Matty_B_YAW,    "Yaw Tracker",  YAW_STACK_DEPTH,        NULL,       YAW_TASK_PRIORITY,      NULL);
 }
 
+/*
+ * Create all of the RTOS queues.
+ */
 void
 createQueues(void)
 {
@@ -185,6 +209,9 @@ createQueues(void)
     xModeQueue      = xQueueCreate(1, sizeof( uint32_t ) );
 }
 
+/*
+ * Create all of the RTOS semaphores and mutexes.
+ */
 void
 createSemaphores(void)
 {
