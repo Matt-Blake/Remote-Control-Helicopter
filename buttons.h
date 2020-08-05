@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-#ifndef BUTTONS_H
-#define BUTTONS_H
-
 // ****************************************************************
 // BUTTONS.h
 //
@@ -95,8 +91,6 @@ extern QueueHandle_t xYawBtnQueue;
 extern SemaphoreHandle_t xAltMutex;
 extern SemaphoreHandle_t xYawMutex;
 
-//extern volatile int TARGET_YAW;     // Link the external variable TARGET_YAW
-//extern volatile int TARGET_ALT;     // Link the external variable TARGET_ALT
 
 // Debounce algorithm: A state machine is associated with each button.
 // A state change occurs only after NUM_BUT_POLLS consecutive polls have
