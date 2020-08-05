@@ -60,8 +60,18 @@
 #define OLED_TASK_PRIORITY      5       // OLED priority
 #define BTN_TASK_PRIORITY       6       // Button polling task priority
 #define ADC_TASK_PRIORITY       7       // ADC sampling priority
-#define ALT_TASK_PRIORITY       7       // Altitude PWM priority
-#define YAW_TASK_PRIORITY       7       // Yaw PWM priority
+#define ALT_TASK_PRIORITY       8       // Altitude PWM priority
+#define YAW_TASK_PRIORITY       8       // Yaw PWM priority
+
+#define ALT_KP                  1       // Altitude proportional gain
+#define ALT_KI                  1       // Altitude integral gain
+#define ALT_KD                  0       // Altitude derivative gain
+#define YAW_KP                  1       // Yaw proportional gain
+#define YAW_KI                  1       // Yaw integral gain
+#define YAW_KD                  0       // Yaw derivative gain
+#define CONTROL_DIVISOR         1       // Divisor used to achieve certain gains without the use of floating point numbers
+#define CONTROL_PERIOD          20      // Period used in the control loops (ms)
+#define MS_TO_S                 1000    // The conversion factor from milliseconds to seconds
 
 
 QueueHandle_t xOLEDQueue;
@@ -77,6 +87,10 @@ SemaphoreHandle_t xYawMutex;
 
 // Just number of LED flashes
 uint32_t value = 0;
+
+// Initalise controllers
+static Controller g_alt_controller;
+static Controller g_yaw_controller;
 
 /*
  * RTOS task that toggles LED state based off button presses
@@ -174,9 +188,6 @@ Set_Main_Duty(void *pvParameters)
     uint8_t    alt_PWM;
     int16_t    alt_meas;
     int16_t    alt_desired;
-    int16_t    alt_error_signal;
-    Controller alt_controller;
-
 
     while (1)
     {
@@ -187,13 +198,12 @@ Set_Main_Duty(void *pvParameters)
             xQueueReceive(xAltRefQueue,  &alt_desired, 10); // Retrieve desired altitude data from the RTOS queue
 
             // Set PWM duty cycle of main rotor in order to hover to the desired altitude
-            alt_error_signal = getErrorSignal(alt_desired, alt_meas); // Find the error between the desired altitude and the actual altitude
-            alt_PWM = getControlSignal(&alt_controller, alt_error_signal, false); // Use the error to calculate a PWM duty cycle for the main rotor
+            alt_PWM = getControlSignal(&g_alt_controller, alt_desired, alt_meas, false); // Use the error to calculate a PWM duty cycle for the main rotor
             setRotorPWM(alt_PWM, 0); // Set main rotor to calculated PWM
 
             xSemaphoreGive(xAltMutex); // Give alt mutex so other mutually exclusive altitude tasks can run
         }
-        vTaskDelay(100 / portTICK_RATE_MS); // Block task so lower priority tasks can run
+        vTaskDelay(CONTROL_PERIOD / portTICK_RATE_MS); // Block task so lower priority tasks can run
     }
 }
 
@@ -207,9 +217,6 @@ Set_Tail_Duty(void *pvParameters)
     uint8_t    yaw_PWM;
     int16_t    yaw_meas;
     int16_t    yaw_desired;
-    int16_t    yaw_error_signal;
-    Controller yaw_controller;
-
 
     while (1)
     {
@@ -220,30 +227,27 @@ Set_Tail_Duty(void *pvParameters)
             xQueueReceive(xYawRefQueue, &yaw_desired, 10); // Retrieve desired yaw data from the RTOS queue
 
             // Set PWM duty cycle of tail rotor in order to spin to target yaw
-            yaw_error_signal = getErrorSignal(yaw_desired, yaw_meas); // Find the error between the desired yaw and the actual yaw
-            yaw_PWM = getControlSignal(&yaw_controller, yaw_error_signal, true); // Use the error to calculate a PWM duty cycle for the tail rotor
+            yaw_PWM = getControlSignal(&g_yaw_controller, yaw_desired, yaw_meas, true); // Use the error to calculate a PWM duty cycle for the tail rotor
             setRotorPWM(yaw_PWM, 0); // Set tail rotor to calculated PWM
 
             xSemaphoreGive(xYawMutex); // Give yaw mutex so other mutually exclusive yaw tasks can run
         }
-        vTaskDelay(100 / portTICK_RATE_MS); // Block task so lower priority tasks can run
+        vTaskDelay(CONTROL_PERIOD / portTICK_RATE_MS); // Block task so lower priority tasks can run
     }
 }
 
 /*
- * Initialize the main clock.
+ * Initialise the main clock.
  */
 void
 initClk(void)
 {
-    /*
-     * Initialize clock frequency to 80MHz
-     */
+    // Initialise clock frequency to 80MHz
     SysCtlClockSet (SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
 }
 
 /*
- * Initialize the LED pin and peripherals.
+ * Initialise the LED pin and peripherals.
  */
 void
 initLED(void)
@@ -256,7 +260,18 @@ initLED(void)
 }
 
 /*
- * Collection of all initialize functions.
+ * Initialize the altitude and yaw PI controllers
+ */
+void
+initControllers(void)
+{
+    initController(&g_alt_controller, ALT_KP, ALT_KI, ALT_KD, CONTROL_DIVISOR, CONTROL_PERIOD * MS_TO_S); // Create altitude controller based of preset gains
+    initController(&g_yaw_controller, YAW_KP, YAW_KI, YAW_KD, CONTROL_DIVISOR, CONTROL_PERIOD * MS_TO_S); // Create yaw controller based of preset gains
+
+}
+
+/*
+ * Collection of all initialise functions.
  */
 void
 init(void)
@@ -269,6 +284,7 @@ init(void)
     initADC();
     initQuadrature();
     initReferenceYaw();
+    initControllers();
 }
 
 /*

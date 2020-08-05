@@ -13,7 +13,7 @@
 //******************************************************
 // Sets all initial PID Controller struct values
 //******************************************************
-void init_controller(Controller* controllerPointer, uint32_t K_P, uint32_t K_I, uint32_t K_D, uint32_t time_step, int32_t divisor_value)
+void initController(Controller* controllerPointer, uint32_t K_P, uint32_t K_I, uint32_t K_D, uint32_t time_step, int32_t divisor_value)
 {
     controllerPointer ->Kp = K_P;
     controllerPointer ->Ki= K_I;
@@ -26,18 +26,6 @@ void init_controller(Controller* controllerPointer, uint32_t K_P, uint32_t K_I, 
 }
 
 //******************************************************
-// calculates the error signal as the reference altitude or yaw
-// minus the current measured (desired) altitude or yaw.
-//******************************************************
-int32_t getErrorSignal(int32_t reference, int32_t measurement)
-{
-    int32_t errorSignal;
-
-    errorSignal = reference - measurement;
-    return errorSignal;
-}
-
-//******************************************************
 // Function reverses error signal for yaw and processes
 // the error signal so it will work with the method used
 // to log yaw which is from 0 to 179 and -180 to 0.
@@ -47,11 +35,16 @@ int32_t getErrorSignal(int32_t reference, int32_t measurement)
 // Duty cycle limits are set for altitude and yaw so as
 // to not overload the helicopter rig and emulator.
 //******************************************************
-int32_t getControlSignal(Controller *piController, int32_t errorSignal, bool isYaw)
+int8_t getControlSignal(Controller *piController, int16_t reference, int16_t measurement, bool isYaw)
 {
-    int32_t controlSignal;
-    int32_t dutyCycle;
+    int8_t  dutyCycle;
+    int16_t controlSignal;
+    int16_t errorSignal;
     int32_t derivativeError;
+
+
+    // Calculate error signal
+    errorSignal = reference - measurement;
 
     //Clockwise rotation corresponds to low power in motors
     if(isYaw) {
