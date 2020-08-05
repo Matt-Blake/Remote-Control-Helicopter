@@ -1,28 +1,41 @@
-/* ****************************************************************
- * BUTTONS.c
- *
- * Module for the D-Pad Buttons (U/D/L/R)
- * Supports buttons on the Tiva/Orbit.
- * Comprises of initialisers and button checks
- *
- * Author: P.J. Bones UCECE
- * Edited: Derrick Edward, Grayson Mynott, Ryan Earwaker
- * Thu AM Group 18
- * Last modified:  29.05.2019
- *
- * ***************************************************************/
+// ****************************************************************
+// BUTTONS.c
+//
+// Module for the D-Pad Buttons (U/D/L/R)
+// Supports buttons on the Tiva/Orbit.
+// Comprises of initialisers and button checks
+//
+// Author: P.J. Bones UCECE
+// Edited: Derrick Edward, Grayson Mynott, Ryan Earwaker
+// Thu AM Group 18
+// Last modified:  29.05.2019
+//
+// buttons.c - Code updated for use with FreeRTOS
+
+// ENCE464 Assignment 1 Group 2
+// Creators: Grayson Mynott      56353855
+//           Ryan Earwaker       12832870
+//           Matt Blake          58979250
+// Last modified: 05/08/2020
+//******************************************************
 
 #include "buttons.h"
 
-// *******************************************************
-// Globals to module
-// *******************************************************
+//******************************************************
+// Constants
+//******************************************************
+#define ALT_CHANGE 20 // The yaw change on button press (percentage)
+#define YAW_CHANGE 15 // The yaw change on button press (degrees)
+
+// *****************************************************
+// Globals
+// *****************************************************
 static bool btn_state[NUM_BTNS];	// Corresponds to the electrical state
 static uint8_t btn_count[NUM_BTNS];
 static bool btn_flag[NUM_BTNS];
 static bool btn_normal[NUM_BTNS];   // Corresponds to the electrical state
 
-// *******************************************************
+// *****************************************************
 // initButtons: Initialise the variables associated with the set of buttons
 // defined by the constants in the buttons2.h header file.
 void initBtns(void)
@@ -210,7 +223,8 @@ ButtonsCheck(void *pvParameters)
             {
                 // ROTATE ANTI-CLOCKWISE
                 UARTSend ("Left\n");
-                //TARGET_YAW += 15;
+                xQueueReceive(xYawRefQueue, &yaw_desired, 10); // Retrieve desired yaw data from the RTOS queue
+                yaw_desired += 15;
                 //if (TARGET_YAW >= 180)
                 //{
                 //    TARGET_YAW = -180;

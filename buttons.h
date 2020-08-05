@@ -1,19 +1,27 @@
 #ifndef BUTTONS_H
 #define BUTTONS_H
 
-/* ****************************************************************
- * BUTTONS.h
- *
- * Header file for the buttons module
- * Supports buttons on the Tiva/Orbit.
- * Comprises of initialisers and button checks
- *
- * Author: P.J. Bones UCECE
- * Edited: Derrick Edward, Grayson Mynott, Ryan Earwaker
- * Thu AM Group 18
- * Last modified:  29.05.2019
- *
- * ***************************************************************/
+// ****************************************************************
+// BUTTONS.c
+//
+// Module for the D-Pad Buttons (U/D/L/R)
+// Supports buttons on the Tiva/Orbit.
+// Comprises of initialisers and button checks
+//
+// Author: P.J. Bones UCECE
+// Edited: Derrick Edward, Grayson Mynott, Ryan Earwaker
+// Thu AM Group 18
+// Last modified:  29.05.2019
+//
+// buttons.c - Code updated for use with FreeRTOS
+
+// ENCE464 Assignment 1 Group 2
+// Creators: Grayson Mynott      56353855
+//           Ryan Earwaker       12832870
+//           Matt Blake          58979250
+// Last modified: 05/08/2020
+//******************************************************
+
 
 #include <stdint.h>
 #include <stdbool.h>
