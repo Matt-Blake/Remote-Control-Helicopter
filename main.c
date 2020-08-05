@@ -73,7 +73,7 @@
 #define MS_TO_S                 1000    // The conversion factor from milliseconds to seconds
 
 #define CONTROL_PERIOD          20      // Period used in the control loops (ms)
-#define DISPLAY_PERIOD          20      // Period used in the control loops (ms)
+#define DISPLAY_PERIOD          200
 #define ADC_PERIOD              250
 #define ALTITUDE_PERIOD         500
 
