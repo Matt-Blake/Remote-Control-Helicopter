@@ -1,23 +1,3 @@
-#ifndef ADC_H
-#define ADC_H
-
-
-#include <stdint.h>
-#include <stdbool.h>
-#include "inc/hw_memmap.h"
-#include "driverlib/adc.h"
-#include "driverlib/gpio.h"
-#include "driverlib/sysctl.h"
-#include "utils/ustdlib.h"
-#include "driverlib/pin_map.h"
-#include "OrbitOLED/circBufT.h"
-
-#include "FreeRTOS.h"
-#include "queue.h"
-#include "semphr.h"
-
-#include "uart.h"
-
 /* ****************************************************************
  * ADC.h
  *
@@ -30,6 +10,30 @@
  * Last modified:  29.05.2019
  *
  * ***************************************************************/
+
+#ifndef ADC_H
+#define ADC_H
+
+/*
+ * Include files.
+ */
+#include <stdint.h>
+#include <stdbool.h>
+
+#include "driverlib/adc.h"
+#include "driverlib/gpio.h"
+#include "driverlib/pin_map.h"
+#include "driverlib/sysctl.h"
+#include "inc/hw_memmap.h"
+#include "utils/ustdlib.h"
+#include "OrbitOLED/circBufT.h"
+#include "uart.h"
+
+#include "FreeRTOS.h"
+#include "queue.h"
+#include "semphr.h"
+
+
 
 // ************************* GLOBALS ******************************
 circBuf_t g_inBuffer;        // Buffer of size BUF_SIZE integers (sample values)
