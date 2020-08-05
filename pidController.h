@@ -28,6 +28,13 @@
 #include <stdbool.h>
 
 /* ******************************************************
+ * Constants
+ * *****************************************************/
+#define DEGREES_CIRCLE      360                         // The number of degrees in a circle
+#define MAX_DUTY            98                          // The maximum duty cycle for the rotors
+#define MIN_DUTY            2                           // The minimum duty cycle for the rotors
+
+/* ******************************************************
  * Sets up PID controller struct values that will be used
  * for both the altitude control and the yaw control.
  * *****************************************************/

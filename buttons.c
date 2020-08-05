@@ -21,12 +21,6 @@
 
 #include "buttons.h"
 
-//******************************************************
-// Constants
-//******************************************************
-#define ALT_CHANGE 20 // The yaw change on button press (percentage)
-#define YAW_CHANGE 15 // The yaw change on button press (degrees)
-
 // *****************************************************
 // Globals
 // *****************************************************
@@ -150,17 +144,18 @@ uint8_t checkButton(uint8_t btnName)
  */
 void upButtonPush(void)
 {
+    uint8_t state;
     int16_t alt_desired;
 
     UARTSend ("Up\n");
     if(xSemaphoreTake(xAltMutex, 0/portTICK_RATE_MS) == pdPASS){ // If the altitude mutex is free, increment the altitude
         xQueueReceive(xAltRefQueue, &alt_desired, 10); // Retrieve desired altitude data from the RTOS queue
-        alt_desired += 10;
+        alt_desired += ALT_CHANGE;
 
         // Check upper limits of the altitude when left button is pressed
-        if (alt_desired > 100)
+        if (alt_desired > MAX_ALT)
         {
-            alt_desired = 100;
+            alt_desired = MAX_ALT;
         }
 
         char cMessage[5];
@@ -182,17 +177,18 @@ void upButtonPush(void)
  */
 void downButtonPush(void)
 {
+    uint8_t state;
     int16_t alt_desired;
 
     UARTSend ("Down\n");
     if(xSemaphoreTake(xAltMutex, 0/portTICK_RATE_MS) == pdPASS){ // If the altitude mutex is free, increment the altitude
         xQueueReceive(xAltRefQueue, &alt_desired, 10); // Retrieve desired altitude data from the RTOS queue
-        alt_desired -= 10;
+        alt_desired -= ALT_CHANGE;
 
         // Check lower limits of the altitude when left button is pressed
-        if (alt_desired < 0)
+        if (alt_desired < MIN_ALT)
         {
-            alt_desired = 0;
+            alt_desired = MIN_ALT;
         }
 
         char cMessage[5];
@@ -214,6 +210,7 @@ void downButtonPush(void)
  */
 void leftButtonPush(void)
 {
+    uint8_t state;
     int16_t yaw_desired;
 
     UARTSend ("Left\n");
@@ -221,10 +218,10 @@ void leftButtonPush(void)
         xQueueReceive(xYawRefQueue, &yaw_desired, 10); // Retrieve desired yaw data from the RTOS queue
 
         // Check upper limits of the yaw when left button is pressed
-        if (yaw_desired >= -165) {
-        yaw_desired = yaw_desired - 15;
+        if (yaw_desired >= MIN_YAW) {
+        yaw_desired = yaw_desired - YAW_CHANGE;
         } else {
-            yaw_desired = 345 + yaw_desired;
+            yaw_desired = DEGREES_CIRCLE - YAW_CHANGE + yaw_desired;
         }
 
         xQueueOverwrite(xYawRefQueue, &yaw_desired); // Update the RTOS yaw reference queue
@@ -242,6 +239,7 @@ void leftButtonPush(void)
  */
 void rightButtonPush(void)
 {
+    uint8_t state;
     int16_t yaw_desired;
 
     UARTSend ("Right\n");
@@ -249,10 +247,10 @@ void rightButtonPush(void)
         xQueueReceive(xYawRefQueue, &yaw_desired, 10); // Retrieve desired yaw data from the RTOS queue
 
         // Check upper limits of the yaw if right button is pressed
-        if (yaw_desired <= 164) {
-            yaw_desired = yaw_desired + 15;
+        if (yaw_desired <= MAX_YAW) {
+            yaw_desired = yaw_desired + YAW_CHANGE;
         } else {
-            yaw_desired = -345 + yaw_desired;
+            yaw_desired = -DEGREES_CIRCLE + YAW_CHANGE + yaw_desired;
         }
 
         xQueueOverwrite(xYawRefQueue, &yaw_desired); // Update the RTOS yaw reference queue

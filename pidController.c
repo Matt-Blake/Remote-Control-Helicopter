@@ -62,10 +62,10 @@ int16_t getControlSignal(controller_t* piController, int16_t reference, int16_t 
         errorSignal = -errorSignal;
 
         //If the error would cause a rotation in the wrong direction
-        if(errorSignal > 180) {
-            errorSignal = errorSignal - 360;
-        } else if(errorSignal < -180) {
-            errorSignal = 360 - errorSignal;
+        if(errorSignal > (DEGREES_CIRCLE/2)) {
+            errorSignal = errorSignal - DEGREES_CIRCLE;
+        } else if(errorSignal < (-(DEGREES_CIRCLE/2))) {
+            errorSignal = DEGREES_CIRCLE - errorSignal;
         }
     }
 
@@ -81,14 +81,11 @@ int16_t getControlSignal(controller_t* piController, int16_t reference, int16_t 
     piController->previousError = errorSignal;
 
     //Enforce duty cycle output limits
-    if(dutyCycle > 70 && isYaw) {
-        dutyCycle = 70;
+    if(dutyCycle > MAX_DUTY) {
+        dutyCycle = MAX_DUTY;
         piController->integratedError -= piController->timeStep * errorSignal;
-    } else if(dutyCycle > 80) {
-        dutyCycle = 80;
-        piController->integratedError -= piController->timeStep * errorSignal;
-    } else if(dutyCycle < 0) {
-        dutyCycle = 0;
+    } else if(dutyCycle < MIN_DUTY) {
+        dutyCycle = MIN_DUTY;
         piController->integratedError -= piController->timeStep * errorSignal;
     }
     return dutyCycle;

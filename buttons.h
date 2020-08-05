@@ -84,7 +84,18 @@ enum btnStates {RELEASED = 0, PUSHED, NO_CHANGE};
 #define L_SW_PIN            GPIO_PIN_6                  // Left Switch Pin
 #define R_SW_PIN            GPIO_PIN_7                  // Right Switch Pin
 
+#define ALT_CHANGE          10                          // The altitude change on button press (percentage)
+#define MAX_ALT             100                         // The maximum altitude (percentage)
+#define MIN_ALT             0                           // The minimum altitude (percentage)
 
+#define YAW_CHANGE          15                          // The yaw change on button press (degrees)
+#define MAX_YAW             164                         // The maximum yaw (degrees)
+#define MIN_YAW             -165                        // The minimum yaw (degrees)
+#define DEGREES_CIRCLE      360                         // The number of degrees in a circle
+
+/* ******************************************************
+ * Globals
+ * *****************************************************/
 extern QueueHandle_t xAltBtnQueue;
 extern QueueHandle_t xYawBtnQueue;
 extern QueueHandle_t xAltRefQueue;
