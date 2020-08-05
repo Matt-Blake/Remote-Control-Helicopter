@@ -165,21 +165,28 @@ Mean_ADC(void *pvParameters)
  * RTOS task that controls the tail rotor speed in order to reach the desire yaw
  */
 static void
-Matty_B_YAW(void *pvParameters)
+Set_Tail_Duty(void *pvParameters)
 {
+
+    uint8_t  yaw_PWM;
+    int16_t yaw_degrees;
+    int16_t yaw_reference;
+    int16_t yaw_error_signal;
+    Controller yaw_controller;
+
+
     while (1)
     {
         if(xSemaphoreTake(xYawMutex, 0/portTICK_RATE_MS) == pdPASS){ // If the yaw mutex is free, apply the desired tair rotor duty cycle
 
             // Retrieve yaw information
             yaw_degrees = getYawDegrees(); // Retrieve measured yaw data
-            xQueueReceive(xYawQueue, &yaw_Reference, 10); // Retrieve desired yaw data from the RTOS queue
-
+            xQueueReceive(xYawQueue, &yaw_reference, 10); // Retrieve desired yaw data from the RTOS queue
 
             // Set PWM duty cycle of tail rotor in order to spin to target yaw
-            yaw_error_signal = getErrorSignal(yaw_Reference, yaw_degrees); // Find the error between the desired yaw and the actual yaw
-            yaw_PWM = getControlSignal(&g_yaw_controller, yaw_error_signal, true); // Use the error to calculate a PWM duty cycle for the tail rotor
-            setTailPWM(yaw_PWM); // Set tail rotor to calculated PWM
+            yaw_error_signal = getErrorSignal(yaw_reference, yaw_degrees); // Find the error between the desired yaw and the actual yaw
+            yaw_PWM = getControlSignal(&yaw_controller, yaw_error_signal, true); // Use the error to calculate a PWM duty cycle for the tail rotor
+            setRotorPWM(yaw_PWM, 0); // Set tail rotor to calculated PWM
 
             xSemaphoreGive(xYawMutex); // Give yaw mutex so other mutually exclusive yaw tasks can run
         }
@@ -239,7 +246,7 @@ createTasks(void)
     xTaskCreate(ButtonsCheck,   "Btn Poll",     BTN_STACK_DEPTH,        NULL,       BTN_TASK_PRIORITY,      NULL);
     xTaskCreate(Cringe_ADC,     "ADC Handler",  ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      NULL);
     xTaskCreate(Mean_ADC,       "ADC Mean",     ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      NULL);
-    xTaskCreate(Matty_B_YAW,    "Yaw Tracker",  YAW_STACK_DEPTH,        NULL,       YAW_TASK_PRIORITY,      NULL);
+    xTaskCreate(Set_Tail_Duty,    "Yaw Tracker",  YAW_STACK_DEPTH,        NULL,       YAW_TASK_PRIORITY,      NULL);
 }
 
 /*
