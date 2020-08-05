@@ -3,9 +3,11 @@
 #define BUTTONS_H
 
 // ****************************************************************
-// BUTTONS.c
+// BUTTONS.h
 //
-// Module for the D-Pad Buttons (U/D/L/R)
+// BUTTONS.h
+//
+// Header file for the buttons module
 // Supports buttons on the Tiva/Orbit.
 // Comprises of initialisers and button checks
 //
@@ -23,7 +25,6 @@
 // Last modified: 05/08/2020
 //******************************************************
 
-=======
 /* ****************************************************************
  * BUTTONS.h
  *
@@ -37,7 +38,6 @@
  * Last modified:  29.05.2019
  *
  * ***************************************************************/
->>>>>>> refs/remotes/origin/master
 
 #ifndef BUTTONS_H
 #define BUTTONS_H
