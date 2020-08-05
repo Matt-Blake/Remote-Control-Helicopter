@@ -1,8 +1,9 @@
 /*
  * TODO:
- *      - Switches are PA6 and PA7
  *      - Figure out what the stack sizes should be
  *      - Suss interrupts
+ *      - Suss yaw
+ *      - Suss ADC
  *
  */
 
