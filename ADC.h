@@ -32,7 +32,7 @@
  * ***************************************************************/
 
 // ************************* GLOBALS ******************************
-extern circBuf_t g_inBuffer;        // Buffer of size BUF_SIZE integers (sample values)
+circBuf_t g_inBuffer;        // Buffer of size BUF_SIZE integers (sample values)
 #define BUF_SIZE 20
 
 // *********************** PROTOTYPES *****************************
@@ -52,7 +52,7 @@ int calculateMean(void);
 
 // ****************************************************************
 // percentageHeight: Calculate the percentage height (0% = Grounded, 100% = Maximum Height)
-int percentageHeight(int16_t ground_level, int32_t current);
+int percentageHeight(int32_t ground_level, int32_t current);
 // @param   ground_level  - The value calculated by calculateMean() when the helicopter is started/turned on.
 // @param   current       - The value calculated by calculateMean() at the moment percentageHeight is called.
 // @return  percent       - The current height as a percentage of the total/maximum height

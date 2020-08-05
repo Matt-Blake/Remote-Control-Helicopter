@@ -15,7 +15,7 @@
 #include "ADC.h"
 
 // ************************* GLOBALS *******************************
-circBuf_t g_inBuffer;
+//circBuf_t g_inBuffer;
 
 // ** Analog-Digital Conversion ***********************************
 //#define BUF_SIZE 20
@@ -48,12 +48,9 @@ void
 ADCIntHandler(void)
 {
     uint32_t ulValue;                                                   // Initialise variable to be used to store ADC value
-    char cMessage[17];
 
     ADCSequenceDataGet(ADC0_BASE, 3, &ulValue);                         // Runs the A-D Conversion and stores the value in ulValue
     writeCircBuf(&g_inBuffer, ulValue);                                 // Writes the ADC value to the Circular Buffer
-    usnprintf(cMessage, sizeof(cMessage), "ADC: %d\n", ulValue);
-    UARTSend(cMessage);
     ADCIntClear(ADC0_BASE, 3);                                          // Clears the interrupt
 }
 
@@ -69,25 +66,28 @@ void initADC(void)
     ADCSequenceEnable(ADC0_BASE, 3);                                    // Enables Sequencing on ADC module
     ADCIntRegister(ADC0_BASE, 3, ADCIntHandler);                        // Registers the interrupt and sets ADCIntHandler to handle the interrupt
     ADCIntEnable(ADC0_BASE, 3);                                         // Enables interrupts on ADC module
+
+    initCircBuf (&g_inBuffer, BUF_SIZE);
 }
 
 /* Calculates the mean value of the circular buffer */
 int32_t calculateMean(void)
 {
-    uint16_t i;
-    int32_t sum = 0;                                                    // Initialise sum
+    uint8_t i;
+    int32_t sum = 0;                                                    // Initialize sum
 
     for (i = 0; i < BUF_SIZE; i++)
         sum = sum + readCircBuf(&g_inBuffer);                           // Sum all values in circBuf
 
-    return (2 * sum + BUF_SIZE) / 2 / BUF_SIZE;                         // Returns mean value
+
+    return (sum / BUF_SIZE);                         // Returns mean value
 }
 
 /* Calculates the altitude as a percentage of the maximum height */
-int percentageHeight(int16_t ground_level, int32_t current)
+int percentageHeight(int32_t ground_level, int32_t current)
 {
-    int16_t vDropADC = 1275;                                            // Voltage drop between ground and maximum height - This value is accurate for the emulator
-    int16_t maxHeight = ground_level - vDropADC;                        // ADC value at maximum height
+    int32_t vDropADC = 1275;                                            // Voltage drop between ground and maximum height - This value is accurate for the emulator
+    int32_t maxHeight = ground_level - vDropADC;                        // ADC value at maximum height
     int8_t percent = 100 - (100 * (current - maxHeight) / (vDropADC));  // Calculates percentage
 
     return percent;                                                     // Returns percentage value
