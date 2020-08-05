@@ -57,6 +57,6 @@ void initController(Controller* controllerPointer, uint32_t K_P, uint32_t K_I, u
 // Duty cycle limits are set for altitude and yaw so as
 // to not overload the helicopter rig and emulator.
 //******************************************************
-int32_t getControlSignal(Controller *piController, int16_t reference, int16_t measurement, bool isYaw);
+int16_t getControlSignal(Controller *piController, int16_t reference, int16_t measurement, bool isYaw);
 
 #endif /* PIDCONTROLLER_H_ */

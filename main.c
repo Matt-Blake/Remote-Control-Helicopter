@@ -137,6 +137,7 @@ OLEDDisplay (void *pvParameters)
 
         usnprintf(cMessage, sizeof(cMessage), "%d flashes", num_flashes);
         OLEDStringDraw(cMessage, 0, 0);
+
         vTaskDelay(100 / portTICK_RATE_MS);
     }
 }
@@ -185,7 +186,7 @@ static void
 Set_Main_Duty(void *pvParameters)
 {
 
-    uint8_t    alt_PWM;
+    int16_t    alt_PWM;
     int16_t    alt_meas;
     int16_t    alt_desired;
 
@@ -214,7 +215,7 @@ static void
 Set_Tail_Duty(void *pvParameters)
 {
 
-    uint8_t    yaw_PWM;
+    int16_t    yaw_PWM;
     int16_t    yaw_meas;
     int16_t    yaw_desired;
 
