@@ -168,12 +168,12 @@ Matty_B_YAW(void *pvParameters)
 {
     while (1)
     {
-        xQueueReceive(xYawQueue, &yaw_degrees, 10); // Retrieve yaw data from the RTOS queue
+        //xQueueReceive(xYawQueue, &yaw_degrees, 10); // Retrieve yaw data from the RTOS queue
 
         // Set PWM duty cycle of tail rotor in order to spin to target yaw
-        yaw_error_signal = getErrorSignal(g_yawReference, yaw_degrees); // Find the error between the desired yaw and the actual yaw
-        yaw_PWM = getControlSignal(&g_yaw_controller, yaw_error_signal, true); // Use the error to calculate a PWM duty cycle for the tail rotor
-        setTailPWM(yaw_PWM); // Set tail rotor to calculated PWM
+        //yaw_error_signal = getErrorSignal(g_yawReference, yaw_degrees); // Find the error between the desired yaw and the actual yaw
+        //yaw_PWM = getControlSignal(&g_yaw_controller, yaw_error_signal, true); // Use the error to calculate a PWM duty cycle for the tail rotor
+        //setTailPWM(yaw_PWM); // Set tail rotor to calculated PWM
 
         vTaskDelay(100 / portTICK_RATE_MS); // Block Task
     }
