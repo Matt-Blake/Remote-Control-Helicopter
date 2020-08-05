@@ -24,16 +24,16 @@
 //******************************************************
 // Sets all initial PID Controller struct values
 //******************************************************
-void initController(Controller* controllerPointer, uint32_t K_P, uint32_t K_I, uint32_t K_D, uint32_t time_step, int32_t divisor_value)
+void initController(controller_t* controllerPointer, uint32_t K_P, uint32_t K_I, uint32_t K_D, uint32_t time_step, int32_t divisor_value)
 {
-    controllerPointer ->Kp = K_P;
-    controllerPointer ->Ki= K_I;
-    controllerPointer ->Kd= K_D;
-    controllerPointer ->timeStep = time_step;
-    controllerPointer ->divisor = divisor_value;
+    controllerPointer->Kp = K_P;
+    controllerPointer->Ki = K_I;
+    controllerPointer->Kd = K_D;
+    controllerPointer->timeStep = time_step;
+    controllerPointer->divisor = divisor_value;
 
-    controllerPointer ->previousError = 0;
-    controllerPointer ->intergratedError = 0;
+    controllerPointer->previousError = 0;
+    controllerPointer->integratedError = 0;
 }
 
 //******************************************************
@@ -46,7 +46,7 @@ void initController(Controller* controllerPointer, uint32_t K_P, uint32_t K_I, u
 // Duty cycle limits are set for altitude and yaw so as
 // to not overload the helicopter rig and emulator.
 //******************************************************
-int16_t getControlSignal(Controller *piController, int16_t reference, int16_t measurement, bool isYaw)
+int16_t getControlSignal(controller_t* piController, int16_t reference, int16_t measurement, bool isYaw)
 {
     int16_t  dutyCycle;
     int16_t controlSignal;
@@ -72,9 +72,9 @@ int16_t getControlSignal(Controller *piController, int16_t reference, int16_t me
     //Calculate the control signal using PID methods and duty cycle
     derivativeError = (errorSignal - piController->previousError)/(piController->timeStep);
 
-    piController->intergratedError += piController->timeStep * errorSignal;
+    piController->integratedError += piController->timeStep * errorSignal;
 
-    controlSignal = (piController->Kp * errorSignal)  + (piController->Ki * piController->intergratedError) + (piController->Kd) * derivativeError;
+    controlSignal = (piController->Kp * errorSignal)  + (piController->Ki * piController->integratedError) + (piController->Kd) * derivativeError;
 
     dutyCycle = controlSignal/(piController->divisor);
 
@@ -83,13 +83,13 @@ int16_t getControlSignal(Controller *piController, int16_t reference, int16_t me
     //Enforce duty cycle output limits
     if(dutyCycle > 70 && isYaw) {
         dutyCycle = 70;
-        piController->intergratedError -= piController->timeStep * errorSignal;
+        piController->integratedError -= piController->timeStep * errorSignal;
     } else if(dutyCycle > 80) {
         dutyCycle = 80;
-        piController->intergratedError -= piController->timeStep * errorSignal;
+        piController->integratedError -= piController->timeStep * errorSignal;
     } else if(dutyCycle < 0) {
         dutyCycle = 0;
-        piController->intergratedError -= piController->timeStep * errorSignal;
+        piController->integratedError -= piController->timeStep * errorSignal;
     }
     return dutyCycle;
 }

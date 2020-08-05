@@ -39,7 +39,7 @@ typedef struct Controllers {
     int32_t divisor; // Divisor used to correct gains without the use of floating point numbers
 
     int32_t previousError;
-    int32_t intergratedError;
+    int32_t integratedError;
 } controller_t;
 
 //******************************************************

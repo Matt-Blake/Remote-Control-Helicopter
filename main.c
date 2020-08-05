@@ -156,6 +156,9 @@ Cringe_ADC(void *pvParameters)
 
 }
 
+/*
+ * RTOS task that periodically calculates the average value of the circular ADC buffer.
+ */
 static void
 Mean_ADC(void *pvParameters)
 {
@@ -180,12 +183,11 @@ Mean_ADC(void *pvParameters)
 }
 
 /*
- * RTOS task that controls the main rotor speed in order to reach the desire yaw
+ * RTOS task that controls the main rotor speed in order to reach the desired altitude.
  */
 static void
 Set_Main_Duty(void *pvParameters)
 {
-
     int16_t    alt_PWM;
     int16_t    alt_meas;
     int16_t    alt_desired;
@@ -209,12 +211,11 @@ Set_Main_Duty(void *pvParameters)
 }
 
 /*
- * RTOS task that controls the tail rotor speed in order to reach the desire yaw
+ * RTOS task that controls the tail rotor speed in order to reach the desire yaw.
  */
 static void
 Set_Tail_Duty(void *pvParameters)
 {
-
     int16_t    yaw_PWM;
     int16_t    yaw_meas;
     int16_t    yaw_desired;
