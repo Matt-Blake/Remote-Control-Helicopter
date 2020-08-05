@@ -10,9 +10,9 @@
 // Mutexes are for shared resources
 // Binary semaphores are used for interrupts I think
 
-/*
- * INCLUDES
- */
+//******************************************************
+// Includes
+//******************************************************
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -73,7 +73,9 @@
 #define CONTROL_PERIOD          20      // Period used in the control loops (ms)
 #define MS_TO_S                 1000    // The conversion factor from milliseconds to seconds
 
-
+//******************************************************
+// Globals
+//******************************************************
 QueueHandle_t xOLEDQueue;
 QueueHandle_t xAltBtnQueue;
 QueueHandle_t xYawBtnQueue;
@@ -92,6 +94,9 @@ uint32_t value = 0;
 static controller_t g_alt_controller;
 static controller_t g_yaw_controller;
 
+//******************************************************
+// Tasks
+//******************************************************
 /*
  * RTOS task that toggles LED state based off button presses
  */
