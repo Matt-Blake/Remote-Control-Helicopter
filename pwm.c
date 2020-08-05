@@ -61,7 +61,7 @@ setRotorPWM (uint32_t ui32Duty, bool SET_MAIN)
 // M0PWM7 (J4-05, PC5) is used for the main rotor motor
 //******************************************************
 void
-initialisePWM (void)
+initPWM (void)
 {
     // Enable PWM peripherals
     SysCtlPeripheralEnable(PWM_MAIN_PERIPH_PWM);

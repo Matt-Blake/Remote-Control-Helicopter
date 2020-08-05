@@ -94,7 +94,7 @@ setRotorPWM (uint32_t ui32Duty, bool SET_MAIN);
  * M0PWM7 (J4-05, PC5) is used for the main rotor motor
  * *****************************************************/
 void
-initialisePWM (void);
+initPWM (void);
 
 /* ******************************************************
  * Turns on the main rotor so a duty cycle can be passed to it

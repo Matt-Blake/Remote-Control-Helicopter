@@ -223,8 +223,18 @@ ButtonsCheck(void *pvParameters)
             {
                 // ROTATE ANTI-CLOCKWISE
                 UARTSend ("Left\n");
-                xQueueReceive(xYawRefQueue, &yaw_desired, 10); // Retrieve desired yaw data from the RTOS queue
-                yaw_desired += 15;
+                if(xSemaphoreTake(xYawMutex, 0/portTICK_RATE_MS) == pdPASS){ // If the yaw mutex is free, increment the yaw
+                    xQueueReceive(xYawRefQueue, &yaw_desired, 10); // Retrieve desired yaw data from the RTOS queue
+                    // Checks upper limits of yaw when left button is pressed
+                    if (yaw_desired >= -165) {
+                        yaw_desired = yaw_desired - 15;
+                    } else {
+                        yaw_desired = 345 + yaw_desired;
+                    }
+                    xQueueOverwrite(); //
+                    xSemaphoreGive(xYawMutex); // Give yaw mutex so other mutually exclusive yaw tasks can run
+                }
+
                 //if (TARGET_YAW >= 180)
                 //{
                 //    TARGET_YAW = -180;

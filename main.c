@@ -292,6 +292,7 @@ init(void)
     initQuadrature();
     initReferenceYaw();
     initControllers();
+    initPWM();
 }
 
 /*
