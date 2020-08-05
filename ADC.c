@@ -48,10 +48,12 @@ void
 ADCIntHandler(void)
 {
     uint32_t ulValue;                                                   // Initialise variable to be used to store ADC value
+    char cMessage[17];
 
     ADCSequenceDataGet(ADC0_BASE, 3, &ulValue);                         // Runs the A-D Conversion and stores the value in ulValue
     writeCircBuf(&g_inBuffer, ulValue);                                 // Writes the ADC value to the Circular Buffer
-    UARTSend("ADC\n");
+    usnprintf(cMessage, sizeof(cMessage), "ADC: %d\n", ulValue);
+    UARTSend(cMessage);
     ADCIntClear(ADC0_BASE, 3);                                          // Clears the interrupt
 }
 
@@ -63,14 +65,14 @@ void initADC(void)
     while(!SysCtlPeripheralReady(SYSCTL_PERIPH_ADC0));
     ADCSequenceConfigure(ADC0_BASE, 3, ADC_TRIGGER_PROCESSOR, 1);       // Sets module, sample sequence, trigger, and priority
     ADCSequenceStepConfigure(ADC0_BASE, 3, 0,                           // Configures the module, sample sequence, step, and channel            // Change to CH9 for heli
-                             ADC_CTL_CH0 | ADC_CTL_IE | ADC_CTL_END);
+                             ADC_CTL_CH9 | ADC_CTL_IE | ADC_CTL_END);
     ADCSequenceEnable(ADC0_BASE, 3);                                    // Enables Sequencing on ADC module
     ADCIntRegister(ADC0_BASE, 3, ADCIntHandler);                        // Registers the interrupt and sets ADCIntHandler to handle the interrupt
     ADCIntEnable(ADC0_BASE, 3);                                         // Enables interrupts on ADC module
 }
 
 /* Calculates the mean value of the circular buffer */
-int calculateMean(void)
+int32_t calculateMean(void)
 {
     uint16_t i;
     int32_t sum = 0;                                                    // Initialise sum

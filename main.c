@@ -131,7 +131,7 @@ Cringe_ADC(void *pvParameters)
     uint32_t mean;
     uint32_t altitude;
 
-    uint32_t ground = calculateMean();
+    int32_t ground = calculateMean();
 
     while(1){
         ADCProcessorTrigger(ADC0_BASE, 3); //maybe changing the trigger type we could sus it using a different event type
