@@ -65,6 +65,7 @@ QueueHandle_t xOLEDQueue;
 QueueHandle_t xYawBtnQueue;
 QueueHandle_t xAltBtnQueue;
 QueueHandle_t xModeQueue;
+QueueHandle_t xAtlitudeQueue;
 
 SemaphoreHandle_t xAltMutex;
 SemaphoreHandle_t xYawMutex;
@@ -127,8 +128,19 @@ OLEDDisplay (void *pvParameters)
 static void
 Cringe_ADC(void *pvParameters)
 {
+    uint32_t mean;
+    uint32_t altitude;
+
+    uint32_t ground = calculateMean();
+
     while(1){
         ADCProcessorTrigger(ADC0_BASE, 3); //maybe changing the trigger type we could sus it using a different event type
+
+        mean = calculateMean();
+        altitude = percentageHeight(ground, mean);
+
+        xQueueOverwrite(xAtlitudeQueue, &altitude);
+
         vTaskDelay(100 / portTICK_RATE_MS);
     }
 
@@ -209,6 +221,7 @@ createQueues(void)
     xAltBtnQueue    = xQueueCreate(1, sizeof( uint32_t ) );
     xYawBtnQueue    = xQueueCreate(1, sizeof( uint32_t ) );
     xModeQueue      = xQueueCreate(1, sizeof( uint32_t ) );
+    xAtlitudeQueue  = xQueueCreate(1, sizeof( uint32_t ) );
 }
 
 /*
