@@ -87,6 +87,8 @@ enum btnStates {RELEASED = 0, PUSHED, NO_CHANGE};
 
 extern QueueHandle_t xAltBtnQueue;
 extern QueueHandle_t xYawBtnQueue;
+extern QueueHandle_t xAltRefQueue;
+extern QueueHandle_t xYawRefQueue;
 
 extern SemaphoreHandle_t xAltMutex;
 extern SemaphoreHandle_t xYawMutex;
@@ -138,7 +140,7 @@ void leftButtonPush(void);
 /*
  * Increment the desired yaw by 15 degrees if the left button has been pushed
  */
-void rightButtonPush(void)
+void rightButtonPush(void);
 
 /* ******************************************************
  * buttonsCheck: checks if buttons associated with altitude and yaw have

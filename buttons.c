@@ -249,10 +249,10 @@ void rightButtonPush(void)
         xQueueReceive(xYawRefQueue, &yaw_desired, 10); // Retrieve desired yaw data from the RTOS queue
 
         // Check upper limits of the yaw if right button is pressed
-        if (g_yawReference <= 164) {
-            g_yawReference = g_yawReference + 15;
+        if (yaw_desired <= 164) {
+            yaw_desired = yaw_desired + 15;
         } else {
-            g_yawReference = -345 + g_yawReference;
+            yaw_desired = -345 + yaw_desired;
         }
 
         xQueueOverwrite(xYawRefQueue, &yaw_desired); // Update the RTOS yaw reference queue
@@ -300,12 +300,12 @@ ButtonsCheck(void *pvParameters)
 
             if(checkButton(UP) == PUSHED)
             {
-                upButtonPush() // Increment altitude by 10%
+                upButtonPush(); // Increment altitude by 10%
             }
 
             if(checkButton(DOWN) == PUSHED)
             {
-                downButtonPush() // Decrement altitude by 10%
+                downButtonPush(); // Decrement altitude by 10%
             }
             while(xSemaphoreGive(xAltMutex) != pdPASS){
                 UARTSend("Couldn't give Alt Mutex\n");
@@ -316,11 +316,11 @@ ButtonsCheck(void *pvParameters)
         if(xSemaphoreTake(xYawMutex, 0/portTICK_RATE_MS) == pdPASS){
             if(checkButton(LEFT) == PUSHED)
             {
-                leftButtonPush() // Rotate anti-clockwise by 15 degrees
+                leftButtonPush(); // Rotate anti-clockwise by 15 degrees
             }
             if(checkButton(RIGHT) == PUSHED)
             {
-                rightButtonPush() // Rotate clockwise by 15 degrees
+                rightButtonPush(); // Rotate clockwise by 15 degrees
             }
 
             while(xSemaphoreGive(xYawMutex) != pdPASS){
