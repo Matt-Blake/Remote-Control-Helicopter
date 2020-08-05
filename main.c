@@ -89,8 +89,8 @@ SemaphoreHandle_t xYawMutex;
 uint32_t value = 0;
 
 // Initalise controllers
-static Controller g_alt_controller;
-static Controller g_yaw_controller;
+static controller_t g_alt_controller;
+static controller_t g_yaw_controller;
 
 /*
  * RTOS task that toggles LED state based off button presses

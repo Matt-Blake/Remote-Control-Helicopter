@@ -40,12 +40,12 @@ typedef struct Controllers {
 
     int32_t previousError;
     int32_t intergratedError;
-} Controller;
+} controller_t;
 
 //******************************************************
 // Sets all initial PID Controller struct values
 //******************************************************
-void initController(Controller* controllerPointer, uint32_t K_P, uint32_t K_I, uint32_t K_D, uint32_t time_step, int32_t divisor_value);
+void initController(controller_t* controllerPointer, uint32_t K_P, uint32_t K_I, uint32_t K_D, uint32_t time_step, int32_t divisor_value);
 
 //******************************************************
 // Function reverses error signal for yaw and processes
@@ -57,6 +57,6 @@ void initController(Controller* controllerPointer, uint32_t K_P, uint32_t K_I, u
 // Duty cycle limits are set for altitude and yaw so as
 // to not overload the helicopter rig and emulator.
 //******************************************************
-int16_t getControlSignal(Controller *piController, int16_t reference, int16_t measurement, bool isYaw);
+int16_t getControlSignal(controller_t *piController, int16_t reference, int16_t measurement, bool isYaw);
 
 #endif /* PIDCONTROLLER_H_ */
