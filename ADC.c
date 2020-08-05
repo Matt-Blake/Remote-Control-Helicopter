@@ -80,7 +80,7 @@ int32_t calculateMean(void)
         sum = sum + readCircBuf(&g_inBuffer);                           // Sum all values in circBuf
 
 
-    return (sum / BUF_SIZE);                         // Returns mean value
+    return (2 * sum + BUF_SIZE) / 2 / BUF_SIZE; ;                         // Returns mean value
 }
 
 /* Calculates the altitude as a percentage of the maximum height */
