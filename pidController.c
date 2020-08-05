@@ -6,9 +6,20 @@
 //           Sarah Kennelly      76389950
 //           Matt Blake          58979250
 // Last modified: 9/05/2019
+
+// pidController.c - This code was based off the piController.c code from ENCE361.
+//      This code has been changed to incopretate error signal calculation
+//      inside of the control signal calculation.
+//      This is part of ENCE464 Assignment 1.
+
+// ENCE464 Assignment 1 Group 2
+// Creators: Grayson Mynott      56353855
+//           Ryan Earwaker       12832870
+//           Matt Blake          58979250
+// Last modified: 05/08/2020
 //******************************************************
 
-#include "piController.h"
+#include <pidController.h>
 
 //******************************************************
 // Sets all initial PID Controller struct values

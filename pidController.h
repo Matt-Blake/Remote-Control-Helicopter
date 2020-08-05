@@ -1,17 +1,28 @@
 //*****************************************************
-// piController.h
+// piController.c
 //
-// Simple PI Controller
+// Simple PID Controller
 
 // Tue am Group 1
 // Creators: Brendain Hennessy   57190084
 //           Sarah Kennelly      76389950
 //           Matt Blake          58979250
 // Last modified: 9/05/2019
+
+// pidController.c - This code was based off the piController.c code from ENCE361.
+//      This code has been changed to incopretate error signal calculation
+//      inside of the control signal calculation.
+//      This is part of ENCE464 Assignment 1.
+
+// ENCE464 Assignment 1 Group 2
+// Creators: Grayson Mynott      56353855
+//           Ryan Earwaker       12832870
+//           Matt Blake          58979250
+// Last modified: 05/08/2020
 //******************************************************
 
-#ifndef PICONTROLLER_H_
-#define PICONTROLLER_H_
+#ifndef PIDCONTROLLER_H_
+#define PIDCONTROLLER_H_
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -21,11 +32,11 @@
 // for both the altitude control and the yaw control.
 //******************************************************
 typedef struct Controllers {
-    uint32_t Kp; //Proportional gain
-    uint32_t Ki; //Integral gain
-    uint32_t Kd; //Derivative gain
-    uint32_t timeStep;
-    int32_t divisor; //Divisor used to correct gains without the use of floating point numbers
+    uint32_t Kp; // Proportional gain
+    uint32_t Ki; // Integral gain
+    uint32_t Kd; // Derivative gain
+    uint32_t timeStep; // The time step used to calculate derivative and integral control
+    int32_t divisor; // Divisor used to correct gains without the use of floating point numbers
 
     int32_t previousError;
     int32_t intergratedError;
@@ -48,4 +59,4 @@ void initController(Controller* controllerPointer, uint32_t K_P, uint32_t K_I, u
 //******************************************************
 int32_t getControlSignal(Controller *piController, int16_t reference, int16_t measurement, bool isYaw);
 
-#endif /* PICONTROLLER_H_ */
+#endif /* PIDCONTROLLER_H_ */

@@ -39,7 +39,7 @@
 #include "uart.h"
 #include "ADC.h"
 #include "buttons.h"
-#include "piController.h"
+#include "pidController.h"
 
 /*
  * DEFINITIONS
