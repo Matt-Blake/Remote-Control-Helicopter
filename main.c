@@ -175,7 +175,7 @@ Mean_ADC(void *pvParameters)
     uint32_t mean;
     uint32_t altitude;
 
-    int32_t ground = calculateMean();
+    int32_t ground = calculateMean();   // calculates before buffer is full
 
 
     while(1){
