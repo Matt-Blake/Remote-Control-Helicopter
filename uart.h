@@ -30,21 +30,26 @@
 #include "stdio.h"
 #include "stdlib.h"
 
-//********************************************************
-// initialiseUSB_UART - 8 bits, 1 stop bit, no parity
-//********************************************************
+/* ******************************************************
+ * initialiseUSB_UART - 8 bits, 1 stop bit, no parity.
+ * *****************************************************/
 void
 initialiseUSB_UART (void);
 
+/* ******************************************************
+ * UARTSend
+ * Transmits a string over UART.
+ * *****************************************************/
 void
 UARTSend (char *pucBuffer);
 
-//********************************************************
-// Puts current yaw degrees, desired yaw degrees, current altitude,
-// desired altitude, main duty cycle, tail duty cycle and current state
-// into a string form which can be send through the UART to the heli rig or
-// serial terminal.
-//********************************************************
+/* ******************************************************
+ * Puts current yaw degrees, desired yaw degrees, current
+ * altitude, desired altitude, main duty cycle, tail duty
+ * cycle and current state into a string form which can
+ * be sent through the UART to the heli rig or serial
+ * terminal.
+ * *****************************************************/
 void
 UARTDisplay (int32_t yaw_degrees, int32_t yaw_desired, int32_t altitude, int32_t altitude_desired, uint32_t duty_main, uint32_t duty_tail, uint8_t g_heliState);
 
