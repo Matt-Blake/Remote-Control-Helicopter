@@ -1,28 +1,28 @@
-//*****************************************************
-//
-// yaw.c - Initializes quadrature decoder to deal with yaw.
-// Controls the increase and decrease of yaw using button
-// based interrupts. Finds the yaw zero reference. Converts
-// quadrature values into degrees.
-//
-// Tue am Group 1
-// Creators: Brendain Hennessy   57190084
-//           Sarah Kennelly      76389950
-//           Matt Blake          58979250
-// Last modified: 9/05/2019
-//
-// ENCE464 Assignment 1 Group 2
-// Creators: Grayson Mynott      56353855
-//           Ryan Earwaker       12832870
-//           Matt Blake          58979250
-// Last modified: 31/07/2020
-//******************************************************
+/********************************************************
+ *
+ * yaw.c - Initializes quadrature decoder to deal with yaw.
+ * Controls the increase and decrease of yaw using button
+ * based interrupts. Finds the yaw zero reference. Converts
+ * quadrature values into degrees.
+ *
+ * Tue am Group 1
+ * Creators: Brendain Hennessy   57190084
+ *           Sarah Kennelly      76389950
+ *           Matt Blake          58979250
+ * Last modified: 9/05/2019
+ *
+ * ENCE464 Assignment 1 Group 2
+ * Creators: Grayson Mynott      56353855
+ *           Ryan Earwaker       12832870
+ *           Matt Blake          58979250
+ * Last modified: 31/07/2020
+********************************************************/
 
 #include "yaw.h"
 
-//********************************************************
-// Constants
-//********************************************************
+/********************************************************
+ * Constants
+********************************************************/
 #define MOUNTSLOTCOUNT      112
 #define DEGREES             180
 //#define NEG_DEGREES_CIRCLE  -360
@@ -34,9 +34,9 @@
 #define YAW_REFERENCE_BASE  GPIO_PORTC_BASE
 #define YAW_REFERENCE_PIN   GPIO_INT_PIN_4
 
-//********************************************************
-// Globals
-//********************************************************
+/********************************************************
+ * Globals
+********************************************************/
 static int32_t yaw;
 static int32_t currentChannelReading;
 static int32_t reference_yaw;
@@ -44,9 +44,9 @@ static int16_t g_flagFoundZeroReference;
 
 enum STATE_QUADRATURE {STATE_00 = 0, STATE_01 = 1, STATE_10 = 2, STATE_11 = 3};
 
-//********************************************************
-// Converts reference yaw to degrees
-//********************************************************
+/********************************************************
+ * Converts reference yaw to degrees.
+********************************************************/
 int32_t getReferenceYaw(void)
 {
     int32_t reference_yaw_degrees;
@@ -56,9 +56,10 @@ int32_t getReferenceYaw(void)
     return reference_yaw_degrees;
 }
 
-//********************************************************
-// Interrupt for to check if the helicopter has found the zero yaw reference
-//********************************************************
+/********************************************************
+ * Interrupt for to check if the helicopter has found the
+ * zero yaw reference.
+********************************************************/
 void referenceInterrupt(void)
 {
     reference_yaw = yaw;
@@ -66,18 +67,19 @@ void referenceInterrupt(void)
     GPIOIntClear(YAW_REFERENCE_BASE, YAW_REFERENCE_PIN);
 }
 
-//********************************************************
-// Flag for having found the zero reference
-//********************************************************
+/********************************************************
+ * Flag for having found the zero reference
+********************************************************/
 int16_t haveFoundZeroReferenceYaw(void)
 {
     return g_flagFoundZeroReference;
 }
 
-//*****************************************************************************
-// This function checks whether the yaw has reached the positive or negative
-// thresholds and resets it to the opposite threshold if necessary
-//*****************************************************************************
+/********************************************************
+ * This function checks whether the yaw has reached the
+ * positive or negative thresholds and resets it to the
+ * opposite threshold if necessary.
+********************************************************/
 void checkYawThresholds(void)
 {
     //Set yaw to -180 degrees if the current reading is 179 degrees
@@ -91,11 +93,12 @@ void checkYawThresholds(void)
     }
 }
 
-//*****************************************************************************
-// Pin change interrupt handler for the quadrature decoder
-// Contains a Finite State Machine which increments the yaw (rotation) according to the
-// values obtained by the quadrature decoder.
-//*****************************************************************************
+/********************************************************
+ * Pin change interrupt handler for the quadrature decoder
+ * Contains a Finite State Machine which increments the
+ * yaw (rotation) according to the values obtained by the
+ * quadrature decoder.
+********************************************************/
 void quadratureFSMInterrupt(void)
 {
     // for readings 0 means 00 where MSB is pin 1 and LSB is pin 0 , 1 means 01, 2 means 10, 3 means 11
@@ -161,9 +164,9 @@ void quadratureFSMInterrupt(void)
     checkYawThresholds();
 }
 
-//********************************************************
-// Initializes the quadrature decoders used to calculate the yaw
-//********************************************************
+/********************************************************
+ * Initializes the quadrature decoders used to calculate the yaw
+********************************************************/
 void initReferenceYaw(void)
 {
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOC);
@@ -181,9 +184,10 @@ void initReferenceYaw(void)
     reference_yaw = 0;
 }
 
-//********************************************************
-// Initialization functions for the clock (incl. SysTick), ADC, display, quadrature.
-//********************************************************
+/********************************************************
+ * Initialize the GPIO ports/pins used for quadrature
+ * decoding.
+********************************************************/
 void initQuadratureGPIO(void)
 {
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
@@ -204,9 +208,9 @@ void initQuadratureGPIO(void)
     YAW_PIN0_GPIO_PIN | YAW_PIN1_GPIO_PIN);
 }
 
-//********************************************************
-// Converts yaw into degrees and returns yaw in degrees.
-//********************************************************
+/********************************************************
+ * Converts yaw into degrees and returns yaw in degrees.
+********************************************************/
 int32_t getYawDegrees(void)
 {
     return yaw * DEGREES / MOUNTSLOTCOUNT;
