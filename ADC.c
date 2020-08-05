@@ -51,7 +51,7 @@ ADCIntHandler(void)
 
     ADCSequenceDataGet(ADC0_BASE, 3, &ulValue);                         // Runs the A-D Conversion and stores the value in ulValue
     writeCircBuf(&g_inBuffer, ulValue);                                 // Writes the ADC value to the Circular Buffer
-    UARTSend("ADC go brrr\n");
+    UARTSend("ADC\n");
     ADCIntClear(ADC0_BASE, 3);                                          // Clears the interrupt
 }
 
