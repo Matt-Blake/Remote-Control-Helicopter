@@ -75,9 +75,11 @@ int32_t calculateMean(void)
 {
     uint8_t i;
     int32_t sum = 0;                                                    // Initialize sum
+    int32_t reading;
 
     for (i = 0; i < BUF_SIZE; i++)
-        sum = sum + readCircBuf(&g_inBuffer);                           // Sum all values in circBuf
+        reading = readCircBuf(&g_inBuffer);
+        sum = sum + reading;                           // Sum all values in circBuf
 
 
     return (2 * sum + BUF_SIZE) / 2 / BUF_SIZE; ;                         // Returns mean value

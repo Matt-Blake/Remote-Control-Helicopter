@@ -70,8 +70,12 @@
 #define YAW_KI                  11      // Yaw integral gain
 #define YAW_KD                  3       // Yaw derivative gain
 #define CONTROL_DIVISOR         1       // Divisor used to achieve certain gains without the use of floating point numbers
-#define CONTROL_PERIOD          20      // Period used in the control loops (ms)
 #define MS_TO_S                 1000    // The conversion factor from milliseconds to seconds
+
+#define CONTROL_PERIOD          20      // Period used in the control loops (ms)
+#define DISPLAY_PERIOD          20      // Period used in the control loops (ms)
+#define ADC_PERIOD              250
+#define ALTITUDE_PERIOD         500
 
 //******************************************************
 // Globals
@@ -143,7 +147,7 @@ OLEDDisplay (void *pvParameters)
         usnprintf(cMessage, sizeof(cMessage), "%d flashes", num_flashes);
         OLEDStringDraw(cMessage, 0, 0);
 
-        vTaskDelay(100 / portTICK_RATE_MS);
+        vTaskDelay(DISPLAY_PERIOD / portTICK_RATE_MS);
     }
 }
 
@@ -154,9 +158,9 @@ static void
 Cringe_ADC(void *pvParameters)
 {
     while(1){
-        ADCProcessorTrigger(ADC0_BASE, 3); //maybe changing the trigger type we could sus it using a different event type
+        ADCProcessorTrigger(ADC0_BASE, 3);
 
-        vTaskDelay(250 / portTICK_RATE_MS);
+        vTaskDelay(ADC_PERIOD / portTICK_RATE_MS);
     }
 
 }
@@ -171,7 +175,9 @@ Mean_ADC(void *pvParameters)
     uint32_t mean;
     uint32_t altitude;
 
+
     int32_t ground = calculateMean();
+
 
     while(1){
         mean = calculateMean();
@@ -182,7 +188,7 @@ Mean_ADC(void *pvParameters)
 
         //xQueueOverwrite(xAltQueue, &altitude);
 
-        vTaskDelay(500 / portTICK_RATE_MS);
+        vTaskDelay(ALTITUDE_PERIOD / portTICK_RATE_MS);
     }
 
 }
