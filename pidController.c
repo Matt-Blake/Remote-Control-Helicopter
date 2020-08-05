@@ -48,7 +48,7 @@ void initController(controller_t* controllerPointer, uint32_t K_P, uint32_t K_I,
 //******************************************************
 int16_t getControlSignal(controller_t* piController, int16_t reference, int16_t measurement, bool isYaw)
 {
-    int16_t  dutyCycle;
+    int16_t dutyCycle;
     int16_t controlSignal;
     int16_t errorSignal;
     int32_t derivativeError;
