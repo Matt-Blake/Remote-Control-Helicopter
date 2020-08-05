@@ -65,10 +65,10 @@
 
 
 QueueHandle_t xOLEDQueue;
-QueueHandle_t xYawBtnQueue;
 QueueHandle_t xAltBtnQueue;
+QueueHandle_t xYawBtnQueue;
 QueueHandle_t xModeQueue;
-QueueHandle_t xAltQueue;
+QueueHandle_t xAltMeasQueue;
 QueueHandle_t xAltRefQueue;
 QueueHandle_t xYawRefQueue;
 
@@ -183,15 +183,15 @@ Set_Main_Duty(void *pvParameters)
         if(xSemaphoreTake(xAltMutex, 0/portTICK_RATE_MS) == pdPASS){ // If the altitude mutex is free, apply the desired main rotor duty cycle
 
             // Retrieve altitude information
-            //alt_meas = getAltitude(); // Retrieve measured altitude data
-            xQueueReceive(xAltRefQueue, &alt_desired, 10); // Retrieve desired altitude data from the RTOS queue
+            xQueueReceive(xAltMeasQueue, &alt_meas,    10); // Retrieve measured altitude data
+            xQueueReceive(xAltRefQueue,  &alt_desired, 10); // Retrieve desired altitude data from the RTOS queue
 
             // Set PWM duty cycle of main rotor in order to hover to the desired altitude
             alt_error_signal = getErrorSignal(alt_desired, alt_meas); // Find the error between the desired altitude and the actual altitude
             alt_PWM = getControlSignal(&alt_controller, alt_error_signal, true); // Use the error to calculate a PWM duty cycle for the main rotor
             setRotorPWM(alt_PWM, 0); // Set main rotor to calculated PWM
 
-            xSemaphoreGive(xYawMutex); // Give alt mutex so other mutually exclusive altitude tasks can run
+            xSemaphoreGive(xAltMutex); // Give alt mutex so other mutually exclusive altitude tasks can run
         }
         vTaskDelay(100 / portTICK_RATE_MS); // Block task so lower priority tasks can run
     }
@@ -296,7 +296,7 @@ createQueues(void)
     xAltBtnQueue    = xQueueCreate(1, sizeof( uint32_t ) );
     xYawBtnQueue    = xQueueCreate(1, sizeof( uint32_t ) );
     xModeQueue      = xQueueCreate(1, sizeof( uint32_t ) );
-    xAltQueue       = xQueueCreate(1, sizeof( uint32_t ) );
+    xAltMeasQueue   = xQueueCreate(1, sizeof( uint32_t ) );
     xAltRefQueue    = xQueueCreate(1, sizeof( uint32_t ) );
     xYawRefQueue    = xQueueCreate(1, sizeof( uint32_t ) );
 }
