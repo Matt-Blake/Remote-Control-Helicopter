@@ -41,9 +41,9 @@
 #include "buttons.h"
 #include "pidController.h"
 
-/*
- * DEFINITIONS
- */
+//******************************************************
+// Constants
+//******************************************************
 //#define OLED_REFRESH_RATE       200     // OLED Screen refresh rate (I think)
 //#define SAMPLE_RATE_HZ          200
 #define LED_PIN_RED             1       // RED LED pin
@@ -197,7 +197,7 @@ Set_Main_Duty(void *pvParameters)
         if(xSemaphoreTake(xAltMutex, 0/portTICK_RATE_MS) == pdPASS){ // If the altitude mutex is free, apply the desired main rotor duty cycle
 
             // Retrieve altitude information
-            xQueueReceive(xAltMeasQueue, &alt_meas,    10); // Retrieve measured altitude data
+            xQueueReceive(xAltMeasQueue, &alt_meas,    10); // Retrieve measured altitude data from the RTOS queue
             xQueueReceive(xAltRefQueue,  &alt_desired, 10); // Retrieve desired altitude data from the RTOS queue
 
             // Set PWM duty cycle of main rotor in order to hover to the desired altitude
