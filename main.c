@@ -66,8 +66,9 @@ QueueHandle_t xOLEDQueue;
 QueueHandle_t xYawBtnQueue;
 QueueHandle_t xAltBtnQueue;
 QueueHandle_t xModeQueue;
-QueueHandle_t xAltitudeQueue;
-QueueHandle_t xYawQueue;
+QueueHandle_t xAltQueue;
+QueueHandle_t xAltRefQueue;
+QueueHandle_t xYawRefQueue;
 
 SemaphoreHandle_t xAltMutex;
 SemaphoreHandle_t xYawMutex;
@@ -154,11 +155,44 @@ Mean_ADC(void *pvParameters)
         usnprintf(cMessage, sizeof(cMessage), "Mean: %d\n", mean);
         UARTSend(cMessage);
 
-        //xQueueOverwrite(xAltitudeQueue, &altitude);
+        //xQueueOverwrite(xAltQueue, &altitude);
 
         vTaskDelay(500 / portTICK_RATE_MS);
     }
 
+}
+
+/*
+ * RTOS task that controls the main rotor speed in order to reach the desire yaw
+ */
+static void
+Set_Main_Duty(void *pvParameters)
+{
+
+    uint8_t    alt_PWM;
+    int16_t    alt_meas;
+    int16_t    alt_desired;
+    int16_t    alt_error_signal;
+    Controller alt_controller;
+
+
+    while (1)
+    {
+        if(xSemaphoreTake(xAltMutex, 0/portTICK_RATE_MS) == pdPASS){ // If the altitude mutex is free, apply the desired main rotor duty cycle
+
+            // Retrieve altitude information
+            //alt_meas = getAltitude(); // Retrieve measured altitude data
+            xQueueReceive(xAltRefQueue, &alt_desired, 10); // Retrieve desired altitude data from the RTOS queue
+
+            // Set PWM duty cycle of main rotor in order to hover to the desired altitude
+            alt_error_signal = getErrorSignal(alt_desired, alt_meas); // Find the error between the desired altitude and the actual altitude
+            alt_PWM = getControlSignal(&alt_controller, alt_error_signal, true); // Use the error to calculate a PWM duty cycle for the main rotor
+            setRotorPWM(alt_PWM, 0); // Set main rotor to calculated PWM
+
+            xSemaphoreGive(xYawMutex); // Give alt mutex so other mutually exclusive altitude tasks can run
+        }
+        vTaskDelay(100 / portTICK_RATE_MS); // Block task so lower priority tasks can run
+    }
 }
 
 /*
@@ -168,23 +202,23 @@ static void
 Set_Tail_Duty(void *pvParameters)
 {
 
-    uint8_t  yaw_PWM;
-    int16_t yaw_degrees;
-    int16_t yaw_reference;
-    int16_t yaw_error_signal;
+    uint8_t    yaw_PWM;
+    int16_t    yaw_meas;
+    int16_t    yaw_desired;
+    int16_t    yaw_error_signal;
     Controller yaw_controller;
 
 
     while (1)
     {
-        if(xSemaphoreTake(xYawMutex, 0/portTICK_RATE_MS) == pdPASS){ // If the yaw mutex is free, apply the desired tair rotor duty cycle
+        if(xSemaphoreTake(xYawMutex, 0/portTICK_RATE_MS) == pdPASS){ // If the yaw mutex is free, apply the desired tail rotor duty cycle
 
             // Retrieve yaw information
-            yaw_degrees = getYawDegrees(); // Retrieve measured yaw data
-            xQueueReceive(xYawQueue, &yaw_reference, 10); // Retrieve desired yaw data from the RTOS queue
+            yaw_meas = getYawDegrees(); // Retrieve measured yaw data
+            xQueueReceive(xYawRefQueue, &yaw_desired, 10); // Retrieve desired yaw data from the RTOS queue
 
             // Set PWM duty cycle of tail rotor in order to spin to target yaw
-            yaw_error_signal = getErrorSignal(yaw_reference, yaw_degrees); // Find the error between the desired yaw and the actual yaw
+            yaw_error_signal = getErrorSignal(yaw_desired, yaw_meas); // Find the error between the desired yaw and the actual yaw
             yaw_PWM = getControlSignal(&yaw_controller, yaw_error_signal, true); // Use the error to calculate a PWM duty cycle for the tail rotor
             setRotorPWM(yaw_PWM, 0); // Set tail rotor to calculated PWM
 
@@ -246,7 +280,8 @@ createTasks(void)
     xTaskCreate(ButtonsCheck,   "Btn Poll",     BTN_STACK_DEPTH,        NULL,       BTN_TASK_PRIORITY,      NULL);
     xTaskCreate(Cringe_ADC,     "ADC Handler",  ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      NULL);
     xTaskCreate(Mean_ADC,       "ADC Mean",     ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      NULL);
-    xTaskCreate(Set_Tail_Duty,    "Yaw Tracker",  YAW_STACK_DEPTH,        NULL,       YAW_TASK_PRIORITY,      NULL);
+    xTaskCreate(Set_Main_Duty,  "Altitude PWM", YAW_STACK_DEPTH,        NULL,       YAW_TASK_PRIORITY,      NULL);
+    xTaskCreate(Set_Tail_Duty,  "Yaw PWM",      YAW_STACK_DEPTH,        NULL,       YAW_TASK_PRIORITY,      NULL);
 }
 
 /*
@@ -259,8 +294,9 @@ createQueues(void)
     xAltBtnQueue    = xQueueCreate(1, sizeof( uint32_t ) );
     xYawBtnQueue    = xQueueCreate(1, sizeof( uint32_t ) );
     xModeQueue      = xQueueCreate(1, sizeof( uint32_t ) );
-    xAltitudeQueue  = xQueueCreate(1, sizeof( uint32_t ) );
-    xYawQueue       = xQueueCreate(1, sizeof( uint32_t ) );
+    xAltQueue       = xQueueCreate(1, sizeof( uint32_t ) );
+    xAltRefQueue    = xQueueCreate(1, sizeof( uint32_t ) );
+    xYawRefQueue    = xQueueCreate(1, sizeof( uint32_t ) );
 }
 
 /*
