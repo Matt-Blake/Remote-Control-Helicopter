@@ -247,12 +247,22 @@ ButtonsCheck(void *pvParameters)
         if(GPIOPinRead(SW_PORT_BASE, L_SW_PIN) != L_PREV)
         {
             L_PREV = GPIOPinRead(SW_PORT_BASE, L_SW_PIN);
-            UARTSend ("Left Switch\n");
+            if(L_PREV == L_SW_PIN){
+                UARTSend ("Left Switch High\n");
+
+            }else{
+                UARTSend ("Left Switch Low\n");
+            }
         }
         if(GPIOPinRead(SW_PORT_BASE, R_SW_PIN) != R_PREV)
         {
             R_PREV = GPIOPinRead(SW_PORT_BASE, R_SW_PIN);
-            UARTSend ("Right Switch\n");
+            if(R_PREV == R_SW_PIN){
+                UARTSend ("Right Switch High\n");
+
+            }else{
+                UARTSend ("Right Switch Low\n");
+            }
         }
 
         // Wait for the required amount of time to check back.
