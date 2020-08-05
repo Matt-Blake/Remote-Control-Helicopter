@@ -65,7 +65,7 @@ QueueHandle_t xOLEDQueue;
 QueueHandle_t xYawBtnQueue;
 QueueHandle_t xAltBtnQueue;
 QueueHandle_t xModeQueue;
-QueueHandle_t xAtlitudeQueue;
+QueueHandle_t xAltitudeQueue;
 
 SemaphoreHandle_t xAltMutex;
 SemaphoreHandle_t xYawMutex;
@@ -139,7 +139,7 @@ Cringe_ADC(void *pvParameters)
         mean = calculateMean();
         altitude = percentageHeight(ground, mean);
 
-        xQueueOverwrite(xAtlitudeQueue, &altitude);
+        xQueueOverwrite(xAltitudeQueue, &altitude);
 
         vTaskDelay(100 / portTICK_RATE_MS);
     }
@@ -221,7 +221,7 @@ createQueues(void)
     xAltBtnQueue    = xQueueCreate(1, sizeof( uint32_t ) );
     xYawBtnQueue    = xQueueCreate(1, sizeof( uint32_t ) );
     xModeQueue      = xQueueCreate(1, sizeof( uint32_t ) );
-    xAtlitudeQueue  = xQueueCreate(1, sizeof( uint32_t ) );
+    xAltitudeQueue  = xQueueCreate(1, sizeof( uint32_t ) );
 }
 
 /*
