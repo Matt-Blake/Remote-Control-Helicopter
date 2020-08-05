@@ -101,67 +101,54 @@ void checkYawThresholds(void)
 ********************************************************/
 void quadratureFSMInterrupt(void)
 {
-    // for readings 0 means 00 where MSB is pin 1 and LSB is pin 0 , 1 means 01, 2 means 10, 3 means 11
     int32_t newChannelReading = GPIOPinRead(GPIO_PORTB_BASE, YAW_PIN0_GPIO_PIN | YAW_PIN1_GPIO_PIN);
+    GPIOIntClear(YAW_GPIO_BASE, YAW_PIN0_GPIO_PIN | YAW_PIN1_GPIO_PIN);
 
-    // Might as well try this. If it doesn't work, can just use the old code.
-    switch (currentChannelReading << 2 | newChannelReading){
-    // Might need to change the 0bXXXX into the decimal values
-        case (0b0001): yaw--; // 1
-        case (0b0010): yaw++; // 2
-        case (0b0100): yaw--; // 4
-        case (0b0111): yaw++; // 7
-        case (0b1101): yaw--; // 13
-        case (0b1110): yaw++; // 14
-        case (0b1011): yaw--; // 11
-        case (0b1000): yaw++; // 8
-        default: UARTSend("QuadDecodeErr\n");
-    }
-    /*
-    //inside each we would set old channel to current channel
-    // current channel is 00
-    if (currentChannelReading == STATE_00 && newChannelReading == STATE_01) {
-        yaw--;
-    }
+    // Bit shift the old reading and combine with new reading. Creates a 4-bit code unique to each state.
+    uint8_t state_code = currentChannelReading << 2 | newChannelReading;
 
-    if (currentChannelReading == STATE_00 && newChannelReading == STATE_10) {
-        yaw++;
+    switch (state_code){
+        case (0b0010):
+                UARTSend("CCW\n");
+                yaw--;
+                break;
+        case (0b0001):
+                UARTSend("CW\n");
+                yaw++;
+                break;
+        case (0b0100):
+                UARTSend("CCW\n");
+                yaw--;
+                break;
+        case (0b0111):
+                UARTSend("CW\n");
+                yaw++;
+                break;
+        case (0b1101):
+                UARTSend("CCW\n");
+                yaw--;
+                break;
+        case (0b1110):
+                UARTSend("CW\n");
+                yaw++;
+                break;
+        case (0b1011):
+                UARTSend("CCW\n");
+                yaw--;
+                break;
+        case (0b1000):
+                UARTSend("CW\n");
+                yaw++;
+                break;
+        // Goes into default when a state is skipped. Usually happens when you turn too fast.
+        default:
+                UARTSend("QD Error\n");
     }
-
-    // current channel is 01
-    if (currentChannelReading == STATE_01 && newChannelReading == STATE_00) {
-        yaw--;
-    }
-
-    if (currentChannelReading == STATE_01 && newChannelReading == STATE_11) {
-        yaw++;
-    }
-
-    // current channel is 11
-    if (currentChannelReading == STATE_11 && newChannelReading == STATE_01) {
-        yaw--;
-    }
-
-    if (currentChannelReading == STATE_11 && newChannelReading == STATE_10) {
-        yaw++;
-    }
-
-    // current channel is 10
-    if (currentChannelReading == STATE_10 && newChannelReading == STATE_11) {
-        yaw--;
-    }
-
-    if (currentChannelReading == STATE_10 && newChannelReading == STATE_00) {
-        yaw++;
-    }
-    */
 
     currentChannelReading = newChannelReading;
 
-    GPIOIntClear(YAW_GPIO_BASE, YAW_PIN0_GPIO_PIN | YAW_PIN1_GPIO_PIN);
-
     //Check if yaw has reached its threshold values
-    checkYawThresholds();
+    //checkYawThresholds();
 }
 
 /********************************************************
@@ -190,6 +177,7 @@ void initReferenceYaw(void)
 ********************************************************/
 void initQuadratureGPIO(void)
 {
+    /*
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
 
     // YAW_GPIO_BASE holds the value for Port B base
@@ -206,6 +194,18 @@ void initQuadratureGPIO(void)
     // set initial quadrature conditions
     currentChannelReading = GPIOPinRead(YAW_GPIO_BASE,
     YAW_PIN0_GPIO_PIN | YAW_PIN1_GPIO_PIN);
+    */
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
+        GPIOPinTypeQEI(YAW_GPIO_BASE, YAW_PIN0_GPIO_PIN | YAW_PIN1_GPIO_PIN);      // Sets pin types to be Quad Decoding pins (Just makes Phase B HIGH = 2 instead of 1)
+
+        GPIOIntRegister(YAW_GPIO_BASE, quadratureFSMInterrupt);                  // Sets QDIntHandler to be function to handle interrupt
+        GPIOIntTypeSet(YAW_GPIO_BASE, YAW_PIN0_GPIO_PIN,                 // Sets Phase A interrupt on both rising and falling edges
+                       GPIO_BOTH_EDGES);
+        GPIOIntTypeSet(YAW_GPIO_BASE, YAW_PIN1_GPIO_PIN,                 // Sets Phase B interrupt on both rising and falling edges
+                       GPIO_BOTH_EDGES);
+        GPIOIntEnable(YAW_GPIO_BASE, YAW_PIN0_GPIO_PIN                   // Enables interrupts
+                      | YAW_PIN1_GPIO_PIN);
+
 }
 
 /********************************************************
