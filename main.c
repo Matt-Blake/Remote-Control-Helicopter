@@ -52,6 +52,7 @@
 #define OLED_STACK_DEPTH        32
 #define BTN_STACK_DEPTH         128     // Stack size in words
 #define ADC_STACK_DEPTH         128     // Stack size in words
+#define ALT_STACK_DEPTH         128     // Stack size in words
 #define YAW_STACK_DEPTH         128     // Stack size in words
 
 // Max priority is 8
@@ -59,7 +60,8 @@
 #define OLED_TASK_PRIORITY      5       // OLED priority
 #define BTN_TASK_PRIORITY       6       // Button polling task priority
 #define ADC_TASK_PRIORITY       7       // ADC sampling priority
-#define YAW_TASK_PRIORITY       7       // Yaw tracker priority
+#define ALT_TASK_PRIORITY       7       // Altitude PWM priority
+#define YAW_TASK_PRIORITY       7       // Yaw PWM priority
 
 
 QueueHandle_t xOLEDQueue;
@@ -280,7 +282,7 @@ createTasks(void)
     xTaskCreate(ButtonsCheck,   "Btn Poll",     BTN_STACK_DEPTH,        NULL,       BTN_TASK_PRIORITY,      NULL);
     xTaskCreate(Cringe_ADC,     "ADC Handler",  ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      NULL);
     xTaskCreate(Mean_ADC,       "ADC Mean",     ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      NULL);
-    xTaskCreate(Set_Main_Duty,  "Altitude PWM", YAW_STACK_DEPTH,        NULL,       YAW_TASK_PRIORITY,      NULL);
+    xTaskCreate(Set_Main_Duty,  "Altitude PWM", ALT_STACK_DEPTH,        NULL,       ALT_TASK_PRIORITY,      NULL);
     xTaskCreate(Set_Tail_Duty,  "Yaw PWM",      YAW_STACK_DEPTH,        NULL,       YAW_TASK_PRIORITY,      NULL);
 }
 
