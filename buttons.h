@@ -120,6 +120,26 @@ void updateButtons (void);
 uint8_t checkButton (uint8_t butName);
 // @param   butname - Name of the button to compare the state of (UP/DOWN/LEFT/RIGHT)
 
+/*
+ * Increment the altitude by 10% if the up button has been pushed
+ */
+void upButtonPush(void);
+
+/*
+ * Decrement the desired altitude by 10% if the down button has been pushed
+ */
+void downButtonPush(void);
+
+/*
+ * Decrement the desired yaw by 15 degrees if the left button has been pushed
+ */
+void leftButtonPush(void);
+
+/*
+ * Increment the desired yaw by 15 degrees if the left button has been pushed
+ */
+void rightButtonPush(void)
+
 /* ******************************************************
  * buttonsCheck: checks if buttons associated with altitude and yaw have
  * been pushed and increments accordingly

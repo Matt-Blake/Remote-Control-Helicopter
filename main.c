@@ -193,9 +193,9 @@ Mean_ADC(void *pvParameters)
 static void
 Set_Main_Duty(void *pvParameters)
 {
-    int16_t    alt_PWM;
-    int16_t    alt_meas;
-    int16_t    alt_desired;
+    int16_t alt_PWM;
+    int16_t alt_meas;
+    int16_t alt_desired;
 
     while (1)
     {
@@ -221,9 +221,9 @@ Set_Main_Duty(void *pvParameters)
 static void
 Set_Tail_Duty(void *pvParameters)
 {
-    int16_t    yaw_PWM;
-    int16_t    yaw_meas;
-    int16_t    yaw_desired;
+    int16_t yaw_PWM;
+    int16_t yaw_meas;
+    int16_t yaw_desired;
 
     while (1)
     {
@@ -274,7 +274,6 @@ initControllers(void)
 {
     initController(&g_alt_controller, ALT_KP, ALT_KI, ALT_KD, CONTROL_DIVISOR, CONTROL_PERIOD * MS_TO_S); // Create altitude controller based of preset gains
     initController(&g_yaw_controller, YAW_KP, YAW_KI, YAW_KD, CONTROL_DIVISOR, CONTROL_PERIOD * MS_TO_S); // Create yaw controller based of preset gains
-
 }
 
 /*
