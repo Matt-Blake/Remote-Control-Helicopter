@@ -36,7 +36,7 @@ int16_t haveFoundZeroReferenceYaw(void);
  * Initialization of the GPIO peripherals and interrupts
  * used for the quadrature decoding.
 ********************************************************/
-void initQuadratureGPIO(void);
+void initQuadrature(void);
 
 /********************************************************
  * Converts yaw to degrees.

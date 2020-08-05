@@ -175,7 +175,7 @@ void initReferenceYaw(void)
  * Initialize the GPIO ports/pins used for quadrature
  * decoding.
 ********************************************************/
-void initQuadratureGPIO(void)
+void initQuadrature(void)
 {
     /*
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);

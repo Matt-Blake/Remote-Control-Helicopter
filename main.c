@@ -66,6 +66,7 @@ QueueHandle_t xYawBtnQueue;
 QueueHandle_t xAltBtnQueue;
 QueueHandle_t xModeQueue;
 QueueHandle_t xAltitudeQueue;
+QueueHandle_t xYawQueue;
 
 SemaphoreHandle_t xAltMutex;
 SemaphoreHandle_t xYawMutex;
@@ -196,6 +197,8 @@ init(void)
     initialiseUSB_UART();
     initADC();
     initCircBuf (&g_inBuffer, BUF_SIZE); //this was in our previous code, not sure is relevant but added it while fucking around
+    initQuadrature();
+    initReferenceYaw();
 }
 
 /*
@@ -222,6 +225,7 @@ createQueues(void)
     xYawBtnQueue    = xQueueCreate(1, sizeof( uint32_t ) );
     xModeQueue      = xQueueCreate(1, sizeof( uint32_t ) );
     xAltitudeQueue  = xQueueCreate(1, sizeof( uint32_t ) );
+    xYawQueue       = xQueueCreate(1, sizeof( uint32_t ) );
 }
 
 /*
