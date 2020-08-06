@@ -75,7 +75,7 @@
 #define CONTROL_PERIOD          20      // Period used in the control loops (ms)
 #define DISPLAY_PERIOD          200
 #define ADC_PERIOD              250
-#define ALTITUDE_PERIOD         500
+#define ALTITUDE_PERIOD         50
 
 //******************************************************
 // Globals
@@ -172,20 +172,19 @@ static void
 Mean_ADC(void *pvParameters)
 {
     char cMessage[17];
-    uint32_t mean;
+    int32_t mean;
     uint8_t altitude;
     int32_t ground;
-
 
 
     while(1){
 
         if (count == 20) {
-            ground = calculateMean();   // calculates before buffer is full
+            ground = calculateMean();   // works but might not always work idk
         }
 
         mean = calculateMean();
-        //altitude = percentageHeight(ground, mean);
+        altitude = percentageHeight(ground, mean);
 
         usnprintf(cMessage, sizeof(cMessage), "Mean: %d\n", mean);
         UARTSend(cMessage);

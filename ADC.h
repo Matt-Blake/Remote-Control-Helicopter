@@ -39,7 +39,7 @@
 circBuf_t g_inBuffer;        // Buffer of size BUF_SIZE integers (sample values)
 #define BUF_SIZE 20
 
-uint32_t count;
+int32_t count;
 
 // *********************** PROTOTYPES *****************************
 // ****************************************************************
