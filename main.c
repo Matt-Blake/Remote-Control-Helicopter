@@ -173,12 +173,17 @@ Mean_ADC(void *pvParameters)
 {
     char cMessage[17];
     uint32_t mean;
-    uint32_t altitude;
+    uint8_t altitude;
+    int32_t ground;
 
-    int32_t ground = calculateMean();   // calculates before buffer is full
 
 
     while(1){
+
+        if (count == 20) {
+            ground = calculateMean();   // calculates before buffer is full
+        }
+
         mean = calculateMean();
         //altitude = percentageHeight(ground, mean);
 

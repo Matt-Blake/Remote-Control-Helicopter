@@ -52,6 +52,9 @@ ADCIntHandler(void)
     ADCSequenceDataGet(ADC0_BASE, 3, &ulValue);                         // Runs the A-D Conversion and stores the value in ulValue
     writeCircBuf(&g_inBuffer, ulValue);                                 // Writes the ADC value to the Circular Buffer
     ADCIntClear(ADC0_BASE, 3);                                          // Clears the interrupt
+    if (count < 21) {
+        count++;
+    }
 }
 
 
@@ -62,7 +65,7 @@ void initADC(void)
     while(!SysCtlPeripheralReady(SYSCTL_PERIPH_ADC0));
     ADCSequenceConfigure(ADC0_BASE, 3, ADC_TRIGGER_PROCESSOR, 1);       // Sets module, sample sequence, trigger, and priority
     ADCSequenceStepConfigure(ADC0_BASE, 3, 0,                           // Configures the module, sample sequence, step, and channel            // Change to CH9 for heli
-                             ADC_CTL_CH9 | ADC_CTL_IE | ADC_CTL_END);
+                             ADC_CTL_CH0 | ADC_CTL_IE | ADC_CTL_END);
     ADCSequenceEnable(ADC0_BASE, 3);                                    // Enables Sequencing on ADC module
     ADCIntRegister(ADC0_BASE, 3, ADCIntHandler);                        // Registers the interrupt and sets ADCIntHandler to handle the interrupt
     ADCIntEnable(ADC0_BASE, 3);                                         // Enables interrupts on ADC module
@@ -79,10 +82,9 @@ int32_t calculateMean(void)
 
     for (i = 0; i < BUF_SIZE; i++)
         reading = readCircBuf(&g_inBuffer);
-        sum = sum + reading;                           // Sum all values in circBuf
+        sum = sum + reading;                                            // Sum all values in circBuf
 
-
-    return (2 * sum + BUF_SIZE) / 2 / BUF_SIZE; ;                         // Returns mean value
+    return (2 * sum + BUF_SIZE) / 2 / BUF_SIZE; ;                       // Returns mean value
 }
 
 /* Calculates the altitude as a percentage of the maximum height */
