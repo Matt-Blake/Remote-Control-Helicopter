@@ -66,7 +66,7 @@ void initADC(void)
     while(!SysCtlPeripheralReady(SYSCTL_PERIPH_ADC0));
     ADCSequenceConfigure(ADC0_BASE, 3, ADC_TRIGGER_PROCESSOR, 1);       // Sets module, sample sequence, trigger, and priority
     ADCSequenceStepConfigure(ADC0_BASE, 3, 0,                           // Configures the module, sample sequence, step, and channel            // Change to CH9 for heli
-                             ADC_CTL_CH0 | ADC_CTL_IE | ADC_CTL_END);
+                             ADC_CTL_CH9 | ADC_CTL_IE | ADC_CTL_END);
     ADCSequenceEnable(ADC0_BASE, 3);                                    // Enables Sequencing on ADC module
     ADCIntRegister(ADC0_BASE, 3, ADCIntHandler);                        // Registers the interrupt and sets ADCIntHandler to handle the interrupt
     ADCIntEnable(ADC0_BASE, 3);                                         // Enables interrupts on ADC module
@@ -92,8 +92,8 @@ int32_t calculateMean(void)
 /* Calculates the altitude as a percentage of the maximum height */
 int percentageHeight(int32_t ground_level, int32_t current)
 {
-    //int32_t vDropADC = 1275;                                            // Voltage drop between ground and maximum height - This value is accurate for the emulator
-    int32_t vDropADC = 4096;
+    int16_t vDropADC = 1275;                                            // Voltage drop between ground and maximum height - This value is accurate for the emulator
+    //int16_t vDropADC = 4096;
     int32_t maxHeight = ground_level - vDropADC;                        // ADC value at maximum height
     int32_t percent = 100 - (100 * (current - maxHeight) / (vDropADC));  // Calculates percentage
 
