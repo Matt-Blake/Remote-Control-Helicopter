@@ -65,7 +65,7 @@ void initADC(void)
     while(!SysCtlPeripheralReady(SYSCTL_PERIPH_ADC0));
     ADCSequenceConfigure(ADC0_BASE, 3, ADC_TRIGGER_PROCESSOR, 1);       // Sets module, sample sequence, trigger, and priority
     ADCSequenceStepConfigure(ADC0_BASE, 3, 0,                           // Configures the module, sample sequence, step, and channel            // Change to CH9 for heli
-                             ADC_CTL_CH0 | ADC_CTL_IE | ADC_CTL_END);
+                             ADC_CTL_CH9 | ADC_CTL_IE | ADC_CTL_END);
     ADCSequenceEnable(ADC0_BASE, 3);                                    // Enables Sequencing on ADC module
     ADCIntRegister(ADC0_BASE, 3, ADCIntHandler);                        // Registers the interrupt and sets ADCIntHandler to handle the interrupt
     ADCIntEnable(ADC0_BASE, 3);                                         // Enables interrupts on ADC module
