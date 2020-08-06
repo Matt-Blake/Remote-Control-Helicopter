@@ -63,13 +63,22 @@ setRotorPWM (uint32_t ui32Duty, bool SET_MAIN)
 void
 initPWM (void)
 {
+
+    SysCtlPWMClockSet(PWM_DIVIDER_CODE);
+
     // Enable PWM peripherals
     SysCtlPeripheralEnable(PWM_MAIN_PERIPH_PWM);
+    while(!SysCtlPeripheralReady(PWM_MAIN_PERIPH_PWM))
+
     SysCtlPeripheralEnable(PWM_TAIL_PERIPH_PWM);
+    while(!SysCtlPeripheralReady(PWM_TAIL_PERIPH_PWM))
 
     // Enable GPIO peripherals
     SysCtlPeripheralEnable(PWM_MAIN_PERIPH_GPIO);
+    //while(!SysCtlPeripheralReady(PWM_MAIN_PERIPH_GPIO))
+
     SysCtlPeripheralEnable(PWM_TAIL_PERIPH_GPIO);
+    //while(!SysCtlPeripheralReady(PWM_TAIL_PERIPH_GPIO))
 
     // Set PWM pin types
     GPIOPinTypePWM(PWM_MAIN_GPIO_BASE, PWM_MAIN_GPIO_PIN);
@@ -92,8 +101,9 @@ initPWM (void)
     PWMGenEnable(PWM_TAIL_BASE, PWM_TAIL_GEN);
 
     // Disable the output.  Repeat this call with 'true' to turn output on.
-    PWMOutputState(PWM_MAIN_BASE, PWM_MAIN_OUTBIT, false);
-    PWMOutputState(PWM_TAIL_BASE, PWM_TAIL_OUTBIT, false);
+    PWMOutputState(PWM_MAIN_BASE, PWM_MAIN_OUTBIT, true);
+    PWMOutputState(PWM_TAIL_BASE, PWM_TAIL_OUTBIT, true);
+
 }
 
 //*********************************************************

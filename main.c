@@ -52,8 +52,8 @@
 #define OLED_STACK_DEPTH        32
 #define BTN_STACK_DEPTH         128     // Stack size in words
 #define ADC_STACK_DEPTH         128     // Stack size in words
-#define ALT_STACK_DEPTH         128     // Stack size in words
-#define YAW_STACK_DEPTH         128     // Stack size in words
+#define ALT_STACK_DEPTH         512     // Stack size in words
+#define YAW_STACK_DEPTH         512     // Stack size in words
 
 // Max priority is 8
 #define LED_TASK_PRIORITY       5       // LED task priority
@@ -217,7 +217,7 @@ Set_Main_Duty(void *pvParameters)
 
             // Set PWM duty cycle of main rotor in order to hover to the desired altitude
             alt_PWM = getControlSignal(&g_alt_controller, alt_desired, alt_meas, false); // Use the error to calculate a PWM duty cycle for the main rotor
-            setRotorPWM(alt_PWM, 0); // Set main rotor to calculated PWM
+            setRotorPWM(50, 0); // Set main rotor to calculated PWM
 
             xSemaphoreGive(xAltMutex); // Give alt mutex so other mutually exclusive altitude tasks can run
         }
@@ -245,7 +245,7 @@ Set_Tail_Duty(void *pvParameters)
 
             // Set PWM duty cycle of tail rotor in order to spin to target yaw
             yaw_PWM = getControlSignal(&g_yaw_controller, yaw_desired, yaw_meas, true); // Use the error to calculate a PWM duty cycle for the tail rotor
-            setRotorPWM(yaw_PWM, 0); // Set tail rotor to calculated PWM
+            setRotorPWM(50, 0); // Set tail rotor to calculated PWM
 
             xSemaphoreGive(xYawMutex); // Give yaw mutex so other mutually exclusive yaw tasks can run
         }
@@ -293,15 +293,16 @@ void
 init(void)
 {
     initClk();
-    initLED();
-    OLEDInitialise();
+    initPWM();
+    //initLED();
+    //OLEDInitialise();
     initBtns();
     initialiseUSB_UART();
     initADC();
     initQuadrature();
     initReferenceYaw();
     initControllers();
-    initPWM();
+
 }
 
 /*
@@ -310,7 +311,7 @@ init(void)
 void
 createTasks(void)
 {
-    xTaskCreate(BlinkLED,       "LED Task",     LED_STACK_DEPTH,        NULL,       LED_TASK_PRIORITY,      NULL);
+    //xTaskCreate(BlinkLED,       "LED Task",     LED_STACK_DEPTH,        NULL,       LED_TASK_PRIORITY,      NULL);
     xTaskCreate(OLEDDisplay,    "OLED Task",    OLED_STACK_DEPTH,       NULL,       OLED_TASK_PRIORITY,     NULL);
     xTaskCreate(ButtonsCheck,   "Btn Poll",     BTN_STACK_DEPTH,        NULL,       BTN_TASK_PRIORITY,      NULL);
     xTaskCreate(Cringe_ADC,     "ADC Handler",  ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      NULL);

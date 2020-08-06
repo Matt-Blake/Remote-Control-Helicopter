@@ -64,6 +64,7 @@ void initADC(void)
 {
     SysCtlPeripheralEnable(SYSCTL_PERIPH_ADC0);                         // Enables ADC peripheral
     while(!SysCtlPeripheralReady(SYSCTL_PERIPH_ADC0));
+
     ADCSequenceConfigure(ADC0_BASE, 3, ADC_TRIGGER_PROCESSOR, 1);       // Sets module, sample sequence, trigger, and priority
     ADCSequenceStepConfigure(ADC0_BASE, 3, 0,                           // Configures the module, sample sequence, step, and channel            // Change to CH9 for heli
                              ADC_CTL_CH9 | ADC_CTL_IE | ADC_CTL_END);
