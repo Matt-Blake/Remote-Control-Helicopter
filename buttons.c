@@ -211,7 +211,7 @@ void downButtonPush(void)
 void leftButtonPush(void)
 {
     uint8_t state;
-    int16_t yaw_desired;
+    static int16_t yaw_desired = 0;
 
     UARTSend ("Left\n");
     if(xSemaphoreTake(xYawMutex, 0/portTICK_RATE_MS) == pdPASS){ // If the yaw mutex is free, decrement the yaw
@@ -240,7 +240,7 @@ void leftButtonPush(void)
 void rightButtonPush(void)
 {
     uint8_t state;
-    int16_t yaw_desired;
+    static int16_t yaw_desired = 0;
 
     UARTSend ("Right\n");
     if(xSemaphoreTake(xYawMutex, 0/portTICK_RATE_MS) == pdPASS){ // If the yaw mutex is free, increment the yaw
@@ -294,7 +294,7 @@ ButtonsCheck(void *pvParameters)
     while(1)
     {
         updateButtons();
-        if(xSemaphoreTake(xAltMutex, 0/portTICK_RATE_MS) == pdPASS){
+//        if(xSemaphoreTake(xAltMutex, 0/portTICK_RATE_MS) == pdPASS){
 
             if(checkButton(UP) == PUSHED)
             {
@@ -305,13 +305,13 @@ ButtonsCheck(void *pvParameters)
             {
                 downButtonPush(); // Decrement altitude by 10%
             }
-            while(xSemaphoreGive(xAltMutex) != pdPASS){
-                UARTSend("Couldn't give Alt Mutex\n");
-            }
-        }
+//            while(xSemaphoreGive(xAltMutex) != pdPASS){
+//                UARTSend("Couldn't give Alt Mutex\n");
+//            }
+//        }
 
 
-        if(xSemaphoreTake(xYawMutex, 0/portTICK_RATE_MS) == pdPASS){
+//        if(xSemaphoreTake(xYawMutex, 0/portTICK_RATE_MS) == pdPASS){
             if(checkButton(LEFT) == PUSHED)
             {
                 leftButtonPush(); // Rotate anti-clockwise by 15 degrees
@@ -321,10 +321,10 @@ ButtonsCheck(void *pvParameters)
                 rightButtonPush(); // Rotate clockwise by 15 degrees
             }
 
-            while(xSemaphoreGive(xYawMutex) != pdPASS){
-                UARTSend("Couldn't give Yaw Mutex\n");
-            }
-        }
+//            while(xSemaphoreGive(xYawMutex) != pdPASS){
+//                UARTSend("Couldn't give Yaw Mutex\n");
+//            }
+//        }
 
         if(GPIOPinRead(SW_PORT_BASE, L_SW_PIN) != L_PREV)
         {
