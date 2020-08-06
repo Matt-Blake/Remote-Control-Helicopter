@@ -180,7 +180,7 @@ Mean_ADC(void *pvParameters)
     while(1){
 
         if (count == 20) {
-            ground = calculateMean();   // works but might not always work idk
+            ground = calculateMean();   // works but might not always work idk, also re calcs few more times after due to autism
         }
 
         mean = calculateMean();
