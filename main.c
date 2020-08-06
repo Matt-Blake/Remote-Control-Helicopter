@@ -298,6 +298,7 @@ init(void)
 {
     initClk();
     //initLED();
+    initPWM();
     OLEDInitialise();
     initBtns();
     initialiseUSB_UART();
@@ -305,7 +306,7 @@ init(void)
     initQuadrature();
     initReferenceYaw();
     initControllers();
-    initPWM();
+
 }
 
 /*
