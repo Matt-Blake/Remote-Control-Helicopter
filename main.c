@@ -74,8 +74,8 @@
 
 #define CONTROL_PERIOD          20      // Period used in the control loops (ms)
 #define DISPLAY_PERIOD          200
-#define ADC_PERIOD              250
-#define ALTITUDE_PERIOD         50
+#define ADC_PERIOD              80
+#define ALTITUDE_PERIOD         200
 
 //******************************************************
 // Globals
@@ -93,6 +93,7 @@ SemaphoreHandle_t xYawMutex;
 
 // Just number of LED flashes
 uint32_t value = 0;
+int8_t groundFound = -1;
 
 // Initalise controllers
 static controller_t g_alt_controller;
@@ -173,22 +174,22 @@ Mean_ADC(void *pvParameters)
 {
     char cMessage[17];
     int32_t mean;
-    uint8_t altitude;
+    int32_t altitude;
     int32_t ground;
-
 
     while(1){
 
-        if (count == 20) {
+        if (groundFound == 0) {
             ground = calculateMean();   // works but might not always work idk, also re calcs few more times after due to autism
+            groundFound = 1;
+            UARTSend("GroundFound\n");
+        }else if(groundFound == 1){
+            mean = calculateMean();
+            altitude = percentageHeight(ground, mean);
+
+            usnprintf(cMessage, sizeof(cMessage), "Alt: %d\n", altitude);
+            UARTSend(cMessage);
         }
-
-        mean = calculateMean();
-        altitude = percentageHeight(ground, mean);
-
-        usnprintf(cMessage, sizeof(cMessage), "Mean: %d\n", mean);
-        UARTSend(cMessage);
-
         //xQueueOverwrite(xAltQueue, &altitude);
 
         vTaskDelay(ALTITUDE_PERIOD / portTICK_RATE_MS);
@@ -345,7 +346,7 @@ createSemaphores(void)
 
 int
 main(void)
-{
+ {
     init();
     createTasks();
     createQueues();

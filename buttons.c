@@ -282,10 +282,10 @@ ButtonsCheck(void *pvParameters)
 
     portTickType ui16LastTime;
     uint32_t ui32SwitchDelay = 25;
-    uint8_t state = 0;
+    //uint8_t state = 0;
     uint16_t L_PREV = GPIOPinRead(SW_PORT_BASE, L_SW_PIN);
     uint16_t R_PREV = GPIOPinRead(SW_PORT_BASE, R_SW_PIN);
-    uint16_t TARGET_ALT;
+    //uint16_t TARGET_ALT;
 
     // Get the current tick count.
     ui16LastTime = xTaskGetTickCount();
