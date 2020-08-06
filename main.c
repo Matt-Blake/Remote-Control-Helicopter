@@ -180,7 +180,7 @@ Mean_ADC(void *pvParameters)
     while(1){
 
         if (groundFound == 0) {
-            ground = calculateMean();   // works but might not always work idk, also re calcs few more times after due to autism
+            ground = calculateMean();
             groundFound = 1;
             UARTSend("GroundFound\n");
         }else if(groundFound == 1){
