@@ -214,6 +214,7 @@ void leftButtonPush(void)
     static int16_t yaw_desired = 0;
 
     UARTSend ("Left\n");
+    if xSemaphoreTake(x); // Decrement semaphore now that the task has been completed
     if(xSemaphoreTake(xYawMutex, 0/portTICK_RATE_MS) == pdPASS){ // If the yaw mutex is free, decrement the yaw
         xQueueReceive(xYawRefQueue, &yaw_desired, 10); // Retrieve desired yaw data from the RTOS queue
 
@@ -254,6 +255,7 @@ void rightButtonPush(void)
         }
 
         xQueueOverwrite(xYawRefQueue, &yaw_desired); // Update the RTOS yaw reference queue
+        xRightButSemaphore--; // Decrement semaphore now that the task has been completed
         xSemaphoreGive(xYawMutex); // Give yaw mutex so other mutually exclusive yaw tasks can run
     }
 
@@ -314,10 +316,12 @@ ButtonsCheck(void *pvParameters)
 //        if(xSemaphoreTake(xYawMutex, 0/portTICK_RATE_MS) == pdPASS){
             if(checkButton(LEFT) == PUSHED)
             {
+                xLeftButSemaphore++; // Increment the semaphore to indicate how many times the button has been pushed
                 leftButtonPush(); // Rotate anti-clockwise by 15 degrees
             }
             if(checkButton(RIGHT) == PUSHED)
             {
+                xRightButSemaphore++; // Increment the semaphore to indicate how many times the button has been pushed
                 rightButtonPush(); // Rotate clockwise by 15 degrees
             }
 
