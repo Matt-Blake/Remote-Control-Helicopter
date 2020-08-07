@@ -61,12 +61,7 @@
 #define ALT_TASK_PRIORITY       8       // Altitude PWM priority
 #define YAW_TASK_PRIORITY       8       // Yaw PWM priority
 
-#define ALT_KP                  5       // Altitude proportional gain
-#define ALT_KI                  0       // Altitude integral gain
-#define ALT_KD                  0       // Altitude derivative gain
-#define YAW_KP                  5       // Yaw proportional gain
-#define YAW_KI                  0       // Yaw integral gain
-#define YAW_KD                  0       // Yaw derivative gain
+
 #define CONTROL_DIVISOR         1       // Divisor used to achieve certain gains without the use of floating point numbers
 
 #define DISPLAY_PERIOD          200
@@ -219,7 +214,7 @@ init(void)
 void
 createTasks(void)
 {
-    //xTaskCreate(BlinkLED,       "LED Task",     LED_STACK_DEPTH,        NULL,       LED_TASK_PRIORITY,      NULL);
+    xTaskCreate(BlinkLED,       "LED Task",     LED_STACK_DEPTH,        NULL,       LED_TASK_PRIORITY,      NULL);
     xTaskCreate(OLEDDisplay,    "OLED Task",    OLED_STACK_DEPTH,       NULL,       OLED_TASK_PRIORITY,     NULL);
     xTaskCreate(ButtonsCheck,   "Btn Poll",     BTN_STACK_DEPTH,        NULL,       BTN_TASK_PRIORITY,      NULL);
     xTaskCreate(Trigger_ADC,     "ADC Handler",  ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      NULL);

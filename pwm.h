@@ -89,8 +89,8 @@
 #define CONTROL_PERIOD          20      // Period used in the control loops (ms)
 
 // Initalise controllers
-static controller_t g_alt_controller;
-static controller_t g_yaw_controller;
+controller_t g_alt_controller;
+controller_t g_yaw_controller;
 
 extern SemaphoreHandle_t xAltMutex;
 extern SemaphoreHandle_t xYawMutex;

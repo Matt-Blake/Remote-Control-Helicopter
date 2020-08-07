@@ -35,6 +35,13 @@
 #define MIN_DUTY            2                           // The minimum duty cycle for the rotors
 #define MS_TO_SECONDS       1000                        // Conversion factor from ms to s
 
+#define ALT_KP                  5       // Altitude proportional gain
+#define ALT_KI                  0       // Altitude integral gain
+#define ALT_KD                  0       // Altitude derivative gain
+#define YAW_KP                  5       // Yaw proportional gain
+#define YAW_KI                  0       // Yaw integral gain
+#define YAW_KD                  0       // Yaw derivative gain
+
 /* ******************************************************
  * Sets up PID controller struct values that will be used
  * for both the altitude control and the yaw control.

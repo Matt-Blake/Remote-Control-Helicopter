@@ -130,9 +130,9 @@ turnOnTailPWM(void)
 void
 Set_Main_Duty(void *pvParameters)
 {
-    int16_t alt_PWM;
-    int16_t alt_meas;
-    int16_t alt_desired;
+    int16_t alt_PWM = 0;
+    int16_t alt_meas = 0;
+    int16_t alt_desired = 0;
 
     while (1)
     {
@@ -158,9 +158,9 @@ Set_Main_Duty(void *pvParameters)
 void
 Set_Tail_Duty(void *pvParameters)
 {
-    int16_t yaw_PWM;
-    int16_t yaw_meas;
-    int16_t yaw_desired;
+    int16_t yaw_PWM = 0;
+    int16_t yaw_meas = 0;
+    int16_t yaw_desired = 0;
 
     while (1)
     {
@@ -168,7 +168,7 @@ Set_Tail_Duty(void *pvParameters)
 
             // Retrieve yaw information
             yaw_meas = getYawDegrees(); // Retrieve measured yaw data
-            xQueueReceive(xYawRefQueue, &yaw_desired, 10); // Retrieve desired yaw data from the RTOS queue
+            xQueuePeek(xYawRefQueue, &yaw_desired, 10); // Retrieve desired yaw data from the RTOS queue
 
             // Set PWM duty cycle of tail rotor in order to spin to target yaw
             yaw_PWM = getControlSignal(&g_yaw_controller, yaw_desired, yaw_meas, true); // Use the error to calculate a PWM duty cycle for the tail rotor
