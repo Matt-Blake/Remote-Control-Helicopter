@@ -138,7 +138,7 @@ OLEDDisplay (void *pvParameters)
     int32_t    data0;
     int32_t    data1;
     //uint32_t    data2;
-    int32_t    data3;
+    int    data3;
     while(1)
     {
         xQueuePeek(xAltMeasQueue, &data0, 10);

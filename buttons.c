@@ -210,7 +210,7 @@ void downButtonPush(void)
 void leftButtonPush(void)
 {
     uint8_t state;
-    static int16_t yaw_desired = 0;
+    static int32_t yaw_desired = 0;
 
     UARTSend ("Left\n");
 
@@ -241,7 +241,7 @@ void leftButtonPush(void)
 void rightButtonPush(void)
 {
     uint8_t state;
-    static int16_t yaw_desired = 0;
+    static int32_t yaw_desired = 0;
 
     UARTSend ("Right\n");
 
