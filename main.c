@@ -220,13 +220,18 @@ createTasks(void)
 void
 createQueues(void)
 {
+    int32_t queue_init = 0;
+
     xOLEDQueue      = xQueueCreate(1, sizeof( uint32_t ) );
     xAltBtnQueue    = xQueueCreate(1, sizeof( uint32_t ) );
     xYawBtnQueue    = xQueueCreate(1, sizeof( uint32_t ) );
     xModeQueue      = xQueueCreate(1, sizeof( uint32_t ) );
     xAltMeasQueue   = xQueueCreate(1, sizeof( uint32_t ) );
-    xAltRefQueue    = xQueueCreate(2, sizeof( uint32_t ) );
+    xAltRefQueue    = xQueueCreate(1, sizeof( uint32_t ) );
     xYawRefQueue    = xQueueCreate(1, sizeof( uint32_t ) );
+
+    xQueueOverwrite(xAltRefQueue, &queue_init);
+    xQueueOverwrite(xAltRefQueue, &queue_init);
 }
 
 /*
