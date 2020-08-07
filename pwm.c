@@ -130,9 +130,9 @@ turnOnTailPWM(void)
 void
 Set_Main_Duty(void *pvParameters)
 {
-    int16_t alt_PWM;
-    int16_t alt_meas;
-    int16_t alt_desired;
+    int32_t alt_PWM;
+    int32_t alt_meas;
+    int32_t alt_desired;
 
     while (1)
     {
