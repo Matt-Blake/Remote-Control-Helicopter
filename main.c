@@ -84,6 +84,9 @@ SemaphoreHandle_t xYawMutex;
 SemaphoreHandle_t xLBtnSemaphore;
 SemaphoreHandle_t xRBtnSemaphore;
 
+controller_t g_alt_controller;
+controller_t g_yaw_controller;
+
 // Just number of LED flashes
 uint32_t value = 0;
 

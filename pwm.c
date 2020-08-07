@@ -130,9 +130,15 @@ turnOnTailPWM(void)
 void
 Set_Main_Duty(void *pvParameters)
 {
+<<<<<<< HEAD
     int16_t alt_PWM = 0;
     int16_t alt_meas = 0;
     int16_t alt_desired = 0;
+=======
+    int32_t alt_PWM;
+    int32_t alt_meas;
+    int32_t alt_desired;
+>>>>>>> branch 'master' of https://eng-git.canterbury.ac.nz/ence464-2020/group2.git
 
     while (1)
     {
