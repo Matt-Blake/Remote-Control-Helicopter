@@ -46,11 +46,11 @@ void initController(controller_t* controllerPointer, uint32_t K_P, uint32_t K_I,
 // Duty cycle limits are set for altitude and yaw so as
 // to not overload the helicopter rig and emulator.
 //******************************************************
-int16_t getControlSignal(controller_t* piController, int16_t reference, int16_t measurement, bool isYaw)
+int32_t getControlSignal(controller_t* piController, int32_t reference, int32_t measurement, bool isYaw)
 {
-    int16_t dutyCycle;
-    int16_t controlSignal;
-    int16_t errorSignal;
+    int32_t dutyCycle;
+    int32_t controlSignal;
+    int32_t errorSignal;
     int32_t derivativeError;
 
 
@@ -74,7 +74,7 @@ int16_t getControlSignal(controller_t* piController, int16_t reference, int16_t 
 
     piController->integratedError += piController->timeStep * errorSignal;
 
-    controlSignal = (piController->Kp * errorSignal)  + (piController->Ki * piController->integratedError) + (piController->Kd) * derivativeError;
+    controlSignal = (piController->Kp * errorSignal)  + (piController->Ki * piController->integratedError)/MS_TO_SECONDS + (piController->Kd) * derivativeError * MS_TO_SECONDS;
 
     dutyCycle = controlSignal/(piController->divisor);
 
@@ -83,10 +83,10 @@ int16_t getControlSignal(controller_t* piController, int16_t reference, int16_t 
     //Enforce duty cycle output limits
     if(dutyCycle > MAX_DUTY) {
         dutyCycle = MAX_DUTY;
-        piController->integratedError -= piController->timeStep * errorSignal;
+        piController->integratedError -= piController->timeStep * errorSignal/MS_TO_SECONDS;
     } else if(dutyCycle < MIN_DUTY) {
         dutyCycle = MIN_DUTY;
-        piController->integratedError -= piController->timeStep * errorSignal;
+        piController->integratedError -= piController->timeStep * errorSignal/MS_TO_SECONDS;
     }
     return dutyCycle;
 }
