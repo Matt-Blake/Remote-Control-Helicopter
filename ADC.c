@@ -119,7 +119,7 @@ Mean_ADC(void *pvParameters)
             usnprintf(cMessage, sizeof(cMessage), "Alt: %d\n", altitude);
             UARTSend(cMessage);
         }
-        //xQueueOverwrite(xAltQueue, &altitude);
+        xQueueOverwrite(xAltMeasQueue, &altitude);
         vTaskDelay(ALTITUDE_PERIOD / portTICK_RATE_MS);
     }
 }

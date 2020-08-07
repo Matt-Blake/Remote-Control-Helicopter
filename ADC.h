@@ -40,6 +40,7 @@
 #define ALTITUDE_PERIOD         200
 
 circBuf_t g_inBuffer;        // Buffer of size BUF_SIZE integers (sample values)
+extern QueueHandle_t xAltMeasQueue;
 #define BUF_SIZE 20
 
 static int8_t groundFound = -1;

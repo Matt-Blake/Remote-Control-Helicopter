@@ -146,10 +146,10 @@ OLEDDisplay (void *pvParameters)
         //xQueuePeek(xYawMeasQueue, &data2, 10);
         xQueuePeek(xYawRefQueue, &data3, 10);
 
-        usnprintf(cMessage0, sizeof(cMessage0), "Alt: %03d", data0);
-        usnprintf(cMessage1, sizeof(cMessage1), "Targ Alt: %03d", data1);
+        usnprintf(cMessage0, sizeof(cMessage0), "Alt: %03d%%", data0);
+        usnprintf(cMessage1, sizeof(cMessage1), "Targ Alt: %03d%%", data1);
         //usnprintf(cMessage2, sizeof(cMessage2), "Alt: %03d", data2);
-        usnprintf(cMessage3, sizeof(cMessage3), "Targ Yaw: %03d", data3);
+        usnprintf(cMessage3, sizeof(cMessage3), "Targ Yaw: %03d ", data3);
         OLEDStringDraw(cMessage0, 0, 0);
         OLEDStringDraw(cMessage1, 0, 1);
         //OLEDStringDraw(cMessage2, 0, 2);
