@@ -33,6 +33,7 @@
 #define DEGREES_CIRCLE      360                         // The number of degrees in a circle
 #define MAX_DUTY            98                          // The maximum duty cycle for the rotors
 #define MIN_DUTY            2                           // The minimum duty cycle for the rotors
+#define MS_TO_SECONDS       1000                        // Conversion factor from ms to s
 
 /* ******************************************************
  * Sets up PID controller struct values that will be used
@@ -42,7 +43,7 @@ typedef struct Controllers {
     uint32_t    Kp;             // Proportional gain
     uint32_t    Ki;             // Integral gain
     uint32_t    Kd;             // Derivative gain
-    uint32_t    timeStep;       // The time step used to calculate derivative and integral control
+    uint32_t    timeStep;       // The time step used to calculate derivative and integral control (in ms)
     int32_t     divisor;        // Divisor used to correct gains without the use of floating point numbers
 
     int32_t     previousError;
@@ -64,6 +65,6 @@ void initController(controller_t* controllerPointer, uint32_t K_P, uint32_t K_I,
  * Duty cycle limits are set for altitude and yaw so as
  * to not overload the helicopter rig and emulator.
  * *****************************************************/
-int16_t getControlSignal(controller_t *piController, int16_t reference, int16_t measurement, bool isYaw);
+int32_t getControlSignal(controller_t *piController, int32_t reference, int32_t measurement, bool isYaw);
 
 #endif /* PIDCONTROLLER_H_ */
