@@ -51,5 +51,7 @@
 
 #define configTICK_RATE_HZ 1000 // 1ms SysTick ticker
 
+#define configCHECK_FOR_STACK_OVERFLOW 2
+
 
 #endif /* FREERTOSCONFIG_H_ */

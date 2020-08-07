@@ -36,10 +36,13 @@
 
 
 // ************************* GLOBALS ******************************
+#define ADC_PERIOD              80
+#define ALTITUDE_PERIOD         200
+
 circBuf_t g_inBuffer;        // Buffer of size BUF_SIZE integers (sample values)
 #define BUF_SIZE 20
 
-extern int8_t groundFound;
+static int8_t groundFound = -1;
 
 // *********************** PROTOTYPES *****************************
 // ****************************************************************
@@ -62,5 +65,11 @@ int percentageHeight(int32_t ground_level, int32_t current);
 // @param   ground_level  - The value calculated by calculateMean() when the helicopter is started/turned on.
 // @param   current       - The value calculated by calculateMean() at the moment percentageHeight is called.
 // @return  percent       - The current height as a percentage of the total/maximum height
+
+void
+Trigger_ADC(void *pvParameters);
+
+void
+Mean_ADC(void *pvParameters);
 
 #endif /*ADC_H*/

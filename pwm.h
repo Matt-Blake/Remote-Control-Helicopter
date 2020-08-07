@@ -44,6 +44,13 @@
 #include "driverlib/pwm.h"
 #include "driverlib/sysctl.h"
 
+#include "uart.h"
+#include "yaw.h"
+#include "pidController.h"
+#include "FreeRTOS.h"
+#include "queue.h"
+#include "semphr.h"
+
 //******************************************************
 // Constants
 //******************************************************
@@ -53,8 +60,6 @@
 #define PWM_FIXED_DUTY          0
 #define PWM_DIVIDER_CODE        SYSCTL_PWMDIV_16
 #define PWM_DIVIDER             16
-
-
 
 //  PWM Hardware Details M0PWM7 (gen 3)
 //  ---Main Rotor PWM: PC5, J4-05
@@ -81,6 +86,19 @@
 #define PWM_TAIL_GPIO_CONFIG    GPIO_PF1_M1PWM5
 #define PWM_TAIL_GPIO_PIN       GPIO_PIN_1
 
+#define CONTROL_PERIOD          20      // Period used in the control loops (ms)
+
+// Initalise controllers
+static controller_t g_alt_controller;
+static controller_t g_yaw_controller;
+
+extern SemaphoreHandle_t xAltMutex;
+extern SemaphoreHandle_t xYawMutex;
+
+extern QueueHandle_t xAltMeasQueue;
+extern QueueHandle_t xAltRefQueue;
+extern QueueHandle_t xYawRefQueue;
+
  /* ******************************************************
  * Function to set the freq, duty cycle of M0PWM7.
  * *****************************************************/
@@ -105,5 +123,11 @@ turnOnMainPWM (void);
  * *****************************************************/
 void
 turnOnTailPWM (void);
+
+void
+Set_Main_Duty(void *pvParameters);
+
+void
+Set_Tail_Duty(void *pvParameters);
 
 #endif /* _PWM_H_ */

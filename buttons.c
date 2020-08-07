@@ -295,48 +295,35 @@ ButtonsCheck(void *pvParameters)
     // Loop forever.
     while(1)
     {
+        /*
+         * Check if any buttons have been pressed. Update button state.
+         */
         updateButtons();
-//        if(xSemaphoreTake(xAltMutex, 0/portTICK_RATE_MS) == pdPASS){
 
-            if(checkButton(UP) == PUSHED)
-            {
-                upButtonPush(); // Increment altitude by 10%
-            }
-
-            if(checkButton(DOWN) == PUSHED)
-            {
-                downButtonPush(); // Decrement altitude by 10%
-            }
-//            while(xSemaphoreGive(xAltMutex) != pdPASS){
-//                UARTSend("Couldn't give Alt Mutex\n");
-//            }
-//        }
-
-
-//        if(xSemaphoreTake(xYawMutex, 0/portTICK_RATE_MS) == pdPASS){
-            if(checkButton(LEFT) == PUSHED)
-            {
-                leftButtonPush();
-                //xSemaphoreGive(xLeftButSemaphore); // Increment the semaphore to indicate how many times the button has been pushed
-            }
-            if(checkButton(RIGHT) == PUSHED)
-            {
-                rightButtonPush();
-                //xSemaphoreGive(xRightButSemaphore); // Increment the semaphore to indicate how many times the button has been pushed
-                 // Rotate clockwise by 15 degrees
-            }
-            //if (xSemaphoreTake(xLeftButSemaphore, 0/portTICK_RATE_MS) == pdPASS){ // Service task if semaphore is greater than 0
-            //    leftButtonPush(); // Rotate anti-clockwise by 15 degrees
-            //}
-            //if (xSemaphoreTake(xRightButSemaphore, 0/portTICK_RATE_MS) == pdPASS){ // Service task if semaphore is greater than 0
-            //    rightButtonPush(); // Rotate clockwise by 15 degrees
-            //}
-
-            //rightButtonPush();
-//            while(xSemaphoreGive(xYawMutex) != pdPASS){
-//                UARTSend("Couldn't give Yaw Mutex\n");
-//            }
-//        }
+        if(checkButton(UP) == PUSHED)
+        {
+            /*
+             * Call the up button handler to increase target altitude by 10%
+             */
+            upButtonPush();
+        }
+        if(checkButton(DOWN) == PUSHED)
+        {
+            /*
+             * Call the down button handler to decrease target altitude by 10%
+             */
+            downButtonPush();
+        }
+        if(checkButton(LEFT) == PUSHED)
+        {
+            xSemaphoreGive(xLBtnSemaphore); // Increment the semaphore to indicate how many times the button has been pushed
+            leftButtonPush();
+        }
+        if(checkButton(RIGHT) == PUSHED)
+        {
+            xSemaphoreGive(xRBtnSemaphore); // Increment the semaphore to indicate how many times the button has been pushed
+            rightButtonPush();
+        }
 
         if(GPIOPinRead(SW_PORT_BASE, L_SW_PIN) != L_PREV)
         {

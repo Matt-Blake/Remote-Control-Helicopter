@@ -53,7 +53,9 @@
  * Constants
  * *****************************************************/
 
-// ** D-Pad Buttons ***********************************************
+/*
+ * Button Config
+ */
 enum btnNames {UP = 0, DOWN, LEFT, RIGHT, NUM_BTNS};
 enum btnStates {RELEASED = 0, PUSHED, NO_CHANGE};
 
@@ -79,15 +81,20 @@ enum btnStates {RELEASED = 0, PUSHED, NO_CHANGE};
 
 #define NUM_BTN_POLLS       3                           // Number Of Times To Poll The Buttons (For Debouncing)
 
+/*
+ * Switch Config
+ */
 #define SW_PERIPH           SYSCTL_PERIPH_GPIOA         // Switch Peripheral
 #define SW_PORT_BASE        GPIO_PORTA_BASE             // Switch Port Base
 #define L_SW_PIN            GPIO_PIN_6                  // Left Switch Pin
 #define R_SW_PIN            GPIO_PIN_7                  // Right Switch Pin
 
+/*
+ * Control Config
+ */
 #define ALT_CHANGE          10                          // The altitude change on button press (percentage)
 #define MAX_ALT             100                         // The maximum altitude (percentage)
 #define MIN_ALT             0                           // The minimum altitude (percentage)
-
 #define YAW_CHANGE          15                          // The yaw change on button press (degrees)
 #define MAX_YAW             164                         // The maximum yaw (degrees)
 #define MIN_YAW             -165                        // The minimum yaw (degrees)
@@ -103,8 +110,8 @@ extern QueueHandle_t xYawRefQueue;
 
 extern SemaphoreHandle_t xAltMutex;
 extern SemaphoreHandle_t xYawMutex;
-extern SemaphoreHandle_t xLeftButSemaphore;
-extern SemaphoreHandle_t xRightButSemaphore;
+extern SemaphoreHandle_t xLBtnSemaphore;
+extern SemaphoreHandle_t xRBtnSemaphore;
 
 // Debounce algorithm: A state machine is associated with each button.
 // A state change occurs only after NUM_BUT_POLLS consecutive polls have

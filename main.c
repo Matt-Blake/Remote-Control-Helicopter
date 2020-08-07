@@ -72,16 +72,13 @@
 #define CONTROL_DIVISOR         1       // Divisor used to achieve certain gains without the use of floating point numbers
 #define MS_TO_S                 1000    // The conversion factor from milliseconds to seconds
 
-#define CONTROL_PERIOD          20      // Period used in the control loops (ms)
 #define DISPLAY_PERIOD          200
-#define ADC_PERIOD              80
-#define ALTITUDE_PERIOD         200
 
 #define MAX_BUTTON_PRESSES      10      // The maximum number of concurrent button presses than can be stored for servicing
 
-//******************************************************
-// Globals
-//******************************************************
+/*
+ * Globals
+*/
 QueueHandle_t xOLEDQueue;
 QueueHandle_t xAltBtnQueue;
 QueueHandle_t xYawBtnQueue;
@@ -92,16 +89,11 @@ QueueHandle_t xYawRefQueue;
 
 SemaphoreHandle_t xAltMutex;
 SemaphoreHandle_t xYawMutex;
-SemaphoreHandle_t xLeftButSemaphore;
-SemaphoreHandle_t xRightButSemaphore;
+SemaphoreHandle_t xLBtnSemaphore;
+SemaphoreHandle_t xRBtnSemaphore;
 
 // Just number of LED flashes
 uint32_t value = 0;
-int8_t groundFound = -1;
-
-// Initalise controllers
-static controller_t g_alt_controller;
-static controller_t g_yaw_controller;
 
 //******************************************************
 // Tasks
@@ -109,6 +101,7 @@ static controller_t g_yaw_controller;
 /*
  * RTOS task that toggles LED state based off button presses
  */
+/*
 static void
 BlinkLED(void *pvParameters)
 {
@@ -136,6 +129,7 @@ BlinkLED(void *pvParameters)
         vTaskDelay(200 / portTICK_RATE_MS);
     }
 }
+*/
 
 /*
  * RTOS task that displays number of LED flashes on the OLED display. - Remove in final version.
@@ -157,107 +151,6 @@ OLEDDisplay (void *pvParameters)
 }
 
 /*
- * RTOS task that periodically triggers the ADC interrupt. - Aim to merge the ADC handler into this.
- */
-static void
-Cringe_ADC(void *pvParameters)
-{
-    while(1){
-        ADCProcessorTrigger(ADC0_BASE, 3);
-
-        vTaskDelay(ADC_PERIOD / portTICK_RATE_MS);
-    }
-
-}
-
-/*
- * RTOS task that periodically calculates the average value of the circular ADC buffer.
- */
-static void
-Mean_ADC(void *pvParameters)
-{
-    char cMessage[17];
-    int32_t mean;
-    int32_t altitude;
-    int32_t ground;
-
-    while(1){
-
-        if (groundFound == 0) {
-            ground = calculateMean();
-            groundFound = 1;
-            UARTSend("GroundFound\n");
-        }else if(groundFound == 1){
-            mean = calculateMean();
-            altitude = percentageHeight(ground, mean);
-
-            usnprintf(cMessage, sizeof(cMessage), "Alt: %d\n", altitude);
-            UARTSend(cMessage);
-        }
-        //xQueueOverwrite(xAltQueue, &altitude);
-
-        vTaskDelay(ALTITUDE_PERIOD / portTICK_RATE_MS);
-    }
-
-}
-
-/*
- * RTOS task that controls the main rotor speed in order to reach the desired altitude.
- */
-static void
-Set_Main_Duty(void *pvParameters)
-{
-    int16_t alt_PWM;
-    int16_t alt_meas;
-    int16_t alt_desired;
-
-    while (1)
-    {
-        if(xSemaphoreTake(xAltMutex, 0/portTICK_RATE_MS) == pdPASS){ // If the altitude mutex is free, apply the desired main rotor duty cycle
-
-            // Retrieve altitude information
-            xQueueReceive(xAltMeasQueue, &alt_meas,    10); // Retrieve measured altitude data from the RTOS queue
-            xQueueReceive(xAltRefQueue,  &alt_desired, 10); // Retrieve desired altitude data from the RTOS queue
-
-            // Set PWM duty cycle of main rotor in order to hover to the desired altitude
-            alt_PWM = getControlSignal(&g_alt_controller, alt_desired, alt_meas, false); // Use the error to calculate a PWM duty cycle for the main rotor
-            setRotorPWM(alt_PWM, 1); // Set main rotor to calculated PWM
-            xQueueOverwrite(xAltRefQueue, &alt_desired);
-            xSemaphoreGive(xAltMutex); // Give alt mutex so other mutually exclusive altitude tasks can run
-        }
-        vTaskDelay(CONTROL_PERIOD / portTICK_RATE_MS); // Block task so lower priority tasks can run
-    }
-}
-
-/*
- * RTOS task that controls the tail rotor speed in order to reach the desire yaw.
- */
-static void
-Set_Tail_Duty(void *pvParameters)
-{
-    int16_t yaw_PWM;
-    int16_t yaw_meas;
-    int16_t yaw_desired;
-
-    while (1)
-    {
-        if(xSemaphoreTake(xYawMutex, 0/portTICK_RATE_MS) == pdPASS){ // If the yaw mutex is free, apply the desired tail rotor duty cycle
-
-            // Retrieve yaw information
-            yaw_meas = getYawDegrees(); // Retrieve measured yaw data
-            xQueueReceive(xYawRefQueue, &yaw_desired, 10); // Retrieve desired yaw data from the RTOS queue
-
-            // Set PWM duty cycle of tail rotor in order to spin to target yaw
-            yaw_PWM = getControlSignal(&g_yaw_controller, yaw_desired, yaw_meas, true); // Use the error to calculate a PWM duty cycle for the tail rotor
-            setRotorPWM(yaw_PWM, 0); // Set tail rotor to calculated PWM
-
-            xSemaphoreGive(xYawMutex); // Give yaw mutex so other mutually exclusive yaw tasks can run
-        }
-        vTaskDelay(CONTROL_PERIOD / portTICK_RATE_MS); // Block task so lower priority tasks can run
-    }
-}
-
-/*
  * Initialise the main clock.
  */
 void
@@ -275,7 +168,7 @@ initLED(void)
 {
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);                // Activate internal bus clocking for GPIO port F
     while (!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOF));        // Busy-wait until GPIOF's bus clock is ready
-    GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_1);         // PF_1 as output
+    GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_2);         // PF_2 as output
     GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_1, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD);    // Doesn't need too much drive strength as the RGB LEDs on the TM4C123 launchpad are switched via N-type transistors
     GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1, 0);               // Off by default
 }
@@ -297,7 +190,7 @@ void
 init(void)
 {
     initClk();
-    //initLED();
+    initLED();
     initPWM();
     OLEDInitialise();
     initBtns();
@@ -318,7 +211,7 @@ createTasks(void)
     //xTaskCreate(BlinkLED,       "LED Task",     LED_STACK_DEPTH,        NULL,       LED_TASK_PRIORITY,      NULL);
     xTaskCreate(OLEDDisplay,    "OLED Task",    OLED_STACK_DEPTH,       NULL,       OLED_TASK_PRIORITY,     NULL);
     xTaskCreate(ButtonsCheck,   "Btn Poll",     BTN_STACK_DEPTH,        NULL,       BTN_TASK_PRIORITY,      NULL);
-    xTaskCreate(Cringe_ADC,     "ADC Handler",  ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      NULL);
+    xTaskCreate(Trigger_ADC,     "ADC Handler",  ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      NULL);
     xTaskCreate(Mean_ADC,       "ADC Mean",     ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      NULL);
     xTaskCreate(Set_Main_Duty,  "Altitude PWM", ALT_STACK_DEPTH,        NULL,       ALT_TASK_PRIORITY,      NULL);
     xTaskCreate(Set_Tail_Duty,  "Yaw PWM",      YAW_STACK_DEPTH,        NULL,       YAW_TASK_PRIORITY,      NULL);
@@ -350,18 +243,15 @@ createSemaphores(void)
     xYawMutex = xSemaphoreCreateMutex();
 
     // Create semaphores to keep track of how many times the yaw buttons have been pushed
-    xLeftButSemaphore = xSemaphoreCreateCounting(MAX_BUTTON_PRESSES, 0);
-    xRightButSemaphore = xSemaphoreCreateCounting(MAX_BUTTON_PRESSES, 0);
+    xLBtnSemaphore = xSemaphoreCreateCounting(MAX_BUTTON_PRESSES, 0);
+    xRBtnSemaphore = xSemaphoreCreateCounting(MAX_BUTTON_PRESSES, 0);
 }
 
-void vApplicationStackOverflowHook( TaskHandle_t xTask,
-                                    signed char *pcTaskName )
+void vApplicationStackOverflowHook(TaskHandle_t xTask, signed char *pcTaskName)
 {
-  UARTSend("OVERFLOW\r\n");
-  UARTSend(pcTaskName);
-    while (1) {
-    ;
-  }
+    UARTSend("OVERFLOW\n");
+    UARTSend(pcTaskName);
+    while (1){}
 }
 
 int
