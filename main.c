@@ -244,6 +244,7 @@ createQueues(void)
 
     xQueueOverwrite(xAltRefQueue, &queue_init);
     xQueueOverwrite(xAltMeasQueue, &queue_init);
+    xQueueOverwrite(xYawRefQueue, &queue_init);
 }
 
 /*
