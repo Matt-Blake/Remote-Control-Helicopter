@@ -98,7 +98,7 @@ uint32_t value = 0;
 /*
  * RTOS task that toggles LED state based off button presses
  */
-/*
+
 static void
 BlinkLED(void *pvParameters)
 {
@@ -108,25 +108,24 @@ BlinkLED(void *pvParameters)
 
     while(1)
     {
-        if(xSemaphoreTake(xAltMutex, 0/portTICK_RATE_MS) == pdPASS){
+        //if(xSemaphoreTake(xAltMutex, 0/portTICK_RATE_MS) == pdPASS){
             prev_state = state;
             //UARTSend("Blink\n");
-            xQueueReceive(xAltBtnQueue, &state, 10);
-            if(state == 0){currentValue &= !2;}
-            if(state == 1){currentValue |= 2;}
-            if(prev_state == 0 && state == 1){
-                value++;
-            }
+        //    xQueueReceive(xAltBtnQueue, &state, 10);
+            currentValue ^= 4;
+        //    if(prev_state == 0 && state == 1){
+        //        value++;
+        //    }
 
-            GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1, currentValue);
-            xQueueOverwrite(xOLEDQueue, &value);
+            GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, currentValue);
+        //    xQueueOverwrite(xOLEDQueue, &value);
 
-            xSemaphoreGive(xAltMutex);
-        }
+        //    xSemaphoreGive(xAltMutex);
+        //}
         vTaskDelay(200 / portTICK_RATE_MS);
     }
 }
-*/
+
 
 /*
  * RTOS task that displays number of LED flashes on the OLED display. - Remove in final version.
@@ -134,14 +133,29 @@ BlinkLED(void *pvParameters)
 static void
 OLEDDisplay (void *pvParameters)
 {
-    char cMessage[17];
-    uint32_t  num_flashes;
+    char cMessage0[17];
+    char cMessage1[17];
+    //char cMessage2[17];
+    char cMessage3[17];
+    uint32_t    data0;
+    uint32_t    data1;
+    //uint32_t    data2;
+    uint32_t    data3;
     while(1)
     {
-        xQueueReceive(xOLEDQueue, &num_flashes, 10);
+        xQueuePeek(xAltMeasQueue, &data0, 10);
+        xQueuePeek(xAltRefQueue, &data1, 10);
+        //xQueuePeek(xYawMeasQueue, &data2, 10);
+        xQueuePeek(xYawRefQueue, &data3, 10);
 
-        usnprintf(cMessage, sizeof(cMessage), "%d flashes", num_flashes);
-        OLEDStringDraw(cMessage, 0, 0);
+        usnprintf(cMessage0, sizeof(cMessage0), "Alt: %03d", data0);
+        usnprintf(cMessage1, sizeof(cMessage1), "Targ Alt: %03d", data1);
+        //usnprintf(cMessage2, sizeof(cMessage2), "Alt: %03d", data2);
+        usnprintf(cMessage3, sizeof(cMessage3), "Targ Yaw: %03d", data3);
+        OLEDStringDraw(cMessage0, 0, 0);
+        OLEDStringDraw(cMessage1, 0, 1);
+        //OLEDStringDraw(cMessage2, 0, 2);
+        OLEDStringDraw(cMessage3, 0, 3);
 
         vTaskDelay(DISPLAY_PERIOD / portTICK_RATE_MS);
     }
@@ -166,8 +180,8 @@ initLED(void)
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);                // Activate internal bus clocking for GPIO port F
     while (!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOF));        // Busy-wait until GPIOF's bus clock is ready
     GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_2);         // PF_2 as output
-    GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_1, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD);    // Doesn't need too much drive strength as the RGB LEDs on the TM4C123 launchpad are switched via N-type transistors
-    GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_1, 0);               // Off by default
+    GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD);    // Doesn't need too much drive strength as the RGB LEDs on the TM4C123 launchpad are switched via N-type transistors
+    GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_PIN_2);               // Off by default
 }
 
 /*
@@ -231,7 +245,7 @@ createQueues(void)
     xYawRefQueue    = xQueueCreate(1, sizeof( uint32_t ) );
 
     xQueueOverwrite(xAltRefQueue, &queue_init);
-    xQueueOverwrite(xAltRefQueue, &queue_init);
+    xQueueOverwrite(xAltMeasQueue, &queue_init);
 }
 
 /*

@@ -139,13 +139,13 @@ Set_Main_Duty(void *pvParameters)
         if(xSemaphoreTake(xAltMutex, 0/portTICK_RATE_MS) == pdPASS){ // If the altitude mutex is free, apply the desired main rotor duty cycle
 
             // Retrieve altitude information
-            xQueueReceive(xAltMeasQueue, &alt_meas,    10); // Retrieve measured altitude data from the RTOS queue
-            xQueueReceive(xAltRefQueue,  &alt_desired, 10); // Retrieve desired altitude data from the RTOS queue
+            xQueuePeek(xAltMeasQueue, &alt_meas,    10); // Retrieve measured altitude data from the RTOS queue
+            xQueuePeek(xAltRefQueue,  &alt_desired, 10); // Retrieve desired altitude data from the RTOS queue
 
             // Set PWM duty cycle of main rotor in order to hover to the desired altitude
             alt_PWM = getControlSignal(&g_alt_controller, alt_desired, alt_meas, false); // Use the error to calculate a PWM duty cycle for the main rotor
             setRotorPWM(alt_PWM, 1); // Set main rotor to calculated PWM
-            xQueueOverwrite(xAltRefQueue, &alt_desired);
+            //xQueueOverwrite(xAltRefQueue, &alt_desired);
             xSemaphoreGive(xAltMutex); // Give alt mutex so other mutually exclusive altitude tasks can run
         }
         vTaskDelay(CONTROL_PERIOD / portTICK_RATE_MS); // Block task so lower priority tasks can run
