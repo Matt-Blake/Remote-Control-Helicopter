@@ -49,7 +49,7 @@
 #define LED_PIN_RED             1       // RED LED pin
 
 #define LED_STACK_DEPTH         32
-#define OLED_STACK_DEPTH        32
+#define OLED_STACK_DEPTH        128
 #define BTN_STACK_DEPTH         128     // Stack size in words
 #define ADC_STACK_DEPTH         128     // Stack size in words
 #define ALT_STACK_DEPTH         128     // Stack size in words
@@ -222,7 +222,7 @@ Set_Main_Duty(void *pvParameters)
             // Set PWM duty cycle of main rotor in order to hover to the desired altitude
             alt_PWM = getControlSignal(&g_alt_controller, alt_desired, alt_meas, false); // Use the error to calculate a PWM duty cycle for the main rotor
             setRotorPWM(alt_PWM, 1); // Set main rotor to calculated PWM
-
+            xQueueOverwrite(xAltRefQueue, &alt_desired);
             xSemaphoreGive(xAltMutex); // Give alt mutex so other mutually exclusive altitude tasks can run
         }
         vTaskDelay(CONTROL_PERIOD / portTICK_RATE_MS); // Block task so lower priority tasks can run
@@ -286,8 +286,8 @@ initLED(void)
 void
 initControllers(void)
 {
-    initController(&g_alt_controller, ALT_KP, ALT_KI, ALT_KD, CONTROL_DIVISOR, CONTROL_PERIOD * MS_TO_S); // Create altitude controller based of preset gains
-    initController(&g_yaw_controller, YAW_KP, YAW_KI, YAW_KD, CONTROL_DIVISOR, CONTROL_PERIOD * MS_TO_S); // Create yaw controller based of preset gains
+    initController(&g_alt_controller, ALT_KP, ALT_KI, ALT_KD, CONTROL_PERIOD * MS_TO_S, CONTROL_DIVISOR); // Create altitude controller based of preset gains
+    initController(&g_yaw_controller, YAW_KP, YAW_KI, YAW_KD, CONTROL_PERIOD * MS_TO_S, CONTROL_DIVISOR); // Create yaw controller based of preset gains
 }
 
 /*
@@ -335,7 +335,7 @@ createQueues(void)
     xYawBtnQueue    = xQueueCreate(1, sizeof( uint32_t ) );
     xModeQueue      = xQueueCreate(1, sizeof( uint32_t ) );
     xAltMeasQueue   = xQueueCreate(1, sizeof( uint32_t ) );
-    xAltRefQueue    = xQueueCreate(1, sizeof( uint32_t ) );
+    xAltRefQueue    = xQueueCreate(2, sizeof( uint32_t ) );
     xYawRefQueue    = xQueueCreate(1, sizeof( uint32_t ) );
 }
 
@@ -352,6 +352,16 @@ createSemaphores(void)
     // Create semaphores to keep track of how many times the yaw buttons have been pushed
     xLeftButSemaphore = xSemaphoreCreateCounting(MAX_BUTTON_PRESSES, 0);
     xRightButSemaphore = xSemaphoreCreateCounting(MAX_BUTTON_PRESSES, 0);
+}
+
+void vApplicationStackOverflowHook( TaskHandle_t xTask,
+                                    signed char *pcTaskName )
+{
+  UARTSend("OVERFLOW\r\n");
+  UARTSend(pcTaskName);
+    while (1) {
+    ;
+  }
 }
 
 int

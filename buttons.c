@@ -149,7 +149,7 @@ void upButtonPush(void)
 
     UARTSend ("Up\n");
     if(xSemaphoreTake(xAltMutex, 0/portTICK_RATE_MS) == pdPASS){ // If the altitude mutex is free, increment the altitude
-        xQueueReceive(xAltRefQueue, &alt_desired, 10); // Retrieve desired altitude data from the RTOS queue
+        xQueuePeek(xAltRefQueue, &alt_desired, 10); // Retrieve desired altitude data from the RTOS queue
         alt_desired += ALT_CHANGE;
 
         // Check upper limits of the altitude when left button is pressed
@@ -162,7 +162,6 @@ void upButtonPush(void)
         usnprintf(cMessage, sizeof(cMessage), "%d\n", alt_desired);
         UARTSend(cMessage);
 
-        xQueueOverwrite(xAltRefQueue, &alt_desired); // Update the RTOS altitude reference queue
         xSemaphoreGive(xAltMutex); // Give altitude mutex so other mutually exclusive altitude tasks can run
     }
 
@@ -182,7 +181,7 @@ void downButtonPush(void)
 
     UARTSend ("Down\n");
     if(xSemaphoreTake(xAltMutex, 0/portTICK_RATE_MS) == pdPASS){ // If the altitude mutex is free, increment the altitude
-        xQueueReceive(xAltRefQueue, &alt_desired, 10); // Retrieve desired altitude data from the RTOS queue
+        xQueuePeek(xAltRefQueue, &alt_desired, 10); // Retrieve desired altitude data from the RTOS queue
         alt_desired -= ALT_CHANGE;
 
         // Check lower limits of the altitude when left button is pressed
@@ -317,21 +316,23 @@ ButtonsCheck(void *pvParameters)
 //        if(xSemaphoreTake(xYawMutex, 0/portTICK_RATE_MS) == pdPASS){
             if(checkButton(LEFT) == PUSHED)
             {
-                xSemaphoreGive(xLeftButSemaphore); // Increment the semaphore to indicate how many times the button has been pushed
+                leftButtonPush();
+                //xSemaphoreGive(xLeftButSemaphore); // Increment the semaphore to indicate how many times the button has been pushed
             }
             if(checkButton(RIGHT) == PUSHED)
             {
-                xSemaphoreGive(xRightButSemaphore); // Increment the semaphore to indicate how many times the button has been pushed
+                rightButtonPush();
+                //xSemaphoreGive(xRightButSemaphore); // Increment the semaphore to indicate how many times the button has been pushed
                  // Rotate clockwise by 15 degrees
             }
-            if (xSemaphoreTake(xLeftButSemaphore, 0/portTICK_RATE_MS) == pdPASS){ // Service task if semaphore is greater than 0
-                leftButtonPush(); // Rotate anti-clockwise by 15 degrees
-            }
-            if (xSemaphoreTake(xRightButSemaphore, 0/portTICK_RATE_MS) == pdPASS){ // Service task if semaphore is greater than 0
-                rightButtonPush(); // Rotate clockwise by 15 degrees
-            }
+            //if (xSemaphoreTake(xLeftButSemaphore, 0/portTICK_RATE_MS) == pdPASS){ // Service task if semaphore is greater than 0
+            //    leftButtonPush(); // Rotate anti-clockwise by 15 degrees
+            //}
+            //if (xSemaphoreTake(xRightButSemaphore, 0/portTICK_RATE_MS) == pdPASS){ // Service task if semaphore is greater than 0
+            //    rightButtonPush(); // Rotate clockwise by 15 degrees
+            //}
 
-            rightButtonPush();
+            //rightButtonPush();
 //            while(xSemaphoreGive(xYawMutex) != pdPASS){
 //                UARTSend("Couldn't give Yaw Mutex\n");
 //            }
