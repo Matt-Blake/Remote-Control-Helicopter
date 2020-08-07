@@ -2,8 +2,6 @@
  * TODO:
  *      - Figure out what the stack sizes should be
  *      - Suss interrupts
- *      - Suss yaw
- *      - Suss ADC
  *
  */
 
