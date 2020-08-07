@@ -63,14 +63,13 @@
 #define ALT_TASK_PRIORITY       8       // Altitude PWM priority
 #define YAW_TASK_PRIORITY       8       // Yaw PWM priority
 
-#define ALT_KP                  130000  // Altitude proportional gain
-#define ALT_KI                  2       // Altitude integral gain
-#define ALT_KD                  4       // Altitude derivative gain
-#define YAW_KP                  98000   // Yaw proportional gain
-#define YAW_KI                  11      // Yaw integral gain
-#define YAW_KD                  3       // Yaw derivative gain
+#define ALT_KP                  5       // Altitude proportional gain
+#define ALT_KI                  0       // Altitude integral gain
+#define ALT_KD                  0       // Altitude derivative gain
+#define YAW_KP                  5       // Yaw proportional gain
+#define YAW_KI                  0       // Yaw integral gain
+#define YAW_KD                  0       // Yaw derivative gain
 #define CONTROL_DIVISOR         1       // Divisor used to achieve certain gains without the use of floating point numbers
-#define MS_TO_S                 1000    // The conversion factor from milliseconds to seconds
 
 #define DISPLAY_PERIOD          200
 
@@ -179,8 +178,8 @@ initLED(void)
 void
 initControllers(void)
 {
-    initController(&g_alt_controller, ALT_KP, ALT_KI, ALT_KD, CONTROL_PERIOD * MS_TO_S, CONTROL_DIVISOR); // Create altitude controller based of preset gains
-    initController(&g_yaw_controller, YAW_KP, YAW_KI, YAW_KD, CONTROL_PERIOD * MS_TO_S, CONTROL_DIVISOR); // Create yaw controller based of preset gains
+    initController(&g_alt_controller, ALT_KP, ALT_KI, ALT_KD, CONTROL_PERIOD, CONTROL_DIVISOR); // Create altitude controller based of preset gains
+    initController(&g_yaw_controller, YAW_KP, YAW_KI, YAW_KD, CONTROL_PERIOD, CONTROL_DIVISOR); // Create yaw controller based of preset gains
 }
 
 /*
