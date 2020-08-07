@@ -34,6 +34,10 @@
 
 #include "pwm.h"
 
+// Initalise controllers
+controller_t g_alt_controller;
+controller_t g_yaw_controller;
+
 /*
  * initialise PWM for the main rotor.
  * M0PWM7 (J4-05, PC5) is used for the main rotor motor

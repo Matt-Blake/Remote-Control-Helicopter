@@ -135,10 +135,10 @@ OLEDDisplay (void *pvParameters)
     char cMessage1[17];
     //char cMessage2[17];
     char cMessage3[17];
-    uint32_t    data0;
-    uint32_t    data1;
+    int32_t    data0;
+    int32_t    data1;
     //uint32_t    data2;
-    uint32_t    data3;
+    int32_t    data3;
     while(1)
     {
         xQueuePeek(xAltMeasQueue, &data0, 10);
@@ -238,9 +238,9 @@ createQueues(void)
     xAltBtnQueue    = xQueueCreate(1, sizeof( uint32_t ) );
     xYawBtnQueue    = xQueueCreate(1, sizeof( uint32_t ) );
     xModeQueue      = xQueueCreate(1, sizeof( uint32_t ) );
-    xAltMeasQueue   = xQueueCreate(1, sizeof( uint32_t ) );
-    xAltRefQueue    = xQueueCreate(1, sizeof( uint32_t ) );
-    xYawRefQueue    = xQueueCreate(1, sizeof( uint32_t ) );
+    xAltMeasQueue   = xQueueCreate(1, sizeof( int32_t ) );
+    xAltRefQueue    = xQueueCreate(1, sizeof( int32_t ) );
+    xYawRefQueue    = xQueueCreate(1, sizeof( int32_t ) );
 
     xQueueOverwrite(xAltRefQueue, &queue_init);
     xQueueOverwrite(xAltMeasQueue, &queue_init);
