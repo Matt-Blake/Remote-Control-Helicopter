@@ -14,6 +14,9 @@
 
 #include "ADC.h"
 
+
+int8_t groundFound = -1;
+circBuf_t g_inBuffer;
 // ************************* GLOBALS *******************************
 //circBuf_t g_inBuffer;
 

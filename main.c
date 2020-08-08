@@ -84,11 +84,9 @@ SemaphoreHandle_t xYawMutex;
 SemaphoreHandle_t xLBtnSemaphore;
 SemaphoreHandle_t xRBtnSemaphore;
 
-controller_t g_alt_controller;
-controller_t g_yaw_controller;
+//controller_t g_alt_controller;
+//controller_t g_yaw_controller;
 
-// Just number of LED flashes
-uint32_t value = 0;
 
 //******************************************************
 // Tasks
@@ -96,30 +94,17 @@ uint32_t value = 0;
 /*
  * RTOS task that toggles LED state based off button presses
  */
-
 static void
 BlinkLED(void *pvParameters)
 {
-    uint8_t currentValue = 0;
-    static uint8_t state = 0;
-    uint8_t prev_state = 0;
+    uint8_t state = 0;
 
     while(1)
     {
-        //if(xSemaphoreTake(xAltMutex, 0/portTICK_RATE_MS) == pdPASS){
-            prev_state = state;
-            //UARTSend("Blink\n");
-        //    xQueueReceive(xAltBtnQueue, &state, 10);
-            currentValue ^= 4;
-        //    if(prev_state == 0 && state == 1){
-        //        value++;
-        //    }
+        state ^= GPIO_PIN_2;
 
-            GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, currentValue);
-        //    xQueueOverwrite(xOLEDQueue, &value);
+        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, state);
 
-        //    xSemaphoreGive(xAltMutex);
-        //}
         vTaskDelay(200 / portTICK_RATE_MS);
     }
 }
@@ -262,7 +247,12 @@ createSemaphores(void)
     xRBtnSemaphore = xSemaphoreCreateCounting(MAX_BUTTON_PRESSES, 0);
 }
 
-void vApplicationStackOverflowHook(TaskHandle_t xTask, signed char *pcTaskName)
+/*
+ * Stack overflow hook
+ * This function is triggered when a stack overflow occurs
+ */
+void
+vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 {
     UARTSend("OVERFLOW\n");
     UARTSend(pcTaskName);
