@@ -145,11 +145,11 @@ uint8_t checkButton(uint8_t btnName)
 void upButtonPush(void)
 {
     uint8_t state;
-    int16_t alt_desired;
+    int16_t alt_desired = 0;
 
     UARTSend ("Up\n");
     if(xSemaphoreTake(xAltMutex, 0/portTICK_RATE_MS) == pdPASS){ // If the altitude mutex is free, increment the altitude
-        xQueueReceive(xAltRefQueue, &alt_desired, 10); // Retrieve desired altitude data from the RTOS queue
+        xQueuePeek(xAltRefQueue, &alt_desired, 10); // Retrieve desired altitude data from the RTOS queue
         alt_desired += ALT_CHANGE;
 
         // Check upper limits of the altitude when left button is pressed
@@ -161,7 +161,6 @@ void upButtonPush(void)
         char cMessage[5];
         usnprintf(cMessage, sizeof(cMessage), "%d\n", alt_desired);
         UARTSend(cMessage);
-
         xQueueOverwrite(xAltRefQueue, &alt_desired); // Update the RTOS altitude reference queue
         xSemaphoreGive(xAltMutex); // Give altitude mutex so other mutually exclusive altitude tasks can run
     }
@@ -178,11 +177,11 @@ void upButtonPush(void)
 void downButtonPush(void)
 {
     uint8_t state;
-    int16_t alt_desired;
+    int16_t alt_desired = 0;
 
     UARTSend ("Down\n");
     if(xSemaphoreTake(xAltMutex, 0/portTICK_RATE_MS) == pdPASS){ // If the altitude mutex is free, increment the altitude
-        xQueueReceive(xAltRefQueue, &alt_desired, 10); // Retrieve desired altitude data from the RTOS queue
+        xQueuePeek(xAltRefQueue, &alt_desired, 10); // Retrieve desired altitude data from the RTOS queue
         alt_desired -= ALT_CHANGE;
 
         // Check lower limits of the altitude when left button is pressed
@@ -211,12 +210,12 @@ void downButtonPush(void)
 void leftButtonPush(void)
 {
     uint8_t state;
-    static int16_t yaw_desired = 0;
+    static int32_t yaw_desired = 0;
 
     UARTSend ("Left\n");
 
     if(xSemaphoreTake(xYawMutex, 0/portTICK_RATE_MS) == pdPASS){ // If the yaw mutex is free, decrement the yaw
-        xQueueReceive(xYawRefQueue, &yaw_desired, 10); // Retrieve desired yaw data from the RTOS queue
+        xQueuePeek(xYawRefQueue, &yaw_desired, 10); // Retrieve desired yaw data from the RTOS queue
 
         // Check upper limits of the yaw when left button is pressed
         if (yaw_desired >= MIN_YAW) {
@@ -242,12 +241,12 @@ void leftButtonPush(void)
 void rightButtonPush(void)
 {
     uint8_t state;
-    static int16_t yaw_desired = 0;
+    static int32_t yaw_desired = 0;
 
     UARTSend ("Right\n");
 
     if(xSemaphoreTake(xYawMutex, 0/portTICK_RATE_MS) == pdPASS){ // If the yaw mutex is free, increment the yaw
-        xQueueReceive(xYawRefQueue, &yaw_desired, 10); // Retrieve desired yaw data from the RTOS queue
+        xQueuePeek(xYawRefQueue, &yaw_desired, 10); // Retrieve desired yaw data from the RTOS queue
 
         // Check upper limits of the yaw if right button is pressed
         if (yaw_desired <= MAX_YAW) {
@@ -296,46 +295,41 @@ ButtonsCheck(void *pvParameters)
     // Loop forever.
     while(1)
     {
+        /*
+         * Check if any buttons have been pressed. Update button state.
+         */
         updateButtons();
-//        if(xSemaphoreTake(xAltMutex, 0/portTICK_RATE_MS) == pdPASS){
-
-            if(checkButton(UP) == PUSHED)
-            {
-                upButtonPush(); // Increment altitude by 10%
-            }
-
-            if(checkButton(DOWN) == PUSHED)
-            {
-                downButtonPush(); // Decrement altitude by 10%
-            }
-//            while(xSemaphoreGive(xAltMutex) != pdPASS){
-//                UARTSend("Couldn't give Alt Mutex\n");
-//            }
-//        }
-
-
-//        if(xSemaphoreTake(xYawMutex, 0/portTICK_RATE_MS) == pdPASS){
-            if(checkButton(LEFT) == PUSHED)
-            {
-                xSemaphoreGive(xLeftButSemaphore); // Increment the semaphore to indicate how many times the button has been pushed
-            }
-            if(checkButton(RIGHT) == PUSHED)
-            {
-                xSemaphoreGive(xRightButSemaphore); // Increment the semaphore to indicate how many times the button has been pushed
-                 // Rotate clockwise by 15 degrees
-            }
-            if (xSemaphoreTake(xLeftButSemaphore, 0/portTICK_RATE_MS) == pdPASS){ // Service task if semaphore is greater than 0
-                leftButtonPush(); // Rotate anti-clockwise by 15 degrees
-            }
-            if (xSemaphoreTake(xRightButSemaphore, 0/portTICK_RATE_MS) == pdPASS){ // Service task if semaphore is greater than 0
-                rightButtonPush(); // Rotate clockwise by 15 degrees
-            }
 
 //            while(xSemaphoreGive(xYawMutex) != pdPASS){
 //                UARTSend("Couldn't give Yaw Mutex\n");
 //            }
 //        }
 //
+        if(checkButton(UP) == PUSHED)
+        {
+            /*
+             * Call the up button handler to increase target altitude by 10%
+             */
+            upButtonPush();
+        }
+        if(checkButton(DOWN) == PUSHED)
+        {
+            /*
+             * Call the down button handler to decrease target altitude by 10%
+             */
+            downButtonPush();
+        }
+        if(checkButton(LEFT) == PUSHED)
+        {
+            xSemaphoreGive(xLBtnSemaphore); // Increment the semaphore to indicate how many times the button has been pushed
+            leftButtonPush();
+        }
+        if(checkButton(RIGHT) == PUSHED)
+        {
+            xSemaphoreGive(xRBtnSemaphore); // Increment the semaphore to indicate how many times the button has been pushed
+            rightButtonPush();
+        }
+
         if(GPIOPinRead(SW_PORT_BASE, L_SW_PIN) != L_PREV)
         {
             L_PREV = GPIOPinRead(SW_PORT_BASE, L_SW_PIN);

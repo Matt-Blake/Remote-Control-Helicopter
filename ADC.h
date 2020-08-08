@@ -33,34 +33,56 @@
 #include "queue.h"
 #include "semphr.h"
 
+/*
+ * DEFINES
+ */
+#define ADC_PERIOD          80
+#define ALTITUDE_PERIOD     200
+#define BUF_SIZE            20
 
+/*
+ * GLOAL VARIABLES
+ */
+extern QueueHandle_t xAltMeasQueue;
+//extern int8_t groundFound;
 
-// ************************* GLOBALS ******************************
-circBuf_t g_inBuffer;        // Buffer of size BUF_SIZE integers (sample values)
-#define BUF_SIZE 20
+/*
+ * PROTOTYPES
+ */
 
-extern int8_t groundFound;
-
-// *********************** PROTOTYPES *****************************
-// ****************************************************************
-// ADCIntHandler: The handler for the ADC conversion complete interrupt
-// Writes to the circular buffer.
+/*
+ * ADCIntHandler: The handler for the ADC interrupt.
+ * Reads value from PE4 and writes to the circular buffer.
+ */
 void ADCIntHandler(void);
 
-// ****************************************************************
-// initADC: Initializes Analog to Digital Conversion
+/*
+ * initADC: Initializes Analog to Digital Conversion on Pin PE4.
+ */
 void initADC(void);
 
-// ****************************************************************
-// calculateMean: Calculate the mean ADC from sensor input
+/*
+ * calculateMean: Calculate the mean value of the circular buffer.
+ * @return  Mean value of all contents of circular buffer
+ */
 int calculateMean(void);
-// @return  Mean value of all contents of circular buffer
 
-// ****************************************************************
-// percentageHeight: Calculate the percentage height (0% = Grounded, 100% = Maximum Height)
+/*
+ * percentageHeight: Calculate the percentage height (0% = Grounded, 100% = Maximum Height)
+ * @param   ground_level  - The value calculated by calculateMean() when the helicopter is started/turned on.
+ * @param   current       - The value calculated by calculateMean() at the moment percentageHeight is called.
+ * @return  percent       - The current height as a percentage of the total/maximum height
+ */
 int percentageHeight(int32_t ground_level, int32_t current);
-// @param   ground_level  - The value calculated by calculateMean() when the helicopter is started/turned on.
-// @param   current       - The value calculated by calculateMean() at the moment percentageHeight is called.
-// @return  percent       - The current height as a percentage of the total/maximum height
+
+/*
+ * Trigger_ADC: RTOS task that periodically triggers the ADC interrupt.
+ */
+void Trigger_ADC(void *pvParameters);
+
+/*
+ * Mean_ADC: RTOS task that periodically calls the calculateMean function.
+ */
+void Mean_ADC(void *pvParameters);
 
 #endif /*ADC_H*/

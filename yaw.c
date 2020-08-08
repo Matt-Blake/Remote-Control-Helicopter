@@ -1,5 +1,4 @@
-/********************************************************
- *
+/*
  * yaw.c - Initializes quadrature decoder to deal with yaw.
  * Controls the increase and decrease of yaw using button
  * based interrupts. Finds the yaw zero reference. Converts
@@ -16,23 +15,14 @@
  *           Ryan Earwaker       12832870
  *           Matt Blake          58979250
  * Last modified: 31/07/2020
-********************************************************/
+ */
 
 #include "yaw.h"
 
 /********************************************************
  * Constants
 ********************************************************/
-#define MOUNTSLOTCOUNT      112
-#define DEGREES             180
-//#define NEG_DEGREES_CIRCLE  -360
 
-#define YAW_GPIO_BASE       GPIO_PORTB_BASE //Sets the base for pins J1-03 (PB0, channel A) and J1-04 (PB1, channel B)
-#define YAW_PIN0_GPIO_PIN   GPIO_INT_PIN_0
-#define YAW_PIN1_GPIO_PIN   GPIO_INT_PIN_1
-
-#define YAW_REFERENCE_BASE  GPIO_PORTC_BASE
-#define YAW_REFERENCE_PIN   GPIO_INT_PIN_4
 
 /********************************************************
  * Globals
@@ -60,7 +50,8 @@ int32_t getReferenceYaw(void)
  * Interrupt for to check if the helicopter has found the
  * zero yaw reference.
 ********************************************************/
-void referenceInterrupt(void)
+void
+referenceInterrupt(void)
 {
     reference_yaw = yaw;
     g_flagFoundZeroReference = 1;
@@ -70,7 +61,8 @@ void referenceInterrupt(void)
 /********************************************************
  * Flag for having found the zero reference
 ********************************************************/
-int16_t haveFoundZeroReferenceYaw(void)
+int16_t
+haveFoundZeroReferenceYaw(void)
 {
     return g_flagFoundZeroReference;
 }
@@ -148,7 +140,7 @@ void quadratureFSMInterrupt(void)
     currentChannelReading = newChannelReading;
 
     //Check if yaw has reached its threshold values
-    //checkYawThresholds();
+    checkYawThresholds();
 }
 
 /********************************************************

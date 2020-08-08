@@ -34,32 +34,14 @@
 
 #include "pwm.h"
 
-//********************************************************
-// Function to set the freq, duty cycle of M0PWM7.
-//********************************************************
-void
-setRotorPWM (uint32_t ui32Duty, bool SET_MAIN)
-{
-    // Calculate the PWM period corresponding to the freq.
-    uint32_t ui32Period = SysCtlClockGet() / PWM_DIVIDER / PWM_START_RATE_HZ;
+// Initalise controllers
+controller_t g_alt_controller;
+controller_t g_yaw_controller;
 
-    if (SET_MAIN == true) // Set PWM freq/duty of the main rotor
-    {
-        PWMGenPeriodSet(PWM_MAIN_BASE, PWM_MAIN_GEN, ui32Period);
-        PWMPulseWidthSet(PWM_MAIN_BASE, PWM_MAIN_OUTNUM, ui32Period * ui32Duty / 100);
-    }
-    else // Set PWM freq/duty of the tail rotor
-    {
-        PWMGenPeriodSet(PWM_TAIL_BASE, PWM_TAIL_GEN, ui32Period);
-        PWMPulseWidthSet(PWM_TAIL_BASE, PWM_TAIL_OUTNUM, ui32Period * ui32Duty / 100);
-    }
-}
-
-
-//******************************************************
-// initialise PWM for the main rotor.
-// M0PWM7 (J4-05, PC5) is used for the main rotor motor
-//******************************************************
+/*
+ * initialise PWM for the main rotor.
+ * M0PWM7 (J4-05, PC5) is used for the main rotor motor
+ */
 void
 initPWM (void)
 {
@@ -106,22 +88,98 @@ initPWM (void)
 
 }
 
-//*********************************************************
-// Turns on the main rotor so a duty cycle can be passed to it
-//*********************************************************
+
+/*
+ * Function to set the freq, duty cycle of M0PWM7.
+ */
+void
+setRotorPWM (uint32_t ui32Duty, bool SET_MAIN)
+{
+    // Calculate the PWM period corresponding to the freq.
+    uint32_t ui32Period = SysCtlClockGet() / PWM_DIVIDER / PWM_START_RATE_HZ;
+
+    if (SET_MAIN == true) // Set PWM freq/duty of the main rotor
+    {
+        PWMGenPeriodSet(PWM_MAIN_BASE, PWM_MAIN_GEN, ui32Period);
+        PWMPulseWidthSet(PWM_MAIN_BASE, PWM_MAIN_OUTNUM, ui32Period * ui32Duty / 100);
+    }
+    else // Set PWM freq/duty of the tail rotor
+    {
+        PWMGenPeriodSet(PWM_TAIL_BASE, PWM_TAIL_GEN, ui32Period);
+        PWMPulseWidthSet(PWM_TAIL_BASE, PWM_TAIL_OUTNUM, ui32Period * ui32Duty / 100);
+    }
+}
+
+/*
+ * Turns on the main rotor so a duty cycle can be passed to it
+ */
 void
 turnOnMainPWM(void)
 {
     PWMOutputState(PWM_MAIN_BASE, PWM_MAIN_OUTBIT, true);
 }
 
-
-//******************************************************
-// Turns on the tail rotor so a duty cycle can be passed to it
-//******************************************************
+/*
+ * Turns on the tail rotor so a duty cycle can be passed to it
+ */
 void
 turnOnTailPWM(void)
 {
     PWMOutputState(PWM_TAIL_BASE, PWM_TAIL_OUTBIT, true);
 }
 
+/*
+ * RTOS task that controls the main rotor speed in order to reach the desired altitude.
+ */
+void
+Set_Main_Duty(void *pvParameters)
+{
+    int16_t alt_PWM = 0;
+    int16_t alt_meas = 0;
+    int16_t alt_desired = 0;
+
+    while (1)
+    {
+        if(xSemaphoreTake(xAltMutex, 0/portTICK_RATE_MS) == pdPASS){ // If the altitude mutex is free, apply the desired main rotor duty cycle
+
+            // Retrieve altitude information
+            xQueuePeek(xAltMeasQueue, &alt_meas,    10); // Retrieve measured altitude data from the RTOS queue
+            xQueuePeek(xAltRefQueue,  &alt_desired, 10); // Retrieve desired altitude data from the RTOS queue
+
+            // Set PWM duty cycle of main rotor in order to hover to the desired altitude
+            alt_PWM = getControlSignal(&g_alt_controller, alt_desired, alt_meas, false); // Use the error to calculate a PWM duty cycle for the main rotor
+            setRotorPWM(alt_PWM, 1); // Set main rotor to calculated PWM
+            //xQueueOverwrite(xAltRefQueue, &alt_desired);
+            xSemaphoreGive(xAltMutex); // Give alt mutex so other mutually exclusive altitude tasks can run
+        }
+        vTaskDelay(CONTROL_PERIOD / portTICK_RATE_MS); // Block task so lower priority tasks can run
+    }
+}
+
+/*
+ * RTOS task that controls the tail rotor speed in order to reach the desire yaw.
+ */
+void
+Set_Tail_Duty(void *pvParameters)
+{
+    int16_t yaw_PWM = 0;
+    int16_t yaw_meas = 0;
+    int16_t yaw_desired = 0;
+
+    while (1)
+    {
+        if(xSemaphoreTake(xYawMutex, 0/portTICK_RATE_MS) == pdPASS){ // If the yaw mutex is free, apply the desired tail rotor duty cycle
+
+            // Retrieve yaw information
+            yaw_meas = getYawDegrees(); // Retrieve measured yaw data
+            xQueuePeek(xYawRefQueue, &yaw_desired, 10); // Retrieve desired yaw data from the RTOS queue
+
+            // Set PWM duty cycle of tail rotor in order to spin to target yaw
+            yaw_PWM = getControlSignal(&g_yaw_controller, yaw_desired, yaw_meas, true); // Use the error to calculate a PWM duty cycle for the tail rotor
+            setRotorPWM(yaw_PWM, 0); // Set tail rotor to calculated PWM
+
+            xSemaphoreGive(xYawMutex); // Give yaw mutex so other mutually exclusive yaw tasks can run
+        }
+        vTaskDelay(CONTROL_PERIOD / portTICK_RATE_MS); // Block task so lower priority tasks can run
+    }
+}

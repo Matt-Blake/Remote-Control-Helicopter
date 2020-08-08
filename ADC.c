@@ -14,6 +14,9 @@
 
 #include "ADC.h"
 
+
+int8_t groundFound = -1;
+circBuf_t g_inBuffer;
 // ************************* GLOBALS *******************************
 //circBuf_t g_inBuffer;
 
@@ -23,27 +26,9 @@
 
 
 // ********************** ADC FUNCTIONS ****************************
-/* Handles the ADC Interrupts (Occur Every SysTick) */
-/*void
-ADCIntHandler (void *pvParameters)
-{
-    portTickType ui16LastTime;
-    uint32_t ui32TaskDelay = 100;
-    while(1){
-        ui16LastTime = xTaskGetTickCount();
-        uint32_t ulValue;                                                   // Initialise variable to be used to store ADC value
-
-        ADCSequenceDataGet(ADC0_BASE, 3, &ulValue);                         // Runs the A-D Conversion and stores the value in ulValue
-        writeCircBuf(&g_inBuffer, ulValue);                                 // Writes the ADC value to the Circular Buffer
-        //UARTSend("ADC sample.\n");
-        char cMessage[20];
-        usnprintf(cMessage, sizeof(cMessage), "%d\n", ulValue);
-        UARTSend(cMessage);
-        ADCIntClear(ADC0_BASE, 3); //clear int
-        vTaskDelayUntil(&ui16LastTime, ui32TaskDelay / portTICK_RATE_MS);
-    }
-}
-*/
+/*
+ * Handles the ADC Interrupts (Occur Every SysTick)
+ */
 void
 ADCIntHandler(void)
 {
@@ -99,4 +84,45 @@ int percentageHeight(int32_t ground_level, int32_t current)
     int32_t percent = 100 - (100 * (current - maxHeight) / (vDropADC));  // Calculates percentage
 
     return percent;                                                     // Returns percentage value
+}
+
+/*
+ * RTOS task that periodically triggers the ADC interrupt. - Aim to merge the ADC handler into this.
+ */
+void
+Trigger_ADC(void *pvParameters)
+{
+    while(1){
+        ADCProcessorTrigger(ADC0_BASE, 3);
+        vTaskDelay(ADC_PERIOD / portTICK_RATE_MS);
+    }
+}
+
+/*
+ * RTOS task that periodically calculates the average value of the circular ADC buffer.
+ */
+void
+Mean_ADC(void *pvParameters)
+{
+    char cMessage[17];
+    int32_t mean;
+    int32_t altitude;
+    int32_t ground;
+
+    while(1){
+
+        if (groundFound == 0) {
+            ground = calculateMean();
+            groundFound = 1;
+            UARTSend("GroundFound\n");
+        }else if(groundFound == 1){
+            mean = calculateMean();
+            altitude = percentageHeight(ground, mean);
+
+            usnprintf(cMessage, sizeof(cMessage), "Alt: %d\n", altitude);
+            UARTSend(cMessage);
+        }
+        xQueueOverwrite(xAltMeasQueue, &altitude);
+        vTaskDelay(ALTITUDE_PERIOD / portTICK_RATE_MS);
+    }
 }

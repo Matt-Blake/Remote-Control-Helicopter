@@ -22,6 +22,16 @@
 #include "inc/hw_memmap.h"
 #include "uart.h"
 
+#define MOUNTSLOTCOUNT      112
+#define DEGREES             180
+
+#define YAW_GPIO_BASE       GPIO_PORTB_BASE //Sets the base for pins J1-03 (PB0, channel A) and J1-04 (PB1, channel B)
+#define YAW_PIN0_GPIO_PIN   GPIO_INT_PIN_0
+#define YAW_PIN1_GPIO_PIN   GPIO_INT_PIN_1
+
+#define YAW_REFERENCE_BASE  GPIO_PORTC_BASE
+#define YAW_REFERENCE_PIN   GPIO_INT_PIN_4
+
 /* ******************************************************
  * Converts reference yaw to degrees
  * *****************************************************/
