@@ -335,7 +335,7 @@ ButtonsCheck(void *pvParameters)
 //                UARTSend("Couldn't give Yaw Mutex\n");
 //            }
 //        }
-
+//
         if(GPIOPinRead(SW_PORT_BASE, L_SW_PIN) != L_PREV)
         {
             L_PREV = GPIOPinRead(SW_PORT_BASE, L_SW_PIN);
