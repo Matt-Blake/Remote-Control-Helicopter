@@ -331,7 +331,6 @@ ButtonsCheck(void *pvParameters)
                 rightButtonPush(); // Rotate clockwise by 15 degrees
             }
 
-            rightButtonPush();
 //            while(xSemaphoreGive(xYawMutex) != pdPASS){
 //                UARTSend("Couldn't give Yaw Mutex\n");
 //            }
