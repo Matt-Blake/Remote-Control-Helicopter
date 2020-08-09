@@ -156,7 +156,6 @@ OLEDDisplay (void *pvParameters)
         usnprintf(string, sizeof(string), "Tail duty = %3d%%", tail_PWM);
         OLEDStringDraw(string, COLUMN_ZERO, ROW_THREE);
 
-
         vTaskDelay(DISPLAY_PERIOD / portTICK_RATE_MS);
     }
 }
