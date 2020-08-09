@@ -2,7 +2,7 @@
  * TODO:
  *      - Figure out what the stack sizes should be
  *      - Suss interrupts
- *
+ *      - Disable buttons but not sliders
  */
 
 // Mutexes are for shared resources
@@ -175,12 +175,15 @@ void
 findref(void)
 {
     int32_t PWM_main = 30; // place holder for now
+    int32_t hover = 10; // hover alt
 
     vTaskSuspend(MainPWM); // suspend the control system until ref is found
     vTaskSuspend(TailPWM);
     //vTaskSuspend(BtnCheck);
     if(xEventGroupGetBits(xFoundYawReference)) { // flying mode
-        setRotorPWM(0, 1);
+
+        xQueueOverwrite(xMainPWMQueue, &hover); // when the ref has been found, let the heli hover at 10%
+
         vTaskResume(MainPWM); // re enable the control system
         vTaskResume(TailPWM);
         //vTaskResume(BtnCheck);
@@ -191,10 +194,21 @@ findref(void)
 }
 
 void
-land(void)
+land(void) // should be able to stage the decent to avoid issues. may have to update the gains etc for this.
 {
-    int32_t ref = 0;
+    int32_t ref = 0; // set red to 0
+    int32_t desired_alt = 10; // set alt to 10
+    int32_t measured_alt;
+
     xQueueOverwrite(xYawDesQueue, &ref);
+
+    xQueueOverwrite(xAltDesQueue, &ref);
+
+    xQueuePeek(xAltMeasQueue, &measured_alt,    10);
+
+    if(measured_alt == 10) {
+        xQueueOverwrite(xAltDesQueue, &ref);
+    }
 }
 
 /* slider down - up, flying
@@ -211,13 +225,18 @@ FSM(void *pvParameters) {
         xQueuePeek(xFSMQueue, &state,    10);
 
         switch(state) {
-        case (1): // landing and landed
+        case (1): // fond ref and landing, disable buttons...
             UARTSend("State 1\n");
             if(!xEventGroupGetBits(xFoundYawReference)) { // if the ref has not been found yet
                 findref();
             } else { // if the ref has been found and the slider comes back to state 1, land
                 land();
             }
+
+            break;
+        case (2): // flying, allows input from buttons
+            UARTSend("State 2\n");
+            // Enable buttons..
 
             break;
         case (3): // flying, allows input from buttons
