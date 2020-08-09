@@ -150,6 +150,7 @@ void upButtonPush(void)
     UARTSend ("Up\n");
     if(xSemaphoreTake(xAltMutex, 0/portTICK_RATE_MS) == pdPASS){ // If the altitude mutex is free, increment the altitude
         xQueuePeek(xAltDesQueue, &alt_desired, 10); // Retrieve desired altitude data from the RTOS queue
+
         alt_desired += ALT_CHANGE;
 
         // Check upper limits of the altitude when left button is pressed
@@ -284,6 +285,7 @@ ButtonsCheck(void *pvParameters)
 
     portTickType ui16LastTime;
     uint32_t ui32SwitchDelay = 25;
+    uint32_t state;
     //uint8_t state = 0;
     uint16_t L_PREV = GPIOPinRead(SW_PORT_BASE, L_SW_PIN);
     uint16_t R_PREV = GPIOPinRead(SW_PORT_BASE, R_SW_PIN);
@@ -310,6 +312,7 @@ ButtonsCheck(void *pvParameters)
             /*
              * Call the up button handler to increase target altitude by 10%
              */
+
             upButtonPush();
         }
         if(checkButton(DOWN) == PUSHED)
@@ -335,20 +338,29 @@ ButtonsCheck(void *pvParameters)
             L_PREV = GPIOPinRead(SW_PORT_BASE, L_SW_PIN);
             if(L_PREV == L_SW_PIN){
                 UARTSend ("Left Switch High\n");
+                state = 1;
+
 
             }else{
                 UARTSend ("Left Switch Low\n");
+                state = 2;
             }
+
+            xQueueOverwrite(xFSMQueue, &state);
         }
         if(GPIOPinRead(SW_PORT_BASE, R_SW_PIN) != R_PREV)
         {
             R_PREV = GPIOPinRead(SW_PORT_BASE, R_SW_PIN);
             if(R_PREV == R_SW_PIN){
                 UARTSend ("Right Switch High\n");
+                state = 3;
 
             }else{
                 UARTSend ("Right Switch Low\n");
+                state = 4;
             }
+
+            xQueueOverwrite(xFSMQueue, &state);
         }
 
         // Wait for the required amount of time to check back.

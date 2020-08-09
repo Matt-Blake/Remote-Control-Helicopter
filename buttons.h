@@ -107,6 +107,7 @@ extern QueueHandle_t xAltBtnQueue;
 extern QueueHandle_t xYawBtnQueue;
 extern QueueHandle_t xAltDesQueue;
 extern QueueHandle_t xYawDesQueue;
+extern QueueHandle_t xFSMQueue;
 
 extern SemaphoreHandle_t xAltMutex;
 extern SemaphoreHandle_t xYawMutex;

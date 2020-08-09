@@ -60,6 +60,7 @@
 #define ADC_TASK_PRIORITY       7       // ADC sampling priority
 #define ALT_TASK_PRIORITY       8       // Altitude PWM priority
 #define YAW_TASK_PRIORITY       8       // Yaw PWM priority
+#define FSM_TASK_PRIORITY       8       // FSM priority
 
 #define ROW_ZERO                0       // Row zero on the OLED display
 #define ROW_ONE                 1       // Row one on the OLED display
@@ -69,6 +70,7 @@
 #define DISPLAY_SIZE            17      // Size of stirngs for the OLED display
 
 #define DISPLAY_PERIOD          200
+#define FSM_PERIOD              100
 
 #define MAX_BUTTON_PRESSES      10      // The maximum number of concurrent button presses than can be stored for servicing
 
@@ -86,11 +88,19 @@ QueueHandle_t xYawDesQueue;
 QueueHandle_t xYawRefQueue;
 QueueHandle_t xMainPWMQueue;
 QueueHandle_t xTailPWMQueue;
+QueueHandle_t xFSMQueue;
+
+TaskHandle_t MainPWM;
+TaskHandle_t TailPWM;
+TaskHandle_t BtnCheck;
 
 SemaphoreHandle_t xAltMutex;
 SemaphoreHandle_t xYawMutex;
 SemaphoreHandle_t xLBtnSemaphore;
 SemaphoreHandle_t xRBtnSemaphore;
+
+int32_t state;
+
 
 //controller_t g_alt_controller;
 //controller_t g_yaw_controller;
@@ -135,13 +145,15 @@ OLEDDisplay (void *pvParameters)
     int32_t    yaw;
     uint32_t   main_PWM;
     uint32_t   tail_PWM;
+    uint32_t   state;
 
     while(1)
     {
-        xQueuePeek(xAltMeasQueue, &altitude, 10);
+        xQueuePeek(xAltDesQueue, &altitude, 10);
         xQueuePeek(xYawMeasQueue, &yaw, 10);
         xQueuePeek(xMainPWMQueue, &main_PWM, 10);
         xQueuePeek(xTailPWMQueue, &tail_PWM, 10);
+        xQueuePeek(xFSMQueue, &state, 10);
 
         //usnprintf(cMessage0, sizeof(cMessage0), "Alt: %03d%%", data0);
         //usnprintf(cMessage1, sizeof(cMessage1), "Targ Alt: %03d%%", data1);
@@ -152,6 +164,7 @@ OLEDDisplay (void *pvParameters)
         //OLEDStringDraw(cMessage2, 0, 2);
         //OLEDStringDraw(cMessage3, 0, 3);
 
+
         usnprintf(string, sizeof(string), "Altitude  = %3d%%", altitude);
         OLEDStringDraw(string, COLUMN_ZERO, ROW_ZERO);
 
@@ -161,12 +174,68 @@ OLEDDisplay (void *pvParameters)
         usnprintf(string, sizeof(string), "Main duty = %3d%%", main_PWM);
         OLEDStringDraw(string, COLUMN_ZERO, ROW_TWO);
 
-        usnprintf(string, sizeof(string), "Tail duty = %3d%%", tail_PWM);
+        usnprintf(string, sizeof(string), "State = %d", state);
         OLEDStringDraw(string, COLUMN_ZERO, ROW_THREE);
 
 
         vTaskDelay(DISPLAY_PERIOD / portTICK_RATE_MS);
     }
+}
+
+void
+findref(void)
+{
+    int32_t PWM_main = 30;
+
+    vTaskSuspend(MainPWM); // suspend the control system until ref is found
+    vTaskSuspend(TailPWM);
+    //vTaskSuspend(BtnCheck);
+    if(haveFoundZeroReferenceYaw()) {
+        setRotorPWM(0, 1);
+        vTaskResume(MainPWM); // re enable the control system
+        vTaskResume(TailPWM);
+        //vTaskResume(BtnCheck);
+        xQueueOverwrite(xFSMQueue, &state); // put heli back into landed mode?
+
+    }else {
+        setRotorPWM(PWM_main, 1); // set the main rotor to on, the torque from the main rotor should work better than using the tail, have to test and actually see whats best
+    }
+}
+
+static void
+FSM(void *pvParameters) {
+
+
+
+    while(1)
+    {
+        xQueuePeek(xFSMQueue, &state,    10);
+        switch(state) {
+        case (1): // Landed
+            UARTSend("State 1\n");
+            break;
+        case (2): // find ref, no buttons
+            UARTSend("State 2\n");
+
+            findref();
+
+            break;
+        case (3): // flying, allows input from buttons
+            UARTSend("State 3\n");
+
+            break;
+        case (4): // land, find ref and land
+            UARTSend("State 4\n");
+
+            break;
+        default:
+            UARTSend("QD Error\n");
+        }
+
+        vTaskDelay(FSM_PERIOD / portTICK_RATE_MS);
+
+    }
+
 }
 
 /*
@@ -229,11 +298,12 @@ createTasks(void)
 {
    // xTaskCreate(BlinkLED,       "LED Task",     LED_STACK_DEPTH,        NULL,       LED_TASK_PRIORITY,      NULL);
     xTaskCreate(OLEDDisplay,    "OLED Task",    OLED_STACK_DEPTH,       NULL,       OLED_TASK_PRIORITY,     NULL);
-    xTaskCreate(ButtonsCheck,   "Btn Poll",     BTN_STACK_DEPTH,        NULL,       BTN_TASK_PRIORITY,      NULL);
-    xTaskCreate(Trigger_ADC,     "ADC Handler",  ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      NULL);
+    xTaskCreate(ButtonsCheck,   "Btn Poll",     BTN_STACK_DEPTH,        NULL,       BTN_TASK_PRIORITY,      &BtnCheck);
+    xTaskCreate(Trigger_ADC,     "ADC Handler", ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      NULL);
     xTaskCreate(Mean_ADC,       "ADC Mean",     ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      NULL);
-    xTaskCreate(Set_Main_Duty,  "Altitude PWM", ALT_STACK_DEPTH,        NULL,       ALT_TASK_PRIORITY,      NULL);
-    xTaskCreate(Set_Tail_Duty,  "Yaw PWM",      YAW_STACK_DEPTH,        NULL,       YAW_TASK_PRIORITY,      NULL);
+    xTaskCreate(Set_Main_Duty,  "Altitude PWM", ALT_STACK_DEPTH,        NULL,       ALT_TASK_PRIORITY,      &MainPWM);
+    xTaskCreate(Set_Tail_Duty,  "Yaw PWM",      YAW_STACK_DEPTH,        NULL,       YAW_TASK_PRIORITY,      &TailPWM);
+    xTaskCreate(FSM,                "FSM",      YAW_STACK_DEPTH,        NULL,       FSM_TASK_PRIORITY,      NULL);
 }
 
 /*
@@ -243,6 +313,7 @@ void
 createQueues(void)
 {
     int32_t queue_init = 0; // Value used to initalise queues
+    int32_t first_state = 1;
 
     // Create queues
     xOLEDQueue      = xQueueCreate(1, sizeof( uint32_t ) );
@@ -250,12 +321,13 @@ createQueues(void)
     xYawBtnQueue    = xQueueCreate(1, sizeof( uint32_t ) );
     xModeQueue      = xQueueCreate(1, sizeof( uint32_t ) );
     xAltMeasQueue   = xQueueCreate(1, sizeof( int32_t ) );
-    xAltDesQueue    = xQueueCreate(1, sizeof( int32_t ) );
+    xAltDesQueue    = xQueueCreate(2, sizeof( int32_t ) );
     xYawMeasQueue   = xQueueCreate(1, sizeof( int32_t ) );
     xYawDesQueue    = xQueueCreate(1, sizeof( int32_t ) );
     xYawRefQueue    = xQueueCreate(1, sizeof( int32_t ) );
     xMainPWMQueue   = xQueueCreate(1, sizeof( int32_t ) );
     xTailPWMQueue   = xQueueCreate(1, sizeof( int32_t ) );
+    xFSMQueue       = xQueueCreate(1, sizeof( int32_t ) );
 
     // Initalise queues
     xQueueOverwrite(xAltBtnQueue, &queue_init);
@@ -268,6 +340,7 @@ createQueues(void)
     xQueueOverwrite(xYawRefQueue, &queue_init);
     xQueueOverwrite(xMainPWMQueue, &queue_init);
     xQueueOverwrite(xTailPWMQueue, &queue_init);
+    xQueueOverwrite(xFSMQueue, &first_state);
 
 }
 
