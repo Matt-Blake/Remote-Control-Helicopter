@@ -27,6 +27,8 @@
 
 #define configUSE_TICK_HOOK 0
 
+#define configUSE_MUTEXES 1
+
 #define INCLUDE_vTaskPrioritySet 0
 
 #define INCLUDE_uxTaskPriorityGet 0
@@ -52,6 +54,8 @@
 #define configTICK_RATE_HZ 1000 // 1ms SysTick ticker
 
 #define configCHECK_FOR_STACK_OVERFLOW 2
+
+#define configIDLE_SHOULD_YIELD     1
 
 
 #endif /* FREERTOSCONFIG_H_ */

@@ -93,9 +93,6 @@ SemaphoreHandle_t xYawMutex;
 SemaphoreHandle_t xLBtnSemaphore;
 SemaphoreHandle_t xRBtnSemaphore;
 
-//controller_t g_alt_controller;
-//controller_t g_yaw_controller;
-
 
 //******************************************************
 // Tasks
@@ -261,7 +258,6 @@ createQueues(void)
     xQueueOverwrite(xMainPWMQueue, &queue_init);
     xQueueOverwrite(xTailPWMQueue, &queue_init);
     xQueueOverwrite(xYawSlotQueue, &queue_init);
-
 }
 
 /*

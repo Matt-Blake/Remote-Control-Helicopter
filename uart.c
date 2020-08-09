@@ -43,7 +43,6 @@
 // Global variables
 //********************************************************
 char statusStr[MAX_STR_LEN + 1];
-volatile uint8_t slowTick = false;
 
 //********************************************************
 // initialiseUSB_UART - 8 bits, 1 stop bit, no parity
