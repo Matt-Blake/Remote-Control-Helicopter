@@ -134,9 +134,9 @@ turnOnTailPWM(void)
 void
 Set_Main_Duty(void *pvParameters)
 {
-    int16_t alt_PWM = 0;
-    int16_t alt_meas = 0;
-    int16_t alt_desired = 0;
+    int32_t alt_PWM = 0;
+    int32_t alt_meas = 0;
+    int32_t alt_desired = 0;
 
     while (1)
     {
@@ -162,9 +162,9 @@ Set_Main_Duty(void *pvParameters)
 void
 Set_Tail_Duty(void *pvParameters)
 {
-    int16_t yaw_PWM = 0;
-    int16_t yaw_meas = 0;
-    int16_t yaw_desired = 0;
+    int32_t yaw_PWM = 0;
+    int32_t yaw_meas = 0;
+    int32_t yaw_desired = 0;
 
     //char cMessage[17];
 

@@ -38,6 +38,7 @@
 
 extern QueueHandle_t xYawMeasQueue;
 extern QueueHandle_t xYawRefQueue;
+extern QueueHandle_t xYawSlotQueue;
 
 
 /* ******************************************************

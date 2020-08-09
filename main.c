@@ -86,6 +86,7 @@ QueueHandle_t xYawDesQueue;
 QueueHandle_t xYawRefQueue;
 QueueHandle_t xMainPWMQueue;
 QueueHandle_t xTailPWMQueue;
+QueueHandle_t xYawSlotQueue;
 
 SemaphoreHandle_t xAltMutex;
 SemaphoreHandle_t xYawMutex;
@@ -133,8 +134,8 @@ OLEDDisplay (void *pvParameters)
     char string[DISPLAY_SIZE];
     int32_t    altitude;
     int32_t    yaw;
-    uint32_t   main_PWM;
-    uint32_t   tail_PWM;
+    int32_t   main_PWM;
+    int32_t   tail_PWM;
 
     while(1)
     {
@@ -142,15 +143,6 @@ OLEDDisplay (void *pvParameters)
         xQueuePeek(xYawMeasQueue, &yaw, 10);
         xQueuePeek(xMainPWMQueue, &main_PWM, 10);
         xQueuePeek(xTailPWMQueue, &tail_PWM, 10);
-
-        //usnprintf(cMessage0, sizeof(cMessage0), "Alt: %03d%%", data0);
-        //usnprintf(cMessage1, sizeof(cMessage1), "Targ Alt: %03d%%", data1);
-        //usnprintf(cMessage2, sizeof(cMessage2), "Alt: %03d", data2);
-        //usnprintf(cMessage3, sizeof(cMessage3), "Targ Yaw: %03d ", data3);
-        //OLEDStringDraw(cMessage0, 0, 0);
-        //OLEDStringDraw(cMessage1, 0, 1);
-        //OLEDStringDraw(cMessage2, 0, 2);
-        //OLEDStringDraw(cMessage3, 0, 3);
 
         usnprintf(string, sizeof(string), "Altitude  = %3d%%", altitude);
         OLEDStringDraw(string, COLUMN_ZERO, ROW_ZERO);
@@ -256,6 +248,7 @@ createQueues(void)
     xYawRefQueue    = xQueueCreate(1, sizeof( int32_t ) );
     xMainPWMQueue   = xQueueCreate(1, sizeof( int32_t ) );
     xTailPWMQueue   = xQueueCreate(1, sizeof( int32_t ) );
+    xYawSlotQueue   = xQueueCreate(1, sizeof( int32_t ) );
 
     // Initalise queues
     xQueueOverwrite(xAltBtnQueue, &queue_init);
@@ -268,6 +261,7 @@ createQueues(void)
     xQueueOverwrite(xYawRefQueue, &queue_init);
     xQueueOverwrite(xMainPWMQueue, &queue_init);
     xQueueOverwrite(xTailPWMQueue, &queue_init);
+    xQueueOverwrite(xYawSlotQueue, &queue_init);
 
 }
 
