@@ -30,6 +30,7 @@
 #include "task.h"
 #include "queue.h"
 #include "semphr.h"
+#include "event_groups.h"
 
 #include "pwm.h"
 #include "reset.h"
@@ -92,6 +93,8 @@ SemaphoreHandle_t xAltMutex;
 SemaphoreHandle_t xYawMutex;
 SemaphoreHandle_t xLBtnSemaphore;
 SemaphoreHandle_t xRBtnSemaphore;
+
+EventGroupHandle_t xFoundYawReference;
 
 
 //******************************************************
@@ -261,7 +264,7 @@ createQueues(void)
 }
 
 /*
- * Create all of the RTOS semaphores and mutexes.
+ * Create all of the RTOS semaphores, event flags and mutexes.
  */
 void
 createSemaphores(void)
@@ -273,6 +276,9 @@ createSemaphores(void)
     // Create semaphores to keep track of how many times the yaw buttons have been pushed
     xLBtnSemaphore = xSemaphoreCreateCounting(MAX_BUTTON_PRESSES, 0);
     xRBtnSemaphore = xSemaphoreCreateCounting(MAX_BUTTON_PRESSES, 0);
+
+    // Create event groups to act as flags
+    xFoundYawReference = xEventGroupCreate();
 }
 
 /*
