@@ -39,6 +39,7 @@
 #define YAW_REFERENCE_FLAG  (1 << 0)
 
 extern QueueHandle_t xYawMeasQueue;
+extern QueueHandle_t xYawDesQueue;
 extern QueueHandle_t xYawSlotQueue;
 
 extern EventGroupHandle_t xFoundYawReference;

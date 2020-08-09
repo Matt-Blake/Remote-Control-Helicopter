@@ -180,15 +180,14 @@ findref(void)
     vTaskSuspend(MainPWM); // suspend the control system until ref is found
     vTaskSuspend(TailPWM);
     //vTaskSuspend(BtnCheck);
-    if(xEventGroupGetBits(xFoundYawReference)) { // flying mode
 
-        xQueueOverwrite(xMainPWMQueue, &hover); // when the ref has been found, let the heli hover at 10%
-
+    if(xEventGroupGetBits(xFoundYawReference)) {
+        setRotorPWM(0, 1);
         vTaskResume(MainPWM); // re enable the control system
         vTaskResume(TailPWM);
         //vTaskResume(BtnCheck);
 
-    }else { // finding red mode
+    } else { // finding red mode
         setRotorPWM(PWM_main, 1); // set the main rotor to on, the torque from the main rotor should work better than using the tail, have to test and actually see whats best
     }
 }
@@ -318,11 +317,11 @@ createTasks(void)
    // xTaskCreate(BlinkLED,       "LED Task",     LED_STACK_DEPTH,        NULL,       LED_TASK_PRIORITY,      NULL);
     xTaskCreate(OLEDDisplay,    "OLED Task",    OLED_STACK_DEPTH,       NULL,       OLED_TASK_PRIORITY,     NULL);
     xTaskCreate(ButtonsCheck,   "Btn Poll",     BTN_STACK_DEPTH,        NULL,       BTN_TASK_PRIORITY,      &BtnCheck);
-    xTaskCreate(Trigger_ADC,     "ADC Handler", ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      NULL);
+    xTaskCreate(Trigger_ADC,    "ADC Handler",  ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      NULL);
     xTaskCreate(Mean_ADC,       "ADC Mean",     ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      NULL);
     xTaskCreate(Set_Main_Duty,  "Altitude PWM", ALT_STACK_DEPTH,        NULL,       ALT_TASK_PRIORITY,      &MainPWM);
     xTaskCreate(Set_Tail_Duty,  "Yaw PWM",      YAW_STACK_DEPTH,        NULL,       YAW_TASK_PRIORITY,      &TailPWM);
-    xTaskCreate(FSM,                "FSM",      YAW_STACK_DEPTH,        NULL,       FSM_TASK_PRIORITY,      NULL);
+    xTaskCreate(FSM,            "FSM",          YAW_STACK_DEPTH,        NULL,       FSM_TASK_PRIORITY,      NULL);
 }
 
 /*
@@ -343,7 +342,6 @@ createQueues(void)
     xAltDesQueue    = xQueueCreate(2, sizeof( int32_t ) );
     xYawMeasQueue   = xQueueCreate(1, sizeof( int32_t ) );
     xYawDesQueue    = xQueueCreate(1, sizeof( int32_t ) );
-    xYawRefQueue    = xQueueCreate(1, sizeof( int32_t ) );
     xMainPWMQueue   = xQueueCreate(1, sizeof( int32_t ) );
     xTailPWMQueue   = xQueueCreate(1, sizeof( int32_t ) );
     xFSMQueue       = xQueueCreate(1, sizeof( int32_t ) );

@@ -46,11 +46,11 @@ referenceInterrupt(void)
     int32_t referenced_desired_yaw;
 
     // Adjust yaw and desired yaw around the reference signal
-    xQueuePeek(xYawMeasQueue, &yaw)
-    xQueuePeek(xYawMeasQueue, &desired_yaw)
+    xQueuePeek(xYawMeasQueue, &yaw, 10);
+    xQueuePeek(xYawDesQueue, &desired_yaw, 10);
     referenced_desired_yaw = desired_yaw - yaw; // Adjusted desired yaw value due to reference
-    xQueueOverright(xYawMeasQueue, &queue_init);// Adjust the current yaw value to 0 (reference position)
-    xQueueOverright(xYawDesQueue,  &referenced_desired_yaw); // Store adjusted desired yaw value in queue
+    xQueueOverwrite(xYawMeasQueue, &queue_init);// Adjust the current yaw value to 0 (reference position)
+    xQueueOverwrite(xYawDesQueue,  &referenced_desired_yaw); // Store adjusted desired yaw value in queue
 
     xEventGroupSetBits(xFoundYawReference, YAW_REFERENCE_FLAG); // Set reference flag
     GPIOIntClear(YAW_REFERENCE_BASE, YAW_REFERENCE_PIN);
