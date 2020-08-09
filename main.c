@@ -100,13 +100,9 @@ SemaphoreHandle_t xYawMutex;
 SemaphoreHandle_t xLBtnSemaphore;
 SemaphoreHandle_t xRBtnSemaphore;
 
-<<<<<<< Updated upstream
 int32_t state;
 
-
-=======
 EventGroupHandle_t xFoundAltReference;
->>>>>>> Stashed changes
 EventGroupHandle_t xFoundYawReference;
 
 
