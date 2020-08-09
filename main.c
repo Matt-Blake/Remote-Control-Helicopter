@@ -39,6 +39,7 @@
 #include "ADC.h"
 #include "buttons.h"
 #include "pidController.h"
+#include "FSM.h"
 
 //******************************************************
 // Constants
@@ -75,6 +76,7 @@
 
 #define MAX_BUTTON_PRESSES      10      // The maximum number of concurrent button presses than can be stored for servicing
 
+typedef enum HELI_STATE {LANDED = 0, TAKEOFF = 1, HOVER = 2, LANDING = 3} HELI_STATE;
 /*
  * Globals
 */
@@ -172,7 +174,7 @@ OLEDDisplay (void *pvParameters)
 }
 
 void
-findref(void)
+findYawRef(void)
 {
     int32_t PWM_main = 30; // place holder for now
     int32_t hover = 10; // hover alt
@@ -187,7 +189,7 @@ findref(void)
         vTaskResume(TailPWM);
         //vTaskResume(BtnCheck);
 
-    } else { // finding red mode
+    } else { // finding ref mode
         setRotorPWM(PWM_main, 1); // set the main rotor to on, the torque from the main rotor should work better than using the tail, have to test and actually see whats best
     }
 }
@@ -195,65 +197,18 @@ findref(void)
 void
 land(void) // should be able to stage the decent to avoid issues. may have to update the gains etc for this.
 {
-    int32_t ref = 0; // set red to 0
-    int32_t desired_alt = 10; // set alt to 10
+    int32_t yaw_ref = 0; // set ref to 0
+    int32_t desired_alt = 10; // First go set desired alt to 10 to avoid overshoot
     int32_t measured_alt;
 
-    xQueueOverwrite(xYawDesQueue, &ref);
-
-    xQueueOverwrite(xAltDesQueue, &ref);
-
-    xQueuePeek(xAltMeasQueue, &measured_alt,    10);
+    xQueueOverwrite(xAltDesQueue, &desired_alt);
+    xQueueOverwrite(xYawDesQueue, &yaw_ref);
+    xQueuePeek(xAltMeasQueue, &measured_alt, 10);
 
     if(measured_alt == 10) {
-        xQueueOverwrite(xAltDesQueue, &ref);
+        desired_alt = 0;
+        xQueueOverwrite(xAltDesQueue, &desired_alt);
     }
-}
-
-/* slider down - up, flying
- * slider up - down, landing
- * slider down, landed
- *
- */
-
-static void
-FSM(void *pvParameters) {
-
-    while(1)
-    {
-        xQueuePeek(xFSMQueue, &state,    10);
-
-        switch(state) {
-        case (1): // fond ref and landing, disable buttons...
-            UARTSend("State 1\n");
-            if(!xEventGroupGetBits(xFoundYawReference)) { // if the ref has not been found yet
-                findref();
-            } else { // if the ref has been found and the slider comes back to state 1, land
-                land();
-            }
-
-            break;
-        case (2): // flying, allows input from buttons
-            UARTSend("State 2\n");
-            // Enable buttons..
-
-            break;
-        case (3): // flying, allows input from buttons
-            UARTSend("State 3\n");
-
-            break;
-        case (4): // land, find ref and land
-            UARTSend("State 4\n");
-
-            break;
-        default:
-            UARTSend("QD Error\n");
-        }
-
-        vTaskDelay(FSM_PERIOD / portTICK_RATE_MS);
-
-    }
-
 }
 
 /*
