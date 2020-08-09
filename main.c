@@ -174,39 +174,50 @@ OLEDDisplay (void *pvParameters)
 void
 findref(void)
 {
-    int32_t PWM_main = 30;
+    int32_t PWM_main = 30; // place holder for now
 
     vTaskSuspend(MainPWM); // suspend the control system until ref is found
     vTaskSuspend(TailPWM);
     //vTaskSuspend(BtnCheck);
-    if(haveFoundZeroReferenceYaw()) {
+    if(xEventGroupGetBits(xFoundYawReference)) { // flying mode
         setRotorPWM(0, 1);
         vTaskResume(MainPWM); // re enable the control system
         vTaskResume(TailPWM);
         //vTaskResume(BtnCheck);
-        xQueueOverwrite(xFSMQueue, &state); // put heli back into landed mode?
 
-    }else {
+    }else { // finding red mode
         setRotorPWM(PWM_main, 1); // set the main rotor to on, the torque from the main rotor should work better than using the tail, have to test and actually see whats best
     }
 }
 
+void
+land(void)
+{
+    int32_t ref = 0;
+    xQueueOverwrite(xYawDesQueue, &ref);
+}
+
+/* slider down - up, flying
+ * slider up - down, landing
+ * slider down, landed
+ *
+ */
+
 static void
 FSM(void *pvParameters) {
-
-
 
     while(1)
     {
         xQueuePeek(xFSMQueue, &state,    10);
-        switch(state) {
-        case (1): // Landed
-            UARTSend("State 1\n");
-            break;
-        case (2): // find ref, no buttons
-            UARTSend("State 2\n");
 
-            findref();
+        switch(state) {
+        case (1): // landing and landed
+            UARTSend("State 1\n");
+            if(!xEventGroupGetBits(xFoundYawReference)) { // if the ref has not been found yet
+                findref();
+            } else { // if the ref has been found and the slider comes back to state 1, land
+                land();
+            }
 
             break;
         case (3): // flying, allows input from buttons
