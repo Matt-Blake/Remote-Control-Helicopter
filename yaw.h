@@ -36,6 +36,7 @@
 
 #define YAW_REFERENCE_BASE  GPIO_PORTC_BASE
 #define YAW_REFERENCE_PIN   GPIO_INT_PIN_4
+#define YAW_REFERENCE_FLAG  (1 << 0)
 
 extern QueueHandle_t xYawMeasQueue;
 extern QueueHandle_t xYawRefQueue;

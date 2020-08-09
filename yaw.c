@@ -45,7 +45,7 @@ referenceInterrupt(void)
     xQueuePeek(xYawMeasQueue, &yaw, 10);// Read the current yaw value
     xQueueOverwrite(xYawRefQueue, &yaw);// Store the resulting yaw measurement in the RTOS queue
 
-    xEventGroupSetBits(xFoundYawReference, (1 << 0)); // Set reference flag
+    xEventGroupSetBits(xFoundYawReference, YAW_REFERENCE_FLAG); // Set reference flag
     GPIOIntClear(YAW_REFERENCE_BASE, YAW_REFERENCE_PIN);
 }
 
