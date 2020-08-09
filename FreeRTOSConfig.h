@@ -57,5 +57,7 @@
 
 #define configIDLE_SHOULD_YIELD     1
 
+#define configSUPPORT_DYNAMIC_ALLOCATION 1
+
 
 #endif /* FREERTOSCONFIG_H_ */

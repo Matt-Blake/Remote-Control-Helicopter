@@ -86,7 +86,6 @@ QueueHandle_t xAltMeasQueue;
 QueueHandle_t xAltDesQueue;
 QueueHandle_t xYawMeasQueue;
 QueueHandle_t xYawDesQueue;
-QueueHandle_t xYawRefQueue;
 QueueHandle_t xMainPWMQueue;
 QueueHandle_t xTailPWMQueue;
 QueueHandle_t xFSMQueue;
@@ -101,9 +100,13 @@ SemaphoreHandle_t xYawMutex;
 SemaphoreHandle_t xLBtnSemaphore;
 SemaphoreHandle_t xRBtnSemaphore;
 
+<<<<<<< Updated upstream
 int32_t state;
 
 
+=======
+EventGroupHandle_t xFoundAltReference;
+>>>>>>> Stashed changes
 EventGroupHandle_t xFoundYawReference;
 
 
@@ -328,7 +331,6 @@ createQueues(void)
     xQueueOverwrite(xAltDesQueue, &queue_init);
     xQueueOverwrite(xYawMeasQueue, &queue_init);
     xQueueOverwrite(xYawDesQueue, &queue_init);
-    xQueueOverwrite(xYawRefQueue, &queue_init);
     xQueueOverwrite(xMainPWMQueue, &queue_init);
     xQueueOverwrite(xTailPWMQueue, &queue_init);
     xQueueOverwrite(xFSMQueue, &first_state);
@@ -336,11 +338,13 @@ createQueues(void)
 }
 
 /*
- * Create all of the RTOS semaphores, event flags and mutexes.
+ * Create all of the RTOS semaphores, event groups and mutexes.
  */
 void
 createSemaphores(void)
 {
+    int event_init = 0; //  Value used to initalise event groups
+
     // Create mutexs to avoid race conditions with the altitude and yaw values
     xAltMutex = xSemaphoreCreateMutex();
     xYawMutex = xSemaphoreCreateMutex();
@@ -350,7 +354,12 @@ createSemaphores(void)
     xRBtnSemaphore = xSemaphoreCreateCounting(MAX_BUTTON_PRESSES, 0);
 
     // Create event groups to act as flags
+    xFoundAltReference = xEventGroupCreate();
     xFoundYawReference = xEventGroupCreate();
+
+    // Initalise event groups to zero
+    xEventGroupSetBits(xFoundAltReference, event_init);
+    xEventGroupSetBits(xFoundYawReference, event_init);
 }
 
 /*

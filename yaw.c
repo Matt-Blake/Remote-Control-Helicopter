@@ -34,16 +34,23 @@ enum STATE_QUADRATURE {STATE_00 = 0, STATE_01 = 1, STATE_10 = 2, STATE_11 = 3};
 
 
 /********************************************************
- * Interrupt for to check if the helicopter has found the
- * zero yaw reference.
+ * Interrupt which is triggered if the helicopter has
+ * found the zero yaw reference.
 ********************************************************/
 void
 referenceInterrupt(void)
 {
+    int32_t queue_init = 0;
     int32_t yaw;
+    int32_t desired_yaw;
+    int32_t referenced_desired_yaw;
 
-    xQueuePeek(xYawMeasQueue, &yaw, 10);// Read the current yaw value
-    xQueueOverwrite(xYawRefQueue, &yaw);// Store the resulting yaw measurement in the RTOS queue
+    // Adjust yaw and desired yaw around the reference signal
+    xQueuePeek(xYawMeasQueue, &yaw)
+    xQueuePeek(xYawMeasQueue, &desired_yaw)
+    referenced_desired_yaw = desired_yaw - yaw; // Adjusted desired yaw value due to reference
+    xQueueOverright(xYawMeasQueue, &queue_init);// Adjust the current yaw value to 0 (reference position)
+    xQueueOverright(xYawDesQueue,  &referenced_desired_yaw); // Store adjusted desired yaw value in queue
 
     xEventGroupSetBits(xFoundYawReference, YAW_REFERENCE_FLAG); // Set reference flag
     GPIOIntClear(YAW_REFERENCE_BASE, YAW_REFERENCE_PIN);
@@ -148,7 +155,6 @@ void initReferenceYaw(void)
 {
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOC);
 
-    // YAW_GPIO_BASE holds the value for Port B base
     GPIOIntRegister(YAW_REFERENCE_BASE, referenceInterrupt);
 
     GPIOPinTypeGPIOInput(YAW_REFERENCE_BASE, YAW_REFERENCE_PIN);

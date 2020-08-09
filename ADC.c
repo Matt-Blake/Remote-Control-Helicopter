@@ -15,10 +15,6 @@
 #include "ADC.h"
 
 
-int8_t groundFound = -1;
-circBuf_t g_inBuffer;
-
-
 // ********************** ADC FUNCTIONS ****************************
 /*
  * Handles the ADC Interrupts (Occur Every SysTick)
@@ -27,11 +23,13 @@ void
 ADCIntHandler(void)
 {
     uint32_t ulValue;                                                   // Initialise variable to be used to store ADC value
-
-    if (g_inBuffer.windex == 19 && groundFound == -1) {
-        groundFound = 0;
+    uint32_t XD;
+    XD = xEventGroupGetBits(xFoundAltReference);
+    if ((g_inBuffer.windex) == 19 && (xEventGroupGetBits(xFoundAltReference) == GROUND_NOT_FOUND)) {
+        xEventGroupSetBits(xFoundAltReference, GROUND_BUFFER_FULL);      // Set flag indicating the buffer is full and can now be averaged
         UARTSend("Buff_Full\n");
     }
+    XD = GROUND_NOT_FOUND;
     ADCSequenceDataGet(ADC0_BASE, 3, &ulValue);                         // Runs the A-D Conversion and stores the value in ulValue
     writeCircBuf(&g_inBuffer, ulValue);                                 // Writes the ADC value to the Circular Buffer
     ADCIntClear(ADC0_BASE, 3);                                          // Clears the interrupt
@@ -103,22 +101,24 @@ Mean_ADC(void *pvParameters)
     char cMessage[17];
     int32_t mean;
     int32_t altitude;
-    int32_t ground;
+    static int32_t ground;
+    int32_t XD;
 
     while(1){
 
-        if (groundFound == 0) {
+        if (xEventGroupGetBits(xFoundAltReference) == GROUND_BUFFER_FULL) {
             ground = calculateMean();
-            groundFound = 1;
+            xEventGroupSetBits(xFoundAltReference, GROUND_FOUND); // Set flag indicating that the ground reference has been set
             UARTSend("GroundFound\n");
-        }else if(groundFound == 1){
+        } else if(xEventGroupGetBits(xFoundAltReference) == GROUND_FOUND){
             mean = calculateMean();
             altitude = percentageHeight(ground, mean);
-
             usnprintf(cMessage, sizeof(cMessage), "Alt: %d\n", altitude);
             UARTSend(cMessage);
         }
+        XD = xEventGroupGetBits(xFoundAltReference);
         xQueueOverwrite(xAltMeasQueue, &altitude);
+        XD = GROUND_FOUND;
         vTaskDelay(ALTITUDE_PERIOD / portTICK_RATE_MS);
     }
 }
