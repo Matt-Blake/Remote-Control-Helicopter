@@ -30,6 +30,7 @@
 #include "task.h"
 #include "queue.h"
 #include "semphr.h"
+#include "event_groups.h"
 
 #include "pwm.h"
 #include "reset.h"
@@ -89,6 +90,7 @@ QueueHandle_t xYawRefQueue;
 QueueHandle_t xMainPWMQueue;
 QueueHandle_t xTailPWMQueue;
 QueueHandle_t xFSMQueue;
+QueueHandle_t xYawSlotQueue;
 
 TaskHandle_t MainPWM;
 TaskHandle_t TailPWM;
@@ -102,8 +104,7 @@ SemaphoreHandle_t xRBtnSemaphore;
 int32_t state;
 
 
-//controller_t g_alt_controller;
-//controller_t g_yaw_controller;
+EventGroupHandle_t xFoundYawReference;
 
 
 //******************************************************
@@ -155,16 +156,6 @@ OLEDDisplay (void *pvParameters)
         xQueuePeek(xTailPWMQueue, &tail_PWM, 10);
         xQueuePeek(xFSMQueue, &state, 10);
 
-        //usnprintf(cMessage0, sizeof(cMessage0), "Alt: %03d%%", data0);
-        //usnprintf(cMessage1, sizeof(cMessage1), "Targ Alt: %03d%%", data1);
-        //usnprintf(cMessage2, sizeof(cMessage2), "Alt: %03d", data2);
-        //usnprintf(cMessage3, sizeof(cMessage3), "Targ Yaw: %03d ", data3);
-        //OLEDStringDraw(cMessage0, 0, 0);
-        //OLEDStringDraw(cMessage1, 0, 1);
-        //OLEDStringDraw(cMessage2, 0, 2);
-        //OLEDStringDraw(cMessage3, 0, 3);
-
-
         usnprintf(string, sizeof(string), "Altitude  = %3d%%", altitude);
         OLEDStringDraw(string, COLUMN_ZERO, ROW_ZERO);
 
@@ -176,7 +167,6 @@ OLEDDisplay (void *pvParameters)
 
         usnprintf(string, sizeof(string), "State = %d", state);
         OLEDStringDraw(string, COLUMN_ZERO, ROW_THREE);
-
 
         vTaskDelay(DISPLAY_PERIOD / portTICK_RATE_MS);
     }
@@ -328,6 +318,7 @@ createQueues(void)
     xMainPWMQueue   = xQueueCreate(1, sizeof( int32_t ) );
     xTailPWMQueue   = xQueueCreate(1, sizeof( int32_t ) );
     xFSMQueue       = xQueueCreate(1, sizeof( int32_t ) );
+    xYawSlotQueue   = xQueueCreate(1, sizeof( int32_t ) );
 
     // Initalise queues
     xQueueOverwrite(xAltBtnQueue, &queue_init);
@@ -341,11 +332,11 @@ createQueues(void)
     xQueueOverwrite(xMainPWMQueue, &queue_init);
     xQueueOverwrite(xTailPWMQueue, &queue_init);
     xQueueOverwrite(xFSMQueue, &first_state);
-
+    xQueueOverwrite(xYawSlotQueue, &queue_init);
 }
 
 /*
- * Create all of the RTOS semaphores and mutexes.
+ * Create all of the RTOS semaphores, event flags and mutexes.
  */
 void
 createSemaphores(void)
@@ -357,6 +348,9 @@ createSemaphores(void)
     // Create semaphores to keep track of how many times the yaw buttons have been pushed
     xLBtnSemaphore = xSemaphoreCreateCounting(MAX_BUTTON_PRESSES, 0);
     xRBtnSemaphore = xSemaphoreCreateCounting(MAX_BUTTON_PRESSES, 0);
+
+    // Create event groups to act as flags
+    xFoundYawReference = xEventGroupCreate();
 }
 
 /*

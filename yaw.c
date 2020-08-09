@@ -29,7 +29,6 @@
 ********************************************************/
 
 static int32_t currentChannelReading;
-static int16_t g_flagFoundZeroReference;
 
 enum STATE_QUADRATURE {STATE_00 = 0, STATE_01 = 1, STATE_10 = 2, STATE_11 = 3};
 
@@ -45,17 +44,9 @@ referenceInterrupt(void)
 
     xQueuePeek(xYawMeasQueue, &yaw, 10);// Read the current yaw value
     xQueueOverwrite(xYawRefQueue, &yaw);// Store the resulting yaw measurement in the RTOS queue
-    g_flagFoundZeroReference = 1;
-    GPIOIntClear(YAW_REFERENCE_BASE, YAW_REFERENCE_PIN);
-}
 
-/********************************************************
- * Flag for having found the zero reference
-********************************************************/
-int16_t
-haveFoundZeroReferenceYaw(void)
-{
-    return g_flagFoundZeroReference;
+    xEventGroupSetBits(xFoundYawReference, YAW_REFERENCE_FLAG); // Set reference flag
+    GPIOIntClear(YAW_REFERENCE_BASE, YAW_REFERENCE_PIN);
 }
 
 /********************************************************
@@ -66,19 +57,21 @@ haveFoundZeroReferenceYaw(void)
 void checkYawThresholds(void)
 {
     int32_t yaw;
+    int32_t yaw_slot;
 
     xQueuePeek(xYawMeasQueue, &yaw, 10);// Read the current yaw value
 
-    //Set yaw to -180 degrees if the current reading is 179 degrees
-    if (yaw >= MAX_YAW_LIMIT) {
+    if (yaw >= MAX_YAW_LIMIT) { //Set yaw to -180 degrees if the current reading is 179 degrees
         yaw = MIN_YAW_LIMIT;
+        yaw_slot = MIN_YAW_LIMIT * DEGREES_HALF_CIRCLE/MOUNT_SLOT_COUNT;
         xQueueOverwrite(xYawMeasQueue, &yaw);// Store the resulting yaw measurement in the RTOS queue
+        xQueueOverwrite(xYawSlotQueue, &yaw_slot);
     }
-
-    //Set yaw to 179 degrees if the current reading is -180 degrees
-    else if (yaw <= MIN_YAW_LIMIT) {
-        yaw = MIN_YAW_LIMIT;
+    else if (yaw <= MIN_YAW_LIMIT) { //Set yaw to 179 degrees if the current reading is -180 degrees
+        yaw = MAX_YAW_LIMIT;
+        yaw_slot = MAX_YAW_LIMIT * DEGREES_HALF_CIRCLE/MOUNT_SLOT_COUNT;
         xQueueOverwrite(xYawMeasQueue, &yaw);// Store the resulting yaw measurement in the RTOS queue
+        xQueueOverwrite(xYawSlotQueue, &yaw_slot);
     }
 }
 
@@ -98,8 +91,7 @@ void quadratureFSMInterrupt(void)
     // Bit shift the old reading and combine with new reading. Creates a 4-bit code unique to each state.
     uint8_t state_code = currentChannelReading << 2 | newChannelReading;
 
-    xQueuePeek(xYawMeasQueue, &yaw, 10);// Read the previous yaw value
-    yaw_slot = yaw * DEGREES_HALF_CIRCLE / MOUNT_SLOT_COUNT; // Convert the yaw measurement from degrees
+    xQueuePeek(xYawSlotQueue, &yaw_slot, 10);; // Get the current number of slots traveled
 
     switch (state_code){
         case (0b0010):
@@ -143,7 +135,8 @@ void quadratureFSMInterrupt(void)
 
     // Calculate yaw in degrees and store the results
     yaw = yaw_slot * MOUNT_SLOT_COUNT/DEGREES_HALF_CIRCLE; // Convert to degrees
-    xQueueOverwrite(xYawMeasQueue, &yaw);// Store the resulting yaw measurement in the RTOS queue
+    xQueueOverwrite(xYawSlotQueue, &yaw_slot); // Store the current number of slots traveled in the RTOS queue
+    xQueueOverwrite(xYawMeasQueue, &yaw); // Store the resulting yaw measurement in the RTOS queue
     checkYawThresholds(); //Check if yaw has reached its threshold values
 
 }
@@ -160,8 +153,7 @@ void initReferenceYaw(void)
 
     GPIOPinTypeGPIOInput(YAW_REFERENCE_BASE, YAW_REFERENCE_PIN);
 
-    GPIOIntTypeSet(YAW_REFERENCE_BASE, YAW_REFERENCE_PIN,
-    GPIO_FALLING_EDGE);
+    GPIOIntTypeSet(YAW_REFERENCE_BASE, YAW_REFERENCE_PIN, GPIO_FALLING_EDGE);
 
     GPIOIntEnable(YAW_REFERENCE_BASE, YAW_REFERENCE_PIN);
 }
@@ -191,14 +183,11 @@ void initQuadrature(void)
     YAW_PIN0_GPIO_PIN | YAW_PIN1_GPIO_PIN);
     */
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
-        GPIOPinTypeQEI(YAW_GPIO_BASE, YAW_PIN0_GPIO_PIN | YAW_PIN1_GPIO_PIN);      // Sets pin types to be Quad Decoding pins (Just makes Phase B HIGH = 2 instead of 1)
+    GPIOPinTypeQEI(YAW_GPIO_BASE, YAW_PIN0_GPIO_PIN | YAW_PIN1_GPIO_PIN);    // Sets pin types to be Quad Decoding pins (Just makes Phase B HIGH = 2 instead of 1)
 
-        GPIOIntRegister(YAW_GPIO_BASE, quadratureFSMInterrupt);                  // Sets QDIntHandler to be function to handle interrupt
-        GPIOIntTypeSet(YAW_GPIO_BASE, YAW_PIN0_GPIO_PIN,                 // Sets Phase A interrupt on both rising and falling edges
-                       GPIO_BOTH_EDGES);
-        GPIOIntTypeSet(YAW_GPIO_BASE, YAW_PIN1_GPIO_PIN,                 // Sets Phase B interrupt on both rising and falling edges
-                       GPIO_BOTH_EDGES);
-        GPIOIntEnable(YAW_GPIO_BASE, YAW_PIN0_GPIO_PIN                   // Enables interrupts
-                      | YAW_PIN1_GPIO_PIN);
+    GPIOIntRegister(YAW_GPIO_BASE, quadratureFSMInterrupt);                  // Sets QDIntHandler to be function to handle interrupt
+    GPIOIntTypeSet(YAW_GPIO_BASE, YAW_PIN0_GPIO_PIN, GPIO_BOTH_EDGES);       // Sets Phase A interrupt on both rising and falling edges
+    GPIOIntTypeSet(YAW_GPIO_BASE, YAW_PIN1_GPIO_PIN, GPIO_BOTH_EDGES);       // Sets Phase B interrupt on both rising and falling edges
+    GPIOIntEnable(YAW_GPIO_BASE, YAW_PIN0_GPIO_PIN|YAW_PIN1_GPIO_PIN);       // Enables interrupts
 
 }

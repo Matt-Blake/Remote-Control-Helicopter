@@ -23,6 +23,7 @@
 #include "uart.h"
 #include "FreeRTOS.h"
 #include "queue.h"
+#include "event_groups.h"
 
 #define MOUNT_SLOT_COUNT    112                         // The number of slots in the helirig mount
 #define DEGREES_HALF_CIRCLE 180                         // The number of degrees in a half circle
@@ -35,15 +36,14 @@
 
 #define YAW_REFERENCE_BASE  GPIO_PORTC_BASE
 #define YAW_REFERENCE_PIN   GPIO_INT_PIN_4
+#define YAW_REFERENCE_FLAG  (1 << 0)
 
 extern QueueHandle_t xYawMeasQueue;
 extern QueueHandle_t xYawRefQueue;
+extern QueueHandle_t xYawSlotQueue;
 
+extern EventGroupHandle_t xFoundYawReference;
 
-/* ******************************************************
- * Flag for having found the zero reference
- * *****************************************************/
-int16_t haveFoundZeroReferenceYaw(void);
 
 /* ******************************************************
  * Initialization of the GPIO peripherals and interrupts
