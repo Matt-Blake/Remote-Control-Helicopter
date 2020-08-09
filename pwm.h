@@ -96,8 +96,11 @@ extern SemaphoreHandle_t xAltMutex;
 extern SemaphoreHandle_t xYawMutex;
 
 extern QueueHandle_t xAltMeasQueue;
-extern QueueHandle_t xAltRefQueue;
-extern QueueHandle_t xYawRefQueue;
+extern QueueHandle_t xAltDesQueue;
+extern QueueHandle_t xYawMeasQueue;
+extern QueueHandle_t xYawDesQueue;
+extern QueueHandle_t xMainPWMQueue;
+extern QueueHandle_t xTailPWMQueue;
 
  /* ******************************************************
  * Function to set the freq, duty cycle of M0PWM7.

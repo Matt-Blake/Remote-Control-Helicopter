@@ -39,6 +39,8 @@
 #define ADC_PERIOD          80
 #define ALTITUDE_PERIOD     200
 #define BUF_SIZE            20
+#define SAMPLE_RATE_HZ      200
+#define VOLTAGE_DROP_ADC    1241    // Voltage drop between ground and maximum height
 
 /*
  * GLOAL VARIABLES

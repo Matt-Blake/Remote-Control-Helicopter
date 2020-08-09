@@ -17,12 +17,6 @@
 
 int8_t groundFound = -1;
 circBuf_t g_inBuffer;
-// ************************* GLOBALS *******************************
-//circBuf_t g_inBuffer;
-
-// ** Analog-Digital Conversion ***********************************
-//#define BUF_SIZE 20
-#define SAMPLE_RATE_HZ 200
 
 
 // ********************** ADC FUNCTIONS ****************************
@@ -76,12 +70,14 @@ int32_t calculateMean(void)
 }
 
 /* Calculates the altitude as a percentage of the maximum height */
-int percentageHeight(int32_t ground_level, int32_t current)
+int32_t
+percentageHeight(int32_t ground_level, int32_t current)
 {
-    int16_t vDropADC = 1275;                                            // Voltage drop between ground and maximum height - This value is accurate for the emulator
-    //int16_t vDropADC = 4096;
-    int32_t maxHeight = ground_level - vDropADC;                        // ADC value at maximum height
-    int32_t percent = 100 - (100 * (current - maxHeight) / (vDropADC));  // Calculates percentage
+    int32_t maxHeight;
+    int32_t percent;
+
+    maxHeight = ground_level - VOLTAGE_DROP_ADC;                        // ADC value at maximum height
+    percent = 100 - (100 * (current - maxHeight) / (VOLTAGE_DROP_ADC));  // Calculates percentage
 
     return percent;                                                     // Returns percentage value
 }

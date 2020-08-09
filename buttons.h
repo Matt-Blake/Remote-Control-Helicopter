@@ -96,8 +96,8 @@ enum btnStates {RELEASED = 0, PUSHED, NO_CHANGE};
 #define MAX_ALT             100                         // The maximum altitude (percentage)
 #define MIN_ALT             0                           // The minimum altitude (percentage)
 #define YAW_CHANGE          15                          // The yaw change on button press (degrees)
-#define MAX_YAW             164                         // The maximum yaw (degrees)
-#define MIN_YAW             -165                        // The minimum yaw (degrees)
+#define MAX_YAW             164                         // The maximum yaw (degrees) before increment
+#define MIN_YAW             -165                        // The minimum yaw (degrees) before increment
 #define DEGREES_CIRCLE      360                         // The number of degrees in a circle
 
 /* ******************************************************
@@ -105,8 +105,8 @@ enum btnStates {RELEASED = 0, PUSHED, NO_CHANGE};
  * *****************************************************/
 extern QueueHandle_t xAltBtnQueue;
 extern QueueHandle_t xYawBtnQueue;
-extern QueueHandle_t xAltRefQueue;
-extern QueueHandle_t xYawRefQueue;
+extern QueueHandle_t xAltDesQueue;
+extern QueueHandle_t xYawDesQueue;
 
 extern SemaphoreHandle_t xAltMutex;
 extern SemaphoreHandle_t xYawMutex;

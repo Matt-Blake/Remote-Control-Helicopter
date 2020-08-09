@@ -61,8 +61,12 @@
 #define ALT_TASK_PRIORITY       8       // Altitude PWM priority
 #define YAW_TASK_PRIORITY       8       // Yaw PWM priority
 
-
-#define CONTROL_DIVISOR         1       // Divisor used to achieve certain gains without the use of floating point numbers
+#define ROW_ZERO                0       // Row zero on the OLED display
+#define ROW_ONE                 1       // Row one on the OLED display
+#define ROW_TWO                 2       // Row two on the OLED display
+#define ROW_THREE               3       // Row thre on the OLED display
+#define COLUMN_ZERO             0       // Column zero on the OLED display
+#define DISPLAY_SIZE            17      // Size of stirngs for the OLED display
 
 #define DISPLAY_PERIOD          200
 
@@ -76,8 +80,12 @@ QueueHandle_t xAltBtnQueue;
 QueueHandle_t xYawBtnQueue;
 QueueHandle_t xModeQueue;
 QueueHandle_t xAltMeasQueue;
-QueueHandle_t xAltRefQueue;
+QueueHandle_t xAltDesQueue;
+QueueHandle_t xYawMeasQueue;
+QueueHandle_t xYawDesQueue;
 QueueHandle_t xYawRefQueue;
+QueueHandle_t xMainPWMQueue;
+QueueHandle_t xTailPWMQueue;
 
 SemaphoreHandle_t xAltMutex;
 SemaphoreHandle_t xYawMutex;
@@ -116,29 +124,46 @@ BlinkLED(void *pvParameters)
 static void
 OLEDDisplay (void *pvParameters)
 {
-    char cMessage0[17];
+    /*char cMessage0[17];
     char cMessage1[17];
-    //char cMessage2[17];
+    char cMessage2[17];
     char cMessage3[17];
-    int32_t    data0;
-    int32_t    data1;
-    //uint32_t    data2;
-    int    data3;
+    */
+
+    char string[DISPLAY_SIZE];
+    int32_t    altitude;
+    int32_t    yaw;
+    uint32_t   main_PWM;
+    uint32_t   tail_PWM;
+
     while(1)
     {
-        xQueuePeek(xAltMeasQueue, &data0, 10);
-        xQueuePeek(xAltRefQueue, &data1, 10);
-        //xQueuePeek(xYawMeasQueue, &data2, 10);
-        xQueuePeek(xYawRefQueue, &data3, 10);
+        xQueuePeek(xAltMeasQueue, &altitude, 10);
+        xQueuePeek(xYawMeasQueue, &yaw, 10);
+        xQueuePeek(xMainPWMQueue, &main_PWM, 10);
+        xQueuePeek(xTailPWMQueue, &tail_PWM, 10);
 
-        usnprintf(cMessage0, sizeof(cMessage0), "Alt: %03d%%", data0);
-        usnprintf(cMessage1, sizeof(cMessage1), "Targ Alt: %03d%%", data1);
+        //usnprintf(cMessage0, sizeof(cMessage0), "Alt: %03d%%", data0);
+        //usnprintf(cMessage1, sizeof(cMessage1), "Targ Alt: %03d%%", data1);
         //usnprintf(cMessage2, sizeof(cMessage2), "Alt: %03d", data2);
-        usnprintf(cMessage3, sizeof(cMessage3), "Targ Yaw: %03d ", data3);
-        OLEDStringDraw(cMessage0, 0, 0);
-        OLEDStringDraw(cMessage1, 0, 1);
+        //usnprintf(cMessage3, sizeof(cMessage3), "Targ Yaw: %03d ", data3);
+        //OLEDStringDraw(cMessage0, 0, 0);
+        //OLEDStringDraw(cMessage1, 0, 1);
         //OLEDStringDraw(cMessage2, 0, 2);
-        OLEDStringDraw(cMessage3, 0, 3);
+        //OLEDStringDraw(cMessage3, 0, 3);
+
+        usnprintf(string, sizeof(string), "Altitude  = %3d%%", altitude);
+        OLEDStringDraw(string, COLUMN_ZERO, ROW_ZERO);
+
+        usnprintf(string, sizeof(string), "Yaw       = %3d", yaw);
+        OLEDStringDraw(string, COLUMN_ZERO, ROW_ONE);
+
+        usnprintf(string, sizeof(string), "Main duty = %3d%%", main_PWM);
+        OLEDStringDraw(string, COLUMN_ZERO, ROW_TWO);
+
+        usnprintf(string, sizeof(string), "Tail duty = %3d%%", tail_PWM);
+        OLEDStringDraw(string, COLUMN_ZERO, ROW_THREE);
+
 
         vTaskDelay(DISPLAY_PERIOD / portTICK_RATE_MS);
     }
@@ -217,19 +242,33 @@ createTasks(void)
 void
 createQueues(void)
 {
-    int32_t queue_init = 0;
+    int32_t queue_init = 0; // Value used to initalise queues
 
+    // Create queues
     xOLEDQueue      = xQueueCreate(1, sizeof( uint32_t ) );
     xAltBtnQueue    = xQueueCreate(1, sizeof( uint32_t ) );
     xYawBtnQueue    = xQueueCreate(1, sizeof( uint32_t ) );
     xModeQueue      = xQueueCreate(1, sizeof( uint32_t ) );
     xAltMeasQueue   = xQueueCreate(1, sizeof( int32_t ) );
-    xAltRefQueue    = xQueueCreate(1, sizeof( int32_t ) );
+    xAltDesQueue    = xQueueCreate(1, sizeof( int32_t ) );
+    xYawMeasQueue   = xQueueCreate(1, sizeof( int32_t ) );
+    xYawDesQueue    = xQueueCreate(1, sizeof( int32_t ) );
     xYawRefQueue    = xQueueCreate(1, sizeof( int32_t ) );
+    xMainPWMQueue   = xQueueCreate(1, sizeof( int32_t ) );
+    xTailPWMQueue   = xQueueCreate(1, sizeof( int32_t ) );
 
-    xQueueOverwrite(xAltRefQueue, &queue_init);
+    // Initalise queues
+    xQueueOverwrite(xAltBtnQueue, &queue_init);
+    xQueueOverwrite(xYawBtnQueue, &queue_init);
+    xQueueOverwrite(xModeQueue, &queue_init);
     xQueueOverwrite(xAltMeasQueue, &queue_init);
+    xQueueOverwrite(xAltDesQueue, &queue_init);
+    xQueueOverwrite(xYawMeasQueue, &queue_init);
+    xQueueOverwrite(xYawDesQueue, &queue_init);
     xQueueOverwrite(xYawRefQueue, &queue_init);
+    xQueueOverwrite(xMainPWMQueue, &queue_init);
+    xQueueOverwrite(xTailPWMQueue, &queue_init);
+
 }
 
 /*

@@ -27,24 +27,12 @@
 /********************************************************
  * Globals
 ********************************************************/
-static int32_t yaw;
+
 static int32_t currentChannelReading;
-static int32_t reference_yaw;
 static int16_t g_flagFoundZeroReference;
 
 enum STATE_QUADRATURE {STATE_00 = 0, STATE_01 = 1, STATE_10 = 2, STATE_11 = 3};
 
-/********************************************************
- * Converts reference yaw to degrees.
-********************************************************/
-int32_t getReferenceYaw(void)
-{
-    int32_t reference_yaw_degrees;
-
-    reference_yaw_degrees = reference_yaw * MOUNTSLOTCOUNT / DEGREES;
-
-    return reference_yaw_degrees;
-}
 
 /********************************************************
  * Interrupt for to check if the helicopter has found the
@@ -53,7 +41,10 @@ int32_t getReferenceYaw(void)
 void
 referenceInterrupt(void)
 {
-    reference_yaw = yaw;
+    int32_t yaw;
+
+    xQueuePeek(xYawMeasQueue, &yaw, 10);// Read the current yaw value
+    xQueueOverwrite(xYawRefQueue, &yaw);// Store the resulting yaw measurement in the RTOS queue
     g_flagFoundZeroReference = 1;
     GPIOIntClear(YAW_REFERENCE_BASE, YAW_REFERENCE_PIN);
 }
@@ -74,14 +65,20 @@ haveFoundZeroReferenceYaw(void)
 ********************************************************/
 void checkYawThresholds(void)
 {
+    int32_t yaw;
+
+    xQueuePeek(xYawMeasQueue, &yaw, 10);// Read the current yaw value
+
     //Set yaw to -180 degrees if the current reading is 179 degrees
-    if (yaw * DEGREES / MOUNTSLOTCOUNT >= (DEGREES - 1)) {
-        yaw = -1 * MOUNTSLOTCOUNT;
+    if (yaw >= MAX_YAW_LIMIT) {
+        yaw = MIN_YAW_LIMIT;
+        xQueueOverwrite(xYawMeasQueue, &yaw);// Store the resulting yaw measurement in the RTOS queue
     }
 
     //Set yaw to 179 degrees if the current reading is -180 degrees
-    else if (yaw * DEGREES / MOUNTSLOTCOUNT <= (-1 * DEGREES)) {
-        yaw = (DEGREES - 1) * MOUNTSLOTCOUNT / DEGREES;
+    else if (yaw <= MIN_YAW_LIMIT) {
+        yaw = MIN_YAW_LIMIT;
+        xQueueOverwrite(xYawMeasQueue, &yaw);// Store the resulting yaw measurement in the RTOS queue
     }
 }
 
@@ -93,44 +90,49 @@ void checkYawThresholds(void)
 ********************************************************/
 void quadratureFSMInterrupt(void)
 {
+    int32_t yaw;
+    int32_t yaw_slot;
     int32_t newChannelReading = GPIOPinRead(GPIO_PORTB_BASE, YAW_PIN0_GPIO_PIN | YAW_PIN1_GPIO_PIN);
     GPIOIntClear(YAW_GPIO_BASE, YAW_PIN0_GPIO_PIN | YAW_PIN1_GPIO_PIN);
 
     // Bit shift the old reading and combine with new reading. Creates a 4-bit code unique to each state.
     uint8_t state_code = currentChannelReading << 2 | newChannelReading;
 
+    xQueuePeek(xYawMeasQueue, &yaw, 10);// Read the previous yaw value
+    yaw_slot = yaw * DEGREES_HALF_CIRCLE / MOUNT_SLOT_COUNT; // Convert the yaw measurement from degrees
+
     switch (state_code){
         case (0b0010):
                 UARTSend("CCW\n");
-                yaw--;
+                yaw_slot--;
                 break;
         case (0b0001):
                 UARTSend("CW\n");
-                yaw++;
+                yaw_slot++;
                 break;
         case (0b0100):
                 UARTSend("CCW\n");
-                yaw--;
+                yaw_slot--;
                 break;
         case (0b0111):
                 UARTSend("CW\n");
-                yaw++;
+                yaw_slot++;
                 break;
         case (0b1101):
                 UARTSend("CCW\n");
-                yaw--;
+                yaw_slot--;
                 break;
         case (0b1110):
                 UARTSend("CW\n");
-                yaw++;
+                yaw_slot++;
                 break;
         case (0b1011):
                 UARTSend("CCW\n");
-                yaw--;
+                yaw_slot--;
                 break;
         case (0b1000):
                 UARTSend("CW\n");
-                yaw++;
+                yaw_slot++;
                 break;
         // Goes into default when a state is skipped. Usually happens when you turn too fast.
         default:
@@ -139,8 +141,11 @@ void quadratureFSMInterrupt(void)
 
     currentChannelReading = newChannelReading;
 
-    //Check if yaw has reached its threshold values
-    checkYawThresholds();
+    // Calculate yaw in degrees and store the results
+    yaw = yaw_slot * MOUNT_SLOT_COUNT/DEGREES_HALF_CIRCLE; // Convert to degrees
+    xQueueOverwrite(xYawMeasQueue, &yaw);// Store the resulting yaw measurement in the RTOS queue
+    checkYawThresholds(); //Check if yaw has reached its threshold values
+
 }
 
 /********************************************************
@@ -159,8 +164,6 @@ void initReferenceYaw(void)
     GPIO_FALLING_EDGE);
 
     GPIOIntEnable(YAW_REFERENCE_BASE, YAW_REFERENCE_PIN);
-
-    reference_yaw = 0;
 }
 
 /********************************************************
@@ -198,12 +201,4 @@ void initQuadrature(void)
         GPIOIntEnable(YAW_GPIO_BASE, YAW_PIN0_GPIO_PIN                   // Enables interrupts
                       | YAW_PIN1_GPIO_PIN);
 
-}
-
-/********************************************************
- * Converts yaw into degrees and returns yaw in degrees.
-********************************************************/
-int32_t getYawDegrees(void)
-{
-    return yaw * DEGREES / MOUNTSLOTCOUNT;
 }
