@@ -48,6 +48,7 @@
 #include "FreeRTOS.h"
 #include "queue.h"
 #include "semphr.h"
+#include "timers.h"
 
 /* ******************************************************
  * Constants
@@ -109,8 +110,11 @@ extern QueueHandle_t xAltDesQueue;
 extern QueueHandle_t xYawDesQueue;
 extern QueueHandle_t xFSMQueue;
 
+extern TimerHandle_t xTimer;
+
 extern SemaphoreHandle_t xAltMutex;
 extern SemaphoreHandle_t xYawMutex;
+extern SemaphoreHandle_t xUpBtnSemaphore;
 
 // Debounce algorithm: A state machine is associated with each button.
 // A state change occurs only after NUM_BUT_POLLS consecutive polls have

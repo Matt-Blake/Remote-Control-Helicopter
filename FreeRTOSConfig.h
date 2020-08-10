@@ -59,5 +59,12 @@
 
 #define configSUPPORT_DYNAMIC_ALLOCATION 1
 
+#define configTIMER_TASK_PRIORITY 5
+
+#define configTIMER_QUEUE_LENGTH 1
+
+#define configTIMER_TASK_STACK_DEPTH 128
+
+#define INCLUDE_xTimerPendFunctionCall 1
 
 #endif /* FREERTOSCONFIG_H_ */

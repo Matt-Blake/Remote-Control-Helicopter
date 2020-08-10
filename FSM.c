@@ -32,22 +32,56 @@ typedef enum HELI_STATE {LANDED = 0, TAKEOFF = 1, HOVER = 2, LANDING = 3, SWITCH
 void
 findYawRef(void)
 {
-    int32_t PWM_main = 30; // place holder for now
+    int32_t PWM_main = 50; // place holder for now
+    int32_t state = 2;
     //
-    //vTaskSuspend(MainPWM); // suspend the control system until ref is found
+    vTaskSuspend(MainPWM); // suspend the control system until ref is found
     vTaskSuspend(TailPWM);
     //vTaskSuspend(BtnCheck);
+    int32_t yolo = xEventGroupGetBits(xFoundYawReference);
 
     if(xEventGroupGetBits(xFoundYawReference)) {
-        setRotorPWM(0, 1);
-        //vTaskResume(MainPWM); // re enable the control system
+        vTaskResume(MainPWM); // re enable the control system
         vTaskResume(TailPWM);
+        xQueueOverwrite(xFSMQueue, &state);
+        xEventGroupClearBitsFromISR(xFoundYawReference, YAW_REFERENCE_FLAG);
         //vTaskResume(BtnCheck);
 
     } else { // finding ref mode
         setRotorPWM(PWM_main, 1); // set the main rotor to on, the torque from the main rotor should work better than using the tail, have to test and actually see whats best
     }
 }
+
+void
+land(void)
+{
+    int32_t yaw = 0;
+    int32_t mes;
+    int32_t state = 3;
+    static int32_t descent = 10;
+
+    int32_t timerID = ( uint32_t ) pvTimerGetTimerID( xTimerLand );
+
+    xQueueOverwrite(xYawDesQueue, &yaw);
+    xQueuePeek(xAltMeasQueue, &mes, 10);
+
+    if (timerID == 0){
+        xTimerStart(xTimerLand, 10); // Starts timer
+        vTimerSetTimerID( xTimerLand, (void *) 1 );
+    }else{
+        descent = descent - 2;
+    }
+
+    if (descent == 0 && mes <= 1) {
+        xQueueOverwrite(xFSMQueue, &state);
+        xTimerStop( xTimerLand, 0 );
+    }else{
+        xQueueOverwrite(xAltDesQueue, &descent);
+    }
+}
+
+
+
 /*
 int findZeroReferenceYaw(void)
 {
@@ -359,7 +393,7 @@ FSM(void *pvParameters) {
         switch(state) {
             case TAKEOFF:
                 UARTSend("State 1: Takeoff\n");
-                //take_off();
+                findYawRef();
                 break;
 
             case HOVER:
@@ -369,19 +403,19 @@ FSM(void *pvParameters) {
 
             case LANDING:
                 UARTSend("State 3: Landing\n");
-                //land();
+                land();
                 break;
 
             case LANDED:
                 UARTSend("State 4: Landed\n");
-                //landed();
+
                 break;
             case SWITCHING:
                 UARTSend("State 5: Switching States\n");
                 switch_states();
 
             default:
-                UARTSend("QD Error\n");
+                UARTSend("FSM Error\n");
         }
 
         vTaskDelay(FSM_PERIOD / portTICK_RATE_MS);

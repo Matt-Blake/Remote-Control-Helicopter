@@ -30,6 +30,7 @@
 #include "queue.h"
 #include "semphr.h"
 #include "event_groups.h"
+#include "timers.h"
 
 #include "pwm.h"
 #include "reset.h"
@@ -59,6 +60,7 @@
 #define ALT_TASK_PRIORITY       8       // Altitude PWM priority
 #define YAW_TASK_PRIORITY       8       // Yaw PWM priority
 #define FSM_TASK_PRIORITY       8       // FSM priority
+#define TIMER_TASK_PRIORITY 5
 
 #define ROW_ZERO                0       // Row zero on the OLED display
 #define ROW_ONE                 1       // Row one on the OLED display
@@ -69,8 +71,8 @@
 
 #define DISPLAY_PERIOD          200
 
-
-#define MAX_BUTTON_PRESSES      10      // The maximum number of concurrent button presses than can be stored for servicing
+#define TIMER_PERIOD            250
+#define LAND_PERIOD             1000
 
 
 //******************************************************
@@ -89,6 +91,9 @@ QueueHandle_t xTailPWMQueue;
 QueueHandle_t xFSMQueue;
 QueueHandle_t xYawSlotQueue;
 
+TimerHandle_t xTimer;
+TimerHandle_t xTimerLand;
+
 TaskHandle_t MainPWM;
 TaskHandle_t TailPWM;
 TaskHandle_t BtnCheck;
@@ -96,8 +101,9 @@ TaskHandle_t SwitchCheck;
 
 SemaphoreHandle_t xAltMutex;
 SemaphoreHandle_t xYawMutex;
-SemaphoreHandle_t xLBtnSemaphore;
-SemaphoreHandle_t xRBtnSemaphore;
+//SemaphoreHandle_t xLBtnSemaphore;
+//SemaphoreHandle_t xRBtnSemaphore;
+SemaphoreHandle_t xUpBtnSemaphore;
 
 EventGroupHandle_t xFoundAltReference;
 EventGroupHandle_t xFoundYawReference;
@@ -106,6 +112,41 @@ EventGroupHandle_t xFoundYawReference;
 //******************************************************
 // Tasks
 //******************************************************
+void vBtnTimerCallback( TimerHandle_t xTimer )
+{
+    uint32_t ulCount;
+
+    /* Optionally do something if the pxTimer parameter is NULL. */
+    configASSERT( xTimer );
+
+    /* The number of times this timer has expired is saved as the
+    timer's ID.  Obtain the count. */
+    ulCount = ( uint32_t ) pvTimerGetTimerID( xTimer );
+
+    /* Increment the count, then test to see if the timer has expired
+    ulMaxExpiryCountBeforeStopping yet. */
+    //ulCount++;
+
+    /* If the timer has expired stop it from running. */
+    if( ulCount == 1 )
+    {
+        /* Do not use a block time if calling a timer API function
+        from a timer callback function, as doing so could cause a
+        deadlock! */
+        vTimerSetTimerID( xTimer, 0 ); //( void * ) ulCount
+        xTimerStop( xTimer, 0 );
+    }
+}
+
+void vLandTimerCallback( TimerHandle_t xTimerLand )
+{
+    uint32_t ulCount;
+    UARTSend("LandTimer\n");
+
+    ulCount = ( uint32_t ) pvTimerGetTimerID( xTimerLand );
+    ulCount++;
+    vTimerSetTimerID( xTimerLand, (void *) ulCount );
+}
 
 /*
  * RTOS task that displays number of LED flashes on the OLED display. - Remove in final version.
@@ -113,37 +154,44 @@ EventGroupHandle_t xFoundYawReference;
 static void
 OLEDDisplay (void *pvParameters)
 {
-    /*char cMessage0[17];
-    char cMessage1[17];
-    char cMessage2[17];
-    char cMessage3[17];
-    */
-
     char string[DISPLAY_SIZE];
-    int32_t    altitude;
-    int32_t    yaw;
+    int32_t    des_alt;
+    int32_t    act_alt;
+
+    int32_t    des_yaw;
+    int32_t    act_yaw;
+
     uint32_t   main_PWM;
     uint32_t   tail_PWM;
+
     uint32_t   state;
+
+    char* states[4] = {"Landed", "Take-Off", "Hover", "Landing"};
 
     while(1)
     {
-        xQueuePeek(xAltDesQueue, &altitude, 10);
-        xQueuePeek(xYawMeasQueue, &yaw, 10);
+        xQueuePeek(xAltDesQueue, &des_alt, 10);
+        xQueuePeek(xAltMeasQueue, &act_alt, 10);
+
+        xQueuePeek(xYawDesQueue, &des_yaw, 10);
+        xQueuePeek(xYawMeasQueue, &act_yaw, 10);
+
         xQueuePeek(xMainPWMQueue, &main_PWM, 10);
         xQueuePeek(xTailPWMQueue, &tail_PWM, 10);
+
         xQueuePeek(xFSMQueue, &state, 10);
 
-        usnprintf(string, sizeof(string), "Altitude  = %3d%%", altitude);
+        usnprintf(string, sizeof(string), "Alt(%%) %3d|%3d", des_alt, act_alt);
         OLEDStringDraw(string, COLUMN_ZERO, ROW_ZERO);
 
-        usnprintf(string, sizeof(string), "Yaw       = %3d", yaw);
+        usnprintf(string, sizeof(string), "Yaw    %3d|%3d", des_yaw, act_yaw);
         OLEDStringDraw(string, COLUMN_ZERO, ROW_ONE);
 
-        usnprintf(string, sizeof(string), "Main duty = %3d%%", main_PWM);
+        usnprintf(string, sizeof(string), "PWM(%%) %3d|%3d", main_PWM);
         OLEDStringDraw(string, COLUMN_ZERO, ROW_TWO);
 
-        usnprintf(string, sizeof(string), "State = %d", state);
+        //usnprintf(string, sizeof(string), "State = %d", state);
+        usnprintf(string, sizeof(string), "%s     ", states[state]);
         OLEDStringDraw(string, COLUMN_ZERO, ROW_THREE);
 
         vTaskDelay(DISPLAY_PERIOD / portTICK_RATE_MS);
@@ -202,7 +250,6 @@ createTasks(void)
     xTaskCreate(Set_Main_Duty,  "Altitude PWM", ALT_STACK_DEPTH,        NULL,       ALT_TASK_PRIORITY,      &MainPWM);
     xTaskCreate(Set_Tail_Duty,  "Yaw PWM",      YAW_STACK_DEPTH,        NULL,       YAW_TASK_PRIORITY,      &TailPWM);
     xTaskCreate(FSM,            "FSM",          YAW_STACK_DEPTH,        NULL,       FSM_TASK_PRIORITY,      NULL);
-    xTaskCreate(FSM,            "FSM",          YAW_STACK_DEPTH,        NULL,       FSM_TASK_PRIORITY,      NULL);
 }
 
 /*
@@ -253,6 +300,7 @@ createSemaphores(void)
     // Create mutexs to avoid race conditions with the altitude and yaw values
     xAltMutex = xSemaphoreCreateMutex();
     xYawMutex = xSemaphoreCreateMutex();
+    xUpBtnSemaphore = xSemaphoreCreateCounting(2, 0);
 
     // Create event groups to act as flags
     xFoundAltReference = xEventGroupCreate();
@@ -261,6 +309,15 @@ createSemaphores(void)
     // Initalise event groups to zero
     xEventGroupSetBits(xFoundAltReference, event_init);
     xEventGroupSetBits(xFoundYawReference, event_init);
+}
+
+void
+createtimers(void)
+{
+    xTimer = xTimerCreate( "Button Timer", TIMER_PERIOD / portTICK_RATE_MS, pdFALSE, ( void * ) 0, vBtnTimerCallback );
+    xTimerLand = xTimerCreate( "Land Timer", LAND_PERIOD / portTICK_RATE_MS, pdTRUE, ( void * ) 0, vLandTimerCallback );
+    xTimerStart(xTimer, 10);
+    xTimerStart(xTimerLand, 10);
 }
 
 /*
@@ -282,6 +339,7 @@ main(void)
     createTasks();
     createQueues();
     createSemaphores();
+    createtimers();
     UARTSend("Starting...\n");
 
     vTaskStartScheduler();

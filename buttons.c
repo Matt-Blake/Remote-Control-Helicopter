@@ -291,6 +291,7 @@ ButtonsCheck(void *pvParameters)
     // Loop forever.
     while(1)
     {
+        inTimeLoop = ( uint32_t ) pvTimerGetTimerID( xTimer );
         /*
          * Check if any buttons have been pressed. Update button state.
          */
@@ -303,12 +304,29 @@ ButtonsCheck(void *pvParameters)
 //
         if(checkButton(UP) == PUSHED)
         {
-            /*
-             * Call the up button handler to increase target altitude by 10%
-             */
+            //xSemaphoreGive(xUPBtnSemaphore);
 
-            upButtonPush();
+            if(inTimeLoop == 0) { // check to see if the timer has ran out
+                vTimerSetTimerID(xTimer, (void *) 1);
+                //xSemaphoreGive(xUPBtnSemaphore, 10);
+                xTimerStart(xTimer, 10); // Restarts timer
+            } else {
+                xSemaphoreGive(xUpBtnSemaphore);
+            }
+
+            if (uxSemaphoreGetCount(xUpBtnSemaphore) == 1) {
+                xSemaphoreTake(xUpBtnSemaphore, 10);
+                alt = 50;
+                xQueueOverwrite(xAltDesQueue, &alt);
+            }else {
+                /*
+                 * Call the up button handler to increase target altitude by 10%
+                 */
+                upButtonPush();
+
+            }
         }
+
         if(checkButton(DOWN) == PUSHED)
         {
             /*
@@ -354,7 +372,7 @@ SwitchesCheck(void *pvParameters)
 
             }else{
                 UARTSend ("Left Switch Low\n");
-                state = 2;
+                state = 3;
             }
 
             xQueueOverwrite(xFSMQueue, &state);
@@ -364,11 +382,11 @@ SwitchesCheck(void *pvParameters)
             R_PREV = GPIOPinRead(SW_PORT_BASE, R_SW_PIN);
             if(R_PREV == R_SW_PIN){
                 UARTSend ("Right Switch High\n");
-                state = 3;
+//                state = 3;
 
             }else{
                 UARTSend ("Right Switch Low\n");
-                state = 4;
+//                state = 4;
             }
 
             xQueueOverwrite(xFSMQueue, &state);
