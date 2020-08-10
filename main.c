@@ -76,7 +76,10 @@
 #define DISPLAY_PERIOD          200
 
 #define TIMER_PERIOD            250
+<<<<<<< HEAD
 #define LAND_PERIOD             1000
+=======
+>>>>>>> branch 'master' of ssh://git@eng-git.canterbury.ac.nz/ence464-2020/group2.git
 
 
 #define MAX_BUTTON_PRESSES      10      // The maximum number of concurrent button presses than can be stored for servicing
@@ -109,7 +112,7 @@ SemaphoreHandle_t xAltMutex;
 SemaphoreHandle_t xYawMutex;
 //SemaphoreHandle_t xLBtnSemaphore;
 //SemaphoreHandle_t xRBtnSemaphore;
-SemaphoreHandle_t xUPBtnSemaphore;
+SemaphoreHandle_t xUpBtnSemaphore;
 
 int32_t state;
 
@@ -183,35 +186,40 @@ BlinkLED(void *pvParameters)
 static void
 OLEDDisplay (void *pvParameters)
 {
-    /*char cMessage0[17];
-    char cMessage1[17];
-    char cMessage2[17];
-    char cMessage3[17];
-    */
-
     char string[DISPLAY_SIZE];
-    int32_t    altitude;
-    int32_t    yaw;
+    int32_t    des_alt;
+    int32_t    act_alt;
+
+    int32_t    des_yaw;
+    int32_t    act_yaw;
+
     uint32_t   main_PWM;
     uint32_t   tail_PWM;
+
     uint32_t   state;
+
     char* states[4] = {"Landed", "Take-Off", "Hover", "Landing"};
 
     while(1)
     {
-        xQueuePeek(xAltDesQueue, &altitude, 10);
-        xQueuePeek(xYawMeasQueue, &yaw, 10);
+        xQueuePeek(xAltDesQueue, &des_alt, 10);
+        xQueuePeek(xAltMeasQueue, &act_alt, 10);
+
+        xQueuePeek(xYawDesQueue, &des_yaw, 10);
+        xQueuePeek(xYawMeasQueue, &act_yaw, 10);
+
         xQueuePeek(xMainPWMQueue, &main_PWM, 10);
         xQueuePeek(xTailPWMQueue, &tail_PWM, 10);
+
         xQueuePeek(xFSMQueue, &state, 10);
 
-        usnprintf(string, sizeof(string), "Altitude  = %3d%%", altitude);
+        usnprintf(string, sizeof(string), "Alt(%%) %3d|%3d", des_alt, act_alt);
         OLEDStringDraw(string, COLUMN_ZERO, ROW_ZERO);
 
-        usnprintf(string, sizeof(string), "Yaw       = %3d", yaw);
+        usnprintf(string, sizeof(string), "Yaw    %3d|%3d", des_yaw, act_yaw);
         OLEDStringDraw(string, COLUMN_ZERO, ROW_ONE);
 
-        usnprintf(string, sizeof(string), "Main duty = %3d%%", main_PWM);
+        usnprintf(string, sizeof(string), "PWM(%%) %3d|%3d", main_PWM);
         OLEDStringDraw(string, COLUMN_ZERO, ROW_TWO);
 
         //usnprintf(string, sizeof(string), "State = %d", state);
@@ -288,6 +296,9 @@ createTasks(void)
     xTaskCreate(Set_Main_Duty,  "Altitude PWM", ALT_STACK_DEPTH,        NULL,       ALT_TASK_PRIORITY,      &MainPWM);
     xTaskCreate(Set_Tail_Duty,  "Yaw PWM",      YAW_STACK_DEPTH,        NULL,       YAW_TASK_PRIORITY,      &TailPWM);
     xTaskCreate(FSM,            "FSM",          YAW_STACK_DEPTH,        NULL,       FSM_TASK_PRIORITY,      NULL);
+
+    //vTaskSuspend(MainPWM);
+    //vTaskSuspend(TailPWM);
 }
 
 /*
@@ -342,7 +353,7 @@ createSemaphores(void)
     // Create semaphores to keep track of how many times the yaw buttons have been pushed
     //xLBtnSemaphore = xSemaphoreCreateCounting(MAX_BUTTON_PRESSES, 0);
     //xRBtnSemaphore = xSemaphoreCreateCounting(MAX_BUTTON_PRESSES, 0);
-    xUPBtnSemaphore = xSemaphoreCreateCounting(2, 0);
+    xUpBtnSemaphore = xSemaphoreCreateCounting(2, 0);
 
     // Create event groups to act as flags
     xFoundAltReference = xEventGroupCreate();

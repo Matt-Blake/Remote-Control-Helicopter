@@ -101,7 +101,7 @@ Mean_ADC(void *pvParameters)
 {
     char cMessage[17];
     int32_t mean;
-    int32_t altitude;
+    int32_t altitude = 0;
     static int32_t ground;
     int32_t ground_flag;
     uint32_t FSM_state = 0;
