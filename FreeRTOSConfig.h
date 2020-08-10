@@ -67,4 +67,6 @@
 
 #define INCLUDE_xTimerPendFunctionCall 1
 
+#define configUSE_TIMERS 1
+
 #endif /* FREERTOSCONFIG_H_ */

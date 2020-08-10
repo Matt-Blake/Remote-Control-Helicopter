@@ -63,11 +63,9 @@ void findYawRef(void);
 void take_off(void);
 
 //****************************************************************************
-//Polls the buttons to change the altitude and yaw references
-//Keeps the helicoptor at the desired references
-//Checks the switch if it needs to change states
+// Helicopter tracks reference altitude and yaw
 //****************************************************************************
-void hover_loop(void);
+void hover(void);
 
 //****************************************************************************
 //Lands the helicoptor by rotating to the yaw reference then decrementing the
@@ -81,6 +79,14 @@ void land(void);
 //****************************************************************************
 void landed(void);
 
-void
-FSM(void *pvParameters);
+//****************************************************************************
+//Resumes tasks that have been previously suspended
+//****************************************************************************
+void switch_states(void);
+
+//****************************************************************************
+//Calls the appropriate function for the current state
+// the slider will switch between take_off and landing. The transition will be dependent on current state
+//****************************************************************************
+void FSM(void *pvParameters);
 

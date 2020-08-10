@@ -285,6 +285,8 @@ ButtonsCheck(void *pvParameters)
 
     portTickType ui16LastTaskTime;
     uint32_t ui32ButtonsDelay = 25;
+    uint32_t inTimeLoop;
+    int32_t desired_alt;
 
     ui16LastTaskTime = xTaskGetTickCount(); // Get the current tick count.
 
@@ -316,8 +318,8 @@ ButtonsCheck(void *pvParameters)
 
             if (uxSemaphoreGetCount(xUpBtnSemaphore) == 1) {
                 xSemaphoreTake(xUpBtnSemaphore, 10);
-                alt = 50;
-                xQueueOverwrite(xAltDesQueue, &alt);
+                desired_alt = 50;
+                xQueueOverwrite(xAltDesQueue, &desired_alt);
             }else {
                 /*
                  * Call the up button handler to increase target altitude by 10%
