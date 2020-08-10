@@ -60,7 +60,7 @@ void
 land(void)
 {
     int32_t yaw = 0;
-    int32_t mes;
+    int32_t meas;
     int32_t state = 3;
     static int32_t descent = 10;
 
@@ -72,7 +72,7 @@ land(void)
     //vTaskResume(SwitchCheck);
 
     xQueueOverwrite(xYawDesQueue, &yaw);
-    xQueuePeek(xAltMeasQueue, &mes, 10);
+    xQueuePeek(xAltMeasQueue, &meas, 10);
 
     if (timerID == 0){
         xTimerStart(xTimerLand, 10); // Starts timer
@@ -81,7 +81,7 @@ land(void)
         descent = descent - 2;
     }
 
-    if (descent == 0 && mes <= 1) {
+    if (descent == 0 && meas <= 1) {
         xQueueOverwrite(xFSMQueue, &state);
         xTimerStop( xTimerLand, 0 );
     }else{
@@ -133,11 +133,12 @@ FSM(void *pvParameters) {
 
             case LANDED:
                 UARTSend("State 2: Hover\n");
-                //hover_loop();
+                landed();
                 break;
 
             case FLYING:
                 UARTSend("State 3: Flying\n");
+                hover();
                 break;
 
             case LANDING:
