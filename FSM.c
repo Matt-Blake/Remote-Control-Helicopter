@@ -21,7 +21,7 @@
 
 #include "FSM.h"
 
-typedef enum HELI_STATE {LANDED = 0, TAKEOFF = 1, HOVER = 2, LANDING = 3, SWITCHING = 4} HELI_STATE;
+typedef enum HELI_STATE {LANDED = 0, TAKEOFF = 1, HOVER = 2, LANDING = 3} HELI_STATE;
 
 #define FSM_PERIOD              100
 
@@ -34,18 +34,21 @@ findYawRef(void)
 {
     int32_t PWM_main = 50; // place holder for now
     int32_t state = 2;
-    //
+    int32_t found_yaw;
+
     vTaskSuspend(MainPWM); // suspend the control system until ref is found
     vTaskSuspend(TailPWM);
-    //vTaskSuspend(BtnCheck);
-    int32_t yolo = xEventGroupGetBits(xFoundYawReference);
+    vTaskSuspend(BtnCheck);
+    //vTaskResume(SwitchCheck);
 
-    if(xEventGroupGetBits(xFoundYawReference)) {
+    found_yaw = xEventGroupGetBits(xFoundYawReference);
+
+    if(found_yaw) {
         vTaskResume(MainPWM); // re enable the control system
         vTaskResume(TailPWM);
+        vTaskResume(BtnCheck);
         xQueueOverwrite(xFSMQueue, &state);
         xEventGroupClearBitsFromISR(xFoundYawReference, YAW_REFERENCE_FLAG);
-        //vTaskResume(BtnCheck);
 
     } else { // finding ref mode
         setRotorPWM(PWM_main, 1); // set the main rotor to on, the torque from the main rotor should work better than using the tail, have to test and actually see whats best
@@ -61,6 +64,11 @@ land(void)
     static int32_t descent = 10;
 
     int32_t timerID = ( uint32_t ) pvTimerGetTimerID( xTimerLand );
+
+    vTaskSuspend(MainPWM); // Suspend the control system while landed
+    vTaskSuspend(TailPWM);
+    vTaskSuspend(BtnCheck); // Disable changes to yaw and altitude while landing
+    //vTaskResume(SwitchCheck);
 
     xQueueOverwrite(xYawDesQueue, &yaw);
     xQueuePeek(xAltMeasQueue, &mes, 10);
@@ -85,7 +93,11 @@ land(void)
 //****************************************************************************
 void hover(void)
 {
-
+    // Resume suspended tasks
+    vTaskResume(MainPWM);
+    vTaskResume(TailPWM);
+    vTaskResume(BtnCheck);
+    //vTaskResume(SwitchCheck);
 }
 
 //****************************************************************************
@@ -97,19 +109,8 @@ void landed(void)
     vTaskSuspend(MainPWM); // Suspend the control system while landed
     vTaskSuspend(TailPWM);
     vTaskSuspend(BtnCheck); // Disable changes to yaw and altitude while landed
+    //vTaskResume(SwitchCheck);
 }
-
-//****************************************************************************
-//Resumes tasks that have been previously suspended
-//****************************************************************************
-void switch_states(void)
-{
-    vTaskResume(MainPWM);
-    vTaskResume(TailPWM);
-    vTaskResume(BtnCheck);
-    vTaskResume(SwitchCheck);
-}
-
 
 //****************************************************************************
 //Calls the appropriate function for the current state
@@ -143,9 +144,6 @@ FSM(void *pvParameters) {
                 UARTSend("State 4: Landed\n");
 
                 break;
-            case SWITCHING:
-                UARTSend("State 5: Switching States\n");
-                switch_states();
 
             default:
                 UARTSend("FSM Error\n");

@@ -80,11 +80,6 @@ void land(void);
 void landed(void);
 
 //****************************************************************************
-//Resumes tasks that have been previously suspended
-//****************************************************************************
-void switch_states(void);
-
-//****************************************************************************
 //Calls the appropriate function for the current state
 // the slider will switch between take_off and landing. The transition will be dependent on current state
 //****************************************************************************
