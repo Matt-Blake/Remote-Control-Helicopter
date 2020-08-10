@@ -76,10 +76,7 @@
 #define DISPLAY_PERIOD          200
 
 #define TIMER_PERIOD            250
-<<<<<<< HEAD
 #define LAND_PERIOD             1000
-=======
->>>>>>> branch 'master' of ssh://git@eng-git.canterbury.ac.nz/ence464-2020/group2.git
 
 
 #define MAX_BUTTON_PRESSES      10      // The maximum number of concurrent button presses than can be stored for servicing

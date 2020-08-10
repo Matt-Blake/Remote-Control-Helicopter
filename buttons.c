@@ -318,11 +318,11 @@ ButtonsCheck(void *pvParameters)
                 //xSemaphoreGive(xUPBtnSemaphore, 10);
                 xTimerStart(xTimer, 10); // Restarts timer
             } else {
-                xSemaphoreGive(xUPBtnSemaphore);
+                xSemaphoreGive(xUpBtnSemaphore);
             }
 
-            if (uxSemaphoreGetCount(xUPBtnSemaphore) == 1) {
-                xSemaphoreTake(xUPBtnSemaphore, 10);
+            if (uxSemaphoreGetCount(xUpBtnSemaphore) == 1) {
+                xSemaphoreTake(xUpBtnSemaphore, 10);
                 alt = 50;
                 xQueueOverwrite(xAltDesQueue, &alt);
             }else {
