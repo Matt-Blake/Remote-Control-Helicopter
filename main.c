@@ -2,6 +2,8 @@
  * TODO:
  *      - Figure out what the stack sizes should be
  *      - Suss interrupts
+ *      - double click to do 180
+ *      - refine control
  */
 
 // Mutexes are for shared resources
