@@ -197,7 +197,7 @@ OLEDDisplay (void *pvParameters)
 
     uint32_t   state;
 
-    char* states[4] = {"Landed", "Take-Off", "Hover", "Landing"};
+    char* states[4] = {"Find Ref", "Landed", "Flying", "Landing"};
 
     while(1)
     {
