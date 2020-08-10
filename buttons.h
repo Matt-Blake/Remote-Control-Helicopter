@@ -48,6 +48,7 @@
 #include "FreeRTOS.h"
 #include "queue.h"
 #include "semphr.h"
+#include "timers.h"
 
 /* ******************************************************
  * Constants
@@ -108,6 +109,8 @@ extern QueueHandle_t xYawBtnQueue;
 extern QueueHandle_t xAltDesQueue;
 extern QueueHandle_t xYawDesQueue;
 extern QueueHandle_t xFSMQueue;
+
+extern TimerHandle_t xTimer;
 
 extern SemaphoreHandle_t xAltMutex;
 extern SemaphoreHandle_t xYawMutex;

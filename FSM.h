@@ -49,7 +49,7 @@ void findYawRef(void);
 //Finally if needed to reach height then sets altitude_PWM
 //Altitude PWM is returned
 //****************************************************************************
-int goToStartPoisition(yaw_degrees, adc_error_signal, heightVal, rotatedToReferenceYaw);
+//int goToStartPoisition(yaw_degrees, adc_error_signal, heightVal, rotatedToReferenceYaw);
 
 //****************************************************************************
 //Gets the helicopter to find the reference yaw and get to altitude of 20%

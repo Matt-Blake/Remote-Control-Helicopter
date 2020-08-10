@@ -41,6 +41,8 @@
 #include "pidController.h"
 #include "FSM.h"
 
+#include "timers.h"
+
 //******************************************************
 // Constants
 //******************************************************
@@ -63,6 +65,7 @@
 #define ALT_TASK_PRIORITY       8       // Altitude PWM priority
 #define YAW_TASK_PRIORITY       8       // Yaw PWM priority
 #define FSM_TASK_PRIORITY       8       // FSM priority
+#define TIMER_TASK_PRIORITY 5
 
 #define ROW_ZERO                0       // Row zero on the OLED display
 #define ROW_ONE                 1       // Row one on the OLED display
@@ -72,6 +75,8 @@
 #define DISPLAY_SIZE            17      // Size of stirngs for the OLED display
 
 #define DISPLAY_PERIOD          200
+
+#define TIMER_PERIOD            200
 
 
 #define MAX_BUTTON_PRESSES      10      // The maximum number of concurrent button presses than can be stored for servicing
@@ -93,6 +98,8 @@ QueueHandle_t xTailPWMQueue;
 QueueHandle_t xFSMQueue;
 QueueHandle_t xYawSlotQueue;
 
+TimerHandle_t xTimer;
+
 TaskHandle_t MainPWM;
 TaskHandle_t TailPWM;
 TaskHandle_t BtnCheck;
@@ -111,6 +118,41 @@ EventGroupHandle_t xFoundYawReference;
 //******************************************************
 // Tasks
 //******************************************************
+
+void vTimerCallback( TimerHandle_t xTimer )
+ {
+ const uint32_t ulMaxExpiryCountBeforeStopping = 1;
+ uint32_t ulCount;
+
+    /* Optionally do something if the pxTimer parameter is NULL. */
+    configASSERT( xTimer );
+
+    /* The number of times this timer has expired is saved as the
+    timer's ID.  Obtain the count. */
+    ulCount = ( uint32_t ) pvTimerGetTimerID( xTimer );
+
+    /* Increment the count, then test to see if the timer has expired
+    ulMaxExpiryCountBeforeStopping yet. */
+    ulCount++;
+
+    /* If the timer has expired 10 times then stop it from running. */
+    if( ulCount >= ulMaxExpiryCountBeforeStopping )
+    {
+        /* Do not use a block time if calling a timer API function
+        from a timer callback function, as doing so could cause a
+        deadlock! */
+        xTimerStop( xTimer, 0 );
+    }
+    else
+    {
+       /* Store the incremented count back into the timer's ID field
+       so it can be read back again the next time this software timer
+       expires. */
+       vTimerSetTimerID( xTimer, ( void * ) ulCount );
+    }
+ }
+
+
 /*
  * RTOS task that toggles LED state based off button presses
  */
@@ -303,6 +345,12 @@ createSemaphores(void)
     xEventGroupSetBits(xFoundYawReference, event_init);
 }
 
+void
+createtimers(void)
+{
+    xTimer = xTimerCreate( "Button Timer", pdMS_TO_TICKS(TIMER_PERIOD), pdFALSE, ( void * ) 0, vTimerCallback );
+}
+
 /*
  * Stack overflow hook
  * This function is triggered when a stack overflow occurs
@@ -322,6 +370,7 @@ main(void)
     createTasks();
     createQueues();
     createSemaphores();
+    createtimers();
     UARTSend("Starting...\n");
 
     vTaskStartScheduler();

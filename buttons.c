@@ -286,6 +286,7 @@ ButtonsCheck(void *pvParameters)
     portTickType ui16LastTime;
     uint32_t ui32SwitchDelay = 25;
     uint32_t state;
+    uint32_t alt;
     //uint8_t state = 0;
     uint16_t L_PREV = GPIOPinRead(SW_PORT_BASE, L_SW_PIN);
     uint16_t R_PREV = GPIOPinRead(SW_PORT_BASE, R_SW_PIN);
@@ -309,12 +310,23 @@ ButtonsCheck(void *pvParameters)
 //
         if(checkButton(UP) == PUSHED)
         {
+            xTimerStart(xTimer, 0);
             /*
              * Call the up button handler to increase target altitude by 10%
              */
 
             upButtonPush();
         }
+
+        if(checkButton(UP) == PUSHED && pvTimerGetTimerID(xTimer) != 1) { // check to see if the timer has ran out
+            alt = 50;
+            xQueueOverwrite(xAltDesQueue, &alt);
+        }
+
+        if(pvTimerGetTimerID(xTimer) == 1) {
+            xTimerReset(xTimer, 0);
+        }
+
         if(checkButton(DOWN) == PUSHED)
         {
             /*
