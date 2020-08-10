@@ -39,7 +39,7 @@ findYawRef(void)
     vTaskSuspend(MainPWM); // suspend the control system until ref is found
     vTaskSuspend(TailPWM);
     vTaskSuspend(BtnCheck);
-    //vTaskResume(SwitchCheck);
+    vTaskResume(SwitchCheck);
 
     found_yaw = xEventGroupGetBits(xFoundYawReference);
 
@@ -47,6 +47,7 @@ findYawRef(void)
         vTaskResume(MainPWM); // re enable the control system
         vTaskResume(TailPWM);
         vTaskResume(BtnCheck);
+        vTaskResume(SwitchCheck)
         xQueueOverwrite(xFSMQueue, &state);
         xEventGroupClearBitsFromISR(xFoundYawReference, YAW_REFERENCE_FLAG);
 
