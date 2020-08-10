@@ -1,4 +1,4 @@
-/* ****************************************************************
+/*
  * BUTTONS.c
  *
  * Module for the D-Pad Buttons (U/D/L/R) and Switches
@@ -17,7 +17,7 @@
  *           Ryan Earwaker       12832870
  *           Matt Blake          58979250
  * Last modified: 05/08/2020
- * ***************************************************************/
+ */
 
 #include "buttons.h"
 

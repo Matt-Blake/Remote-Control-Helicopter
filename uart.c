@@ -1,26 +1,25 @@
-//*****************************************************
-//
-// uartDemo.c - Sends information using the serial UART.
-//
-// P.J. Bones UCECE
-// last modified on 16.4.2018
-//
-// uart.c - This code is an adaptation of uartDemo.h,
-//       the code is tailored to send the information
-//       that is required for helicopter project.
-//
-// Tue am Group 1
-// Creators: Brendain Hennessy   57190084
-//           Sarah Kennelly      76389950
-//           Matt Blake          58979250
-// Last modified: 9/05/2019
-//
-// ENCE464 Assignment 1 Group 2
-// Creators: Grayson Mynott      56353855
-//           Ryan Earwaker       12832870
-//           Matt Blake          58979250
-// Last modified: 31/07/2020
-//******************************************************
+/*
+ * uartDemo.c - Sends information using the serial UART.
+ *
+ * P.J. Bones UCECE
+ * last modified on 16.4.2018
+ *
+ * uart.c - This code is an adaptation of uartDemo.h,
+ *       the code is tailored to send the information
+ *       that is required for helicopter project.
+ *
+ * Tue am Group 1
+ * Creators: Brendain Hennessy   57190084
+ *           Sarah Kennelly      76389950
+ *           Matt Blake          58979250
+ * Last modified: 9/05/2019
+ *
+ * ENCE464 Assignment 1 Group 2
+ * Creators: Grayson Mynott      56353855
+ *           Ryan Earwaker       12832870
+ *           Matt Blake          58979250
+ * Last modified: 31/07/2020
+ */
 
 #include "uart.h"
 

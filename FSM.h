@@ -1,4 +1,4 @@
-/*
+/* ****************************************************************
  * FSM.c - Helicopter finite state machine
  *
  * Tue am Group 1
@@ -17,7 +17,7 @@
  *           Ryan Earwaker       12832870
  *           Matt Blake          58979250
  * Last modified: 10/08/2020
- */
+ * ***************************************************************/
 
 #include <stdint.h>
 #include <stdbool.h>

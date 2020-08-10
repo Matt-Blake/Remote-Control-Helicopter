@@ -6,9 +6,6 @@
  *      - refine control
  */
 
-// Mutexes are for shared resources
-// Binary semaphores are used for interrupts I think
-
 //******************************************************
 // Includes
 //******************************************************

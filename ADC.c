@@ -1,4 +1,4 @@
-/* ****************************************************************
+/*
  * ADC.c
  *
  * Module for Analogue to Digital Conversion and Altitude Calculations
@@ -10,10 +10,11 @@
  * Last modified:  29.05.2019
  *
  * Based off ADCdemo1.c - P.J. Bones, UCECE, 2018
- * ***************************************************************/
+ */
 
 #include "ADC.h"
 
+circBuf_t g_inBuffer;
 
 // ********************** ADC FUNCTIONS ****************************
 /*

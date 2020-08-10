@@ -54,7 +54,7 @@
 extern QueueHandle_t xAltMeasQueue;
 extern EventGroupHandle_t xFoundAltReference;
 extern QueueHandle_t xFSMQueue;
-circBuf_t g_inBuffer;
+extern circBuf_t g_inBuffer;
 
 /*
  * PROTOTYPES

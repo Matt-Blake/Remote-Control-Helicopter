@@ -1,4 +1,4 @@
-/* ******************************************************
+/* ****************************************************************
  *
  * pwm.c - Example code which generates a single PWM
  *     output on J4-05 (M0PWM7) with duty cycle fixed and
@@ -31,7 +31,7 @@
  *           Ryan Earwaker       12832870
  *           Matt Blake          58979250
  * Last modified: 31/07/2020
- * *****************************************************/
+ * ***************************************************************/
 
 #ifndef PWMMAINGEN_H_
 #define PWMMAINGEN_H_
