@@ -61,7 +61,7 @@
 #define ALT_TASK_PRIORITY       8       // Altitude PWM priority
 #define YAW_TASK_PRIORITY       8       // Yaw PWM priority
 #define FSM_TASK_PRIORITY       8       // FSM priority
-#define TIMER_TASK_PRIORITY 5
+#define TIMER_TASK_PRIORITY     5
 
 #define ROW_ZERO                0       // Row zero on the OLED display
 #define ROW_ONE                 1       // Row one on the OLED display
