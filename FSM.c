@@ -33,7 +33,7 @@ void
 findYawRef(void)
 {
     int32_t PWM_main = 50; // place holder for now
-    int32_t state = 2;
+    int32_t state = 1;
     int32_t found_yaw;
 
     vTaskSuspend(MainPWM); // suspend the control system until ref is found
@@ -47,7 +47,7 @@ findYawRef(void)
         vTaskResume(MainPWM); // re enable the control system
         vTaskResume(TailPWM);
         vTaskResume(BtnCheck);
-        vTaskResume(SwitchCheck)
+        vTaskResume(SwitchCheck);
         xQueueOverwrite(xFSMQueue, &state);
         xEventGroupClearBitsFromISR(xFoundYawReference, YAW_REFERENCE_FLAG);
 
@@ -120,7 +120,7 @@ void landed(void)
 void
 FSM(void *pvParameters) {
 
-    uint32_t state;
+    uint32_t state = 0;
 
     while(1)
     {

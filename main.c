@@ -212,10 +212,10 @@ OLEDDisplay (void *pvParameters)
 
         xQueuePeek(xFSMQueue, &state, 10);
 
-        usnprintf(string, sizeof(string), "Alt(%%) %3d|%3d", des_alt, act_alt);
+        usnprintf(string, sizeof(string), "Alt(%%) %3d|%3d ", des_alt, act_alt);
         OLEDStringDraw(string, COLUMN_ZERO, ROW_ZERO);
 
-        usnprintf(string, sizeof(string), "Yaw    %3d|%3d", des_yaw, act_yaw);
+        usnprintf(string, sizeof(string), "Yaw   %4d|%3d ", des_yaw, act_yaw);
         OLEDStringDraw(string, COLUMN_ZERO, ROW_ONE);
 
         usnprintf(string, sizeof(string), "PWM(%%) %3d|%3d", main_PWM);
@@ -274,7 +274,7 @@ init(void)
 void
 createTasks(void)
 {
-    //Fuck blinky xTaskCreate(BlinkLED,       "LED Task",     LED_STACK_DEPTH,        NULL,       LED_TASK_PRIORITY,      NULL);
+    xTaskCreate(BlinkLED,       "LED Task",     LED_STACK_DEPTH,        NULL,       LED_TASK_PRIORITY,      NULL);
     xTaskCreate(OLEDDisplay,    "OLED Task",    OLED_STACK_DEPTH,       NULL,       OLED_TASK_PRIORITY,     NULL);
     xTaskCreate(ButtonsCheck,   "Btn Poll",     BTN_STACK_DEPTH,        NULL,       BTN_TASK_PRIORITY,      &BtnCheck);
     xTaskCreate(SwitchesCheck,  "Switch Poll",  SWITCH_STACK_DEPTH,     NULL,       SWI_TASK_PRIORITY,      &SwitchCheck);
