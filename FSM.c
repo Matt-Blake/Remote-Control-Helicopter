@@ -61,7 +61,7 @@ land(void)
 {
     int32_t yaw = 0;
     int32_t meas;
-    int32_t state = 3;
+    int32_t state = LANDING;
     static int32_t descent = 10;
 
     int32_t timerID = ( uint32_t ) pvTimerGetTimerID( xTimerLand );
@@ -82,11 +82,12 @@ land(void)
     }
 
     if (descent == 0 && meas <= 1) {
-        xQueueOverwrite(xFSMQueue, &state);
+        state = LANDED;
         xTimerStop( xTimerLand, 0 );
     }else{
         xQueueOverwrite(xAltDesQueue, &descent);
     }
+    xQueueOverwrite(xFSMQueue, &state);
 }
 
 //****************************************************************************
