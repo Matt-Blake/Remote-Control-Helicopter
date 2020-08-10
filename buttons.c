@@ -316,7 +316,7 @@ ButtonsCheck(void *pvParameters)
             if(inTimeLoop == 0) { // check to see if the timer has ran out
                 vTimerSetTimerID(xTimer, (void *) 1);
                 //xSemaphoreGive(xUPBtnSemaphore, 10);
-                xTimerStart(xTimer, 10); // restarts timer
+                xTimerStart(xTimer, 10); // Restarts timer
             } else {
                 xSemaphoreGive(xUPBtnSemaphore);
             }
@@ -347,12 +347,12 @@ ButtonsCheck(void *pvParameters)
         }
         if(checkButton(LEFT) == PUSHED)
         {
-            xSemaphoreGive(xLBtnSemaphore); // Increment the semaphore to indicate how many times the button has been pushed
+            //xSemaphoreGive(xLBtnSemaphore); // Increment the semaphore to indicate how many times the button has been pushed
             leftButtonPush();
         }
         if(checkButton(RIGHT) == PUSHED)
         {
-            xSemaphoreGive(xRBtnSemaphore); // Increment the semaphore to indicate how many times the button has been pushed
+            //xSemaphoreGive(xRBtnSemaphore); // Increment the semaphore to indicate how many times the button has been pushed
             rightButtonPush();
         }
 
@@ -366,7 +366,7 @@ ButtonsCheck(void *pvParameters)
 
             }else{
                 UARTSend ("Left Switch Low\n");
-                state = 2;
+                state = 3;
             }
 
             xQueueOverwrite(xFSMQueue, &state);
@@ -376,11 +376,11 @@ ButtonsCheck(void *pvParameters)
             R_PREV = GPIOPinRead(SW_PORT_BASE, R_SW_PIN);
             if(R_PREV == R_SW_PIN){
                 UARTSend ("Right Switch High\n");
-                state = 3;
+//                state = 3;
 
             }else{
                 UARTSend ("Right Switch Low\n");
-                state = 4;
+//                state = 4;
             }
 
             xQueueOverwrite(xFSMQueue, &state);

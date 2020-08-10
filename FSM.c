@@ -403,7 +403,7 @@ FSM(void *pvParameters) {
                 break;
 
             default:
-                UARTSend("QD Error\n");
+                UARTSend("FSM Error\n");
         }
 
         vTaskDelay(FSM_PERIOD / portTICK_RATE_MS);

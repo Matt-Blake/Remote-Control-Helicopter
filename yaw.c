@@ -93,7 +93,6 @@ void quadratureFSMInterrupt(void)
     int32_t yaw;
     int32_t yaw_slot;
     int32_t newChannelReading = GPIOPinRead(GPIO_PORTB_BASE, YAW_PIN0_GPIO_PIN | YAW_PIN1_GPIO_PIN);
-    GPIOIntClear(YAW_GPIO_BASE, YAW_PIN0_GPIO_PIN | YAW_PIN1_GPIO_PIN);
 
     // Bit shift the old reading and combine with new reading. Creates a 4-bit code unique to each state.
     uint8_t state_code = currentChannelReading << 2 | newChannelReading;
@@ -102,40 +101,40 @@ void quadratureFSMInterrupt(void)
 
     switch (state_code){
         case (0b0010):
-                UARTSend("CCW\n");
+                //UARTSend("CCW\n");
                 yaw_slot--;
                 break;
         case (0b0001):
-                UARTSend("CW\n");
+                //UARTSend("CW\n");
                 yaw_slot++;
                 break;
         case (0b0100):
-                UARTSend("CCW\n");
+                //UARTSend("CCW\n");
                 yaw_slot--;
                 break;
         case (0b0111):
-                UARTSend("CW\n");
+                //UARTSend("CW\n");
                 yaw_slot++;
                 break;
         case (0b1101):
-                UARTSend("CCW\n");
+                //UARTSend("CCW\n");
                 yaw_slot--;
                 break;
         case (0b1110):
-                UARTSend("CW\n");
+                //UARTSend("CW\n");
                 yaw_slot++;
                 break;
         case (0b1011):
-                UARTSend("CCW\n");
+                //UARTSend("CCW\n");
                 yaw_slot--;
                 break;
         case (0b1000):
-                UARTSend("CW\n");
+                //UARTSend("CW\n");
                 yaw_slot++;
                 break;
         // Goes into default when a state is skipped. Usually happens when you turn too fast.
         default:
-                UARTSend("QD Error\n");
+                //UARTSend("QD Error\n");
     }
 
     currentChannelReading = newChannelReading;
@@ -144,6 +143,7 @@ void quadratureFSMInterrupt(void)
     yaw = yaw_slot * MOUNT_SLOT_COUNT/DEGREES_HALF_CIRCLE; // Convert to degrees
     xQueueOverwrite(xYawSlotQueue, &yaw_slot); // Store the current number of slots traveled in the RTOS queue
     xQueueOverwrite(xYawMeasQueue, &yaw); // Store the resulting yaw measurement in the RTOS queue
+    GPIOIntClear(YAW_GPIO_BASE, YAW_PIN0_GPIO_PIN | YAW_PIN1_GPIO_PIN);
     checkYawThresholds(); //Check if yaw has reached its threshold values
 
 }

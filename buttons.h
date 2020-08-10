@@ -114,8 +114,8 @@ extern TimerHandle_t xTimer;
 
 extern SemaphoreHandle_t xAltMutex;
 extern SemaphoreHandle_t xYawMutex;
-extern SemaphoreHandle_t xLBtnSemaphore;
-extern SemaphoreHandle_t xRBtnSemaphore;
+//extern SemaphoreHandle_t xLBtnSemaphore;
+//extern SemaphoreHandle_t xRBtnSemaphore;
 extern SemaphoreHandle_t xUPBtnSemaphore;
 
 // Debounce algorithm: A state machine is associated with each button.

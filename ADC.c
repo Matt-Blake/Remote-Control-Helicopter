@@ -104,6 +104,7 @@ Mean_ADC(void *pvParameters)
     int32_t altitude;
     static int32_t ground;
     int32_t ground_flag;
+    uint32_t FSM_state = 0;
 
     while(1){
         ground_flag = xEventGroupGetBits(xFoundAltReference); // Retrieve the current state of the ground reference
@@ -117,6 +118,9 @@ Mean_ADC(void *pvParameters)
             altitude = percentageHeight(ground, mean);
             usnprintf(cMessage, sizeof(cMessage), "Alt: %d\n", altitude);
             UARTSend(cMessage);
+        }
+        if (altitude <= 1) {
+            xQueueOverwrite(xFSMQueue, &FSM_state);
         }
         xQueueOverwrite(xAltMeasQueue, &altitude);
         vTaskDelay(ALTITUDE_PERIOD / portTICK_RATE_MS);

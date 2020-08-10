@@ -105,8 +105,8 @@ TaskHandle_t BtnCheck;
 
 SemaphoreHandle_t xAltMutex;
 SemaphoreHandle_t xYawMutex;
-SemaphoreHandle_t xLBtnSemaphore;
-SemaphoreHandle_t xRBtnSemaphore;
+//SemaphoreHandle_t xLBtnSemaphore;
+//SemaphoreHandle_t xRBtnSemaphore;
 SemaphoreHandle_t xUPBtnSemaphore;
 
 int32_t state;
@@ -183,6 +183,7 @@ OLEDDisplay (void *pvParameters)
     uint32_t   main_PWM;
     uint32_t   tail_PWM;
     uint32_t   state;
+    char* states[4] = {"Landed", "Take-Off", "Hover", "Landing"};
 
     while(1)
     {
@@ -201,7 +202,8 @@ OLEDDisplay (void *pvParameters)
         usnprintf(string, sizeof(string), "Main duty = %3d%%", main_PWM);
         OLEDStringDraw(string, COLUMN_ZERO, ROW_TWO);
 
-        usnprintf(string, sizeof(string), "State = %d", state);
+        //usnprintf(string, sizeof(string), "State = %d", state);
+        usnprintf(string, sizeof(string), "%s     ", states[state]);
         OLEDStringDraw(string, COLUMN_ZERO, ROW_THREE);
 
         vTaskDelay(DISPLAY_PERIOD / portTICK_RATE_MS);
@@ -326,8 +328,8 @@ createSemaphores(void)
     xYawMutex = xSemaphoreCreateMutex();
 
     // Create semaphores to keep track of how many times the yaw buttons have been pushed
-    xLBtnSemaphore = xSemaphoreCreateCounting(MAX_BUTTON_PRESSES, 0);
-    xRBtnSemaphore = xSemaphoreCreateCounting(MAX_BUTTON_PRESSES, 0);
+    //xLBtnSemaphore = xSemaphoreCreateCounting(MAX_BUTTON_PRESSES, 0);
+    //xRBtnSemaphore = xSemaphoreCreateCounting(MAX_BUTTON_PRESSES, 0);
     xUPBtnSemaphore = xSemaphoreCreateCounting(2, 0);
 
     // Create event groups to act as flags
