@@ -47,6 +47,7 @@
 // Constants
 //******************************************************
 
+#define LED_STACK_DEPTH         32      // Stack size in words
 #define OLED_STACK_DEPTH        128     // Stack size in words
 #define BTN_STACK_DEPTH         128     // Stack size in words
 #define SWITCH_STACK_DEPTH      128     // Stack size in words
@@ -55,6 +56,7 @@
 #define YAW_STACK_DEPTH         128     // Stack size in words
 
 // Max priority is 8
+#define LED_TASK_PRIORITY       5       // LED task priority
 #define OLED_TASK_PRIORITY      5       // OLED priority
 #define BTN_TASK_PRIORITY       6       // Button polling task priority
 #define SWI_TASK_PRIORITY       6       // Switch polling task priority
@@ -114,6 +116,36 @@ EventGroupHandle_t xFoundYawReference;
 //******************************************************
 // Tasks
 //******************************************************
+/*
+ * RTOS task that toggles LED state based off button presses
+ */
+static void
+BlinkLED(void *pvParameters)
+{
+    uint8_t state = 0;
+
+    while(1)
+    {
+        state ^= GPIO_PIN_2;
+
+        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, state);
+
+        vTaskDelay(200 / portTICK_RATE_MS);
+    }
+}
+/*
+ * Initialise the LED pin and peripherals.
+ */
+void
+initLED(void)
+{
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);                // Activate internal bus clocking for GPIO port F
+    while (!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOF));        // Busy-wait until GPIOF's bus clock is ready
+    GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_2);         // PF_2 as output
+    GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD);    // Doesn't need too much drive strength as the RGB LEDs on the TM4C123 launchpad are switched via N-type transistors
+    GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_PIN_2);               // Off by default
+}
+
 void vBtnTimerCallback( TimerHandle_t xTimer )
 {
     uint32_t ulCount;
@@ -228,6 +260,7 @@ init(void)
 {
     initClk();
     initPWM();
+    initLED();
     OLEDInitialise();
     initBtns();
     initialiseUSB_UART();
@@ -244,6 +277,7 @@ init(void)
 void
 createTasks(void)
 {
+    xTaskCreate(BlinkLED,       "LED Task",     LED_STACK_DEPTH,        NULL,       LED_TASK_PRIORITY,      NULL);
     xTaskCreate(OLEDDisplay,    "OLED Task",    OLED_STACK_DEPTH,       NULL,       OLED_TASK_PRIORITY,     NULL);
     xTaskCreate(ButtonsCheck,   "Btn Poll",     BTN_STACK_DEPTH,        NULL,       BTN_TASK_PRIORITY,      &BtnCheck);
     xTaskCreate(SwitchesCheck,  "Switch Poll",  SWITCH_STACK_DEPTH,     NULL,       SWI_TASK_PRIORITY,      &SwitchCheck);
