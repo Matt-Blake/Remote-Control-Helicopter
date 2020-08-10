@@ -76,7 +76,7 @@
 
 #define DISPLAY_PERIOD          200
 
-#define TIMER_PERIOD            200
+#define TIMER_PERIOD            1000
 
 
 #define MAX_BUTTON_PRESSES      10      // The maximum number of concurrent button presses than can be stored for servicing
@@ -108,6 +108,7 @@ SemaphoreHandle_t xAltMutex;
 SemaphoreHandle_t xYawMutex;
 SemaphoreHandle_t xLBtnSemaphore;
 SemaphoreHandle_t xRBtnSemaphore;
+SemaphoreHandle_t xUPBtnSemaphore;
 
 int32_t state;
 
@@ -121,7 +122,6 @@ EventGroupHandle_t xFoundYawReference;
 
 void vTimerCallback( TimerHandle_t xTimer )
  {
- const uint32_t ulMaxExpiryCountBeforeStopping = 1;
  uint32_t ulCount;
 
     /* Optionally do something if the pxTimer parameter is NULL. */
@@ -135,20 +135,14 @@ void vTimerCallback( TimerHandle_t xTimer )
     ulMaxExpiryCountBeforeStopping yet. */
     ulCount++;
 
-    /* If the timer has expired 10 times then stop it from running. */
-    if( ulCount >= ulMaxExpiryCountBeforeStopping )
+    /* If the timer has expired stop it from running. */
+    if( ulCount == 1 )
     {
         /* Do not use a block time if calling a timer API function
         from a timer callback function, as doing so could cause a
         deadlock! */
+        vTimerSetTimerID( xTimer, ( void * ) ulCount );
         xTimerStop( xTimer, 0 );
-    }
-    else
-    {
-       /* Store the incremented count back into the timer's ID field
-       so it can be read back again the next time this software timer
-       expires. */
-       vTimerSetTimerID( xTimer, ( void * ) ulCount );
     }
  }
 
@@ -335,6 +329,7 @@ createSemaphores(void)
     // Create semaphores to keep track of how many times the yaw buttons have been pushed
     xLBtnSemaphore = xSemaphoreCreateCounting(MAX_BUTTON_PRESSES, 0);
     xRBtnSemaphore = xSemaphoreCreateCounting(MAX_BUTTON_PRESSES, 0);
+    xUPBtnSemaphore = xSemaphoreCreateCounting(2, 0);
 
     // Create event groups to act as flags
     xFoundAltReference = xEventGroupCreate();
@@ -348,7 +343,8 @@ createSemaphores(void)
 void
 createtimers(void)
 {
-    xTimer = xTimerCreate( "Button Timer", pdMS_TO_TICKS(TIMER_PERIOD), pdFALSE, ( void * ) 0, vTimerCallback );
+    xTimer = xTimerCreate( "Button Timer", TIMER_PERIOD / portTICK_RATE_MS, pdFALSE, ( void * ) 0, vTimerCallback );
+    xTimerStart(xTimer, 10);
 }
 
 /*
