@@ -286,9 +286,9 @@ ButtonsCheck(void *pvParameters)
     portTickType ui16LastTime;
     uint32_t ui32SwitchDelay = 25;
     uint32_t state;
-    uint32_t ulCount;
+    uint32_t inTimeLoop;
     uint32_t alt;
-    ulCount = ( uint32_t ) pvTimerGetTimerID( xTimer );
+
     //uint8_t state = 0;
     uint16_t L_PREV = GPIOPinRead(SW_PORT_BASE, L_SW_PIN);
     uint16_t R_PREV = GPIOPinRead(SW_PORT_BASE, R_SW_PIN);
@@ -298,6 +298,7 @@ ButtonsCheck(void *pvParameters)
     // Loop forever.
     while(1)
     {
+        inTimeLoop = ( uint32_t ) pvTimerGetTimerID( xTimer );
         /*
          * Check if any buttons have been pressed. Update button state.
          */
@@ -310,11 +311,24 @@ ButtonsCheck(void *pvParameters)
 //
         if(checkButton(UP) == PUSHED)
         {
-            xSemaphoreGive(xUPBtnSemaphore);
+            //xSemaphoreGive(xUPBtnSemaphore);
 
-            if (uxSemaphoreGetCount(xUPBtnSemaphore) > 1) {
-                    alt = 50;
-                    xQueueOverwrite(xAltDesQueue, &alt);
+            if(inTimeLoop == 0) { // check to see if the timer has ran out
+                vTimerSetTimerID(xTimer, (void *) 1);
+                //xSemaphoreGive(xUPBtnSemaphore, 10);
+                xTimerStart(xTimer, 10); // restarts timer
+            } else {
+                xSemaphoreGive(xUPBtnSemaphore);
+            }
+
+
+
+
+
+            if (uxSemaphoreGetCount(xUPBtnSemaphore) == 1) {
+                xSemaphoreTake(xUPBtnSemaphore, 10);
+                alt = 50;
+                xQueueOverwrite(xAltDesQueue, &alt);
             }else {
                 /*
                  * Call the up button handler to increase target altitude by 10%
@@ -322,12 +336,6 @@ ButtonsCheck(void *pvParameters)
                 upButtonPush();
 
             }
-        }
-
-        if(ulCount == 1) { // check to see if the timer has ran out
-            xSemaphoreTake(xUPBtnSemaphore, 10);
-            xTimerStart(xTimer, 10); // restarts timer
-
         }
 
         if(checkButton(DOWN) == PUSHED)

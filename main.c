@@ -31,6 +31,7 @@
 #include "queue.h"
 #include "semphr.h"
 #include "event_groups.h"
+#include "timers.h"
 
 #include "pwm.h"
 #include "reset.h"
@@ -40,8 +41,6 @@
 #include "buttons.h"
 #include "pidController.h"
 #include "FSM.h"
-
-#include "timers.h"
 
 //******************************************************
 // Constants
@@ -76,7 +75,7 @@
 
 #define DISPLAY_PERIOD          200
 
-#define TIMER_PERIOD            1000
+#define TIMER_PERIOD            500
 
 
 #define MAX_BUTTON_PRESSES      10      // The maximum number of concurrent button presses than can be stored for servicing
@@ -121,8 +120,8 @@ EventGroupHandle_t xFoundYawReference;
 //******************************************************
 
 void vTimerCallback( TimerHandle_t xTimer )
- {
- uint32_t ulCount;
+{
+    uint32_t ulCount;
 
     /* Optionally do something if the pxTimer parameter is NULL. */
     configASSERT( xTimer );
@@ -133,7 +132,7 @@ void vTimerCallback( TimerHandle_t xTimer )
 
     /* Increment the count, then test to see if the timer has expired
     ulMaxExpiryCountBeforeStopping yet. */
-    ulCount++;
+    //ulCount++;
 
     /* If the timer has expired stop it from running. */
     if( ulCount == 1 )
@@ -141,10 +140,10 @@ void vTimerCallback( TimerHandle_t xTimer )
         /* Do not use a block time if calling a timer API function
         from a timer callback function, as doing so could cause a
         deadlock! */
-        vTimerSetTimerID( xTimer, ( void * ) ulCount );
+        vTimerSetTimerID( xTimer, 0 ); //( void * ) ulCount
         xTimerStop( xTimer, 0 );
     }
- }
+}
 
 
 /*
@@ -267,7 +266,7 @@ init(void)
 void
 createTasks(void)
 {
-   // xTaskCreate(BlinkLED,       "LED Task",     LED_STACK_DEPTH,        NULL,       LED_TASK_PRIORITY,      NULL);
+    xTaskCreate(BlinkLED,       "LED Task",     LED_STACK_DEPTH,        NULL,       LED_TASK_PRIORITY,      NULL);
     xTaskCreate(OLEDDisplay,    "OLED Task",    OLED_STACK_DEPTH,       NULL,       OLED_TASK_PRIORITY,     NULL);
     xTaskCreate(ButtonsCheck,   "Btn Poll",     BTN_STACK_DEPTH,        NULL,       BTN_TASK_PRIORITY,      &BtnCheck);
     xTaskCreate(Trigger_ADC,    "ADC Handler",  ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      NULL);
