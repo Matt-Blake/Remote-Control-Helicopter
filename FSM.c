@@ -19,7 +19,11 @@
  * Last modified: 10/08/2020
  */
 
+#include "FSM.h"
 
+typedef enum HELI_STATE {LANDED = 0, TAKEOFF = 1, HOVER = 2, LANDING = 3} HELI_STATE;
+
+#define FSM_PERIOD              100
 
 //****************************************************************************
 //Check if found the reference yaw, if it has then set found reference to 1 and
@@ -29,16 +33,14 @@ void
 findYawRef(void)
 {
     int32_t PWM_main = 30; // place holder for now
-    int32_t hover = 10; // hover alt
-
     //
-    vTaskSuspend(MainPWM); // suspend the control system until ref is found
+    //vTaskSuspend(MainPWM); // suspend the control system until ref is found
     vTaskSuspend(TailPWM);
     //vTaskSuspend(BtnCheck);
 
     if(xEventGroupGetBits(xFoundYawReference)) {
         setRotorPWM(0, 1);
-        vTaskResume(MainPWM); // re enable the control system
+        //vTaskResume(MainPWM); // re enable the control system
         vTaskResume(TailPWM);
         //vTaskResume(BtnCheck);
 
@@ -46,7 +48,7 @@ findYawRef(void)
         setRotorPWM(PWM_main, 1); // set the main rotor to on, the torque from the main rotor should work better than using the tail, have to test and actually see whats best
     }
 }
-
+/*
 int findZeroReferenceYaw(void)
 {
     int8_t foundReferenceYaw = 0;
@@ -63,13 +65,14 @@ int findZeroReferenceYaw(void)
     }
     return foundReferenceYaw;
 }
-
+*/
 //****************************************************************************
 //If it has reached the appropriate height and yaw it will move to state 2
 //Otherwise if it still needs to rotate to reference yaw set altitude to 25
 //Finally if needed to reach height then sets altitude_PWM
 //Altitude PWM is returned
 //****************************************************************************
+/*
 int ToStartPoisition(yaw_degrees, adc_error_signal, heightVal, rotatedToReferenceYaw)
 {
     uint32_t altitude_PWM;
@@ -90,10 +93,11 @@ int ToStartPoisition(yaw_degrees, adc_error_signal, heightVal, rotatedToReferenc
     }
     return altitude_PWM;
 }
-
+*/
 //****************************************************************************
 //Gets the helicopter to find the reference yaw and get to altitude of 20%
 //****************************************************************************
+/*
 void take_off(void)
 {
     //Setting up variables
@@ -168,12 +172,13 @@ void take_off(void)
         }
     }
 }
-
+*/
 //****************************************************************************
 //Polls the buttons to change the altitude and yaw references
 //Keeps the helicoptor at the desired references
 //Checks the switch if it needs to change states
 //****************************************************************************
+/*
 void hover_loop(void)
 {
     //initializes variables
@@ -232,11 +237,12 @@ void hover_loop(void)
         }
     }
 }
-
+*/
 //****************************************************************************
 //Lands the helicoptor by rotating to the yaw reference then decrementing the
 //height and a defined frequency
 //****************************************************************************
+/*
 void land(void)
 {
     //Initializes the variables
@@ -314,11 +320,12 @@ void land(void)
 
     }
 }
-
+*/
 //****************************************************************************
 //Checks the switch and updates the display and UART after the helicoptor is
 //landed
 //****************************************************************************
+/*
 void landed(void)
 {
     //Initialize appropriate variables
@@ -361,14 +368,15 @@ void landed(void)
         }
     }
 }
-
+*/
 //****************************************************************************
 //Calls the appropriate function for the current state
+// the slider will switch between take_off and landing. The transition will be dependent on current state
 //****************************************************************************
-static void
+void
 FSM(void *pvParameters) {
 
-    uint8_t = state;
+    uint32_t state;
 
     while(1)
     {
@@ -376,22 +384,22 @@ FSM(void *pvParameters) {
         switch(state) {
             case TAKEOFF:
                 UARTSend("State 1: Takeoff\n");
-                take_off();
+                //take_off();
                 break;
 
             case HOVER:
                 UARTSend("State 2: Hover\n");
-                hover();
+                //hover_loop();
                 break;
 
             case LANDING:
                 UARTSend("State 3: Landing\n");
-                land()
+                //land();
                 break;
 
             case LANDED:
                 UARTSend("State 4: Landed\n");
-                landed();
+                //landed();
                 break;
 
             default:

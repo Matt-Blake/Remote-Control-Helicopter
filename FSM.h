@@ -19,11 +19,29 @@
  * Last modified: 10/08/2020
  */
 
+#include <stdint.h>
+#include <stdbool.h>
+#include "driverlib/gpio.h"
+#include "driverlib/sysctl.h"
+#include "inc/hw_memmap.h"
+#include "uart.h"
+#include "FreeRTOS.h"
+#include "queue.h"
+#include "event_groups.h"
+
+#include "pwm.h"
+
+extern TaskHandle_t MainPWM;
+extern TaskHandle_t TailPWM;
+extern TaskHandle_t BtnCheck;
+
+extern QueueHandle_t xFSMQueue;
+
 //****************************************************************************
 //Check if found the reference yaw, if it has then set found reference to 1 and
 //reset the integrator error and update yaw reference
 //****************************************************************************
-int findZeroReferenceYaw(void);
+void findYawRef(void);
 
 //****************************************************************************
 //If it has reached the appropriate height and yaw it will move to state 2
@@ -56,4 +74,7 @@ void land(void);
 //landed
 //****************************************************************************
 void landed(void);
+
+void
+FSM(void *pvParameters);
 

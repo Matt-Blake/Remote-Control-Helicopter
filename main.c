@@ -72,11 +72,11 @@
 #define DISPLAY_SIZE            17      // Size of stirngs for the OLED display
 
 #define DISPLAY_PERIOD          200
-#define FSM_PERIOD              100
+
 
 #define MAX_BUTTON_PRESSES      10      // The maximum number of concurrent button presses than can be stored for servicing
 
-typedef enum HELI_STATE {LANDED = 0, TAKEOFF = 1, HOVER = 2, LANDING = 3} HELI_STATE;
+
 /*
  * Globals
 */
@@ -170,44 +170,6 @@ OLEDDisplay (void *pvParameters)
         OLEDStringDraw(string, COLUMN_ZERO, ROW_THREE);
 
         vTaskDelay(DISPLAY_PERIOD / portTICK_RATE_MS);
-    }
-}
-
-void
-findYawRef(void)
-{
-    int32_t PWM_main = 30; // place holder for now
-    int32_t hover = 10; // hover alt
-
-    vTaskSuspend(MainPWM); // suspend the control system until ref is found
-    vTaskSuspend(TailPWM);
-    //vTaskSuspend(BtnCheck);
-
-    if(xEventGroupGetBits(xFoundYawReference)) {
-        setRotorPWM(0, 1);
-        vTaskResume(MainPWM); // re enable the control system
-        vTaskResume(TailPWM);
-        //vTaskResume(BtnCheck);
-
-    } else { // finding ref mode
-        setRotorPWM(PWM_main, 1); // set the main rotor to on, the torque from the main rotor should work better than using the tail, have to test and actually see whats best
-    }
-}
-
-void
-land(void) // should be able to stage the decent to avoid issues. may have to update the gains etc for this.
-{
-    int32_t yaw_ref = 0; // set ref to 0
-    int32_t desired_alt = 10; // First go set desired alt to 10 to avoid overshoot
-    int32_t measured_alt;
-
-    xQueueOverwrite(xAltDesQueue, &desired_alt);
-    xQueueOverwrite(xYawDesQueue, &yaw_ref);
-    xQueuePeek(xAltMeasQueue, &measured_alt, 10);
-
-    if(measured_alt == 10) {
-        desired_alt = 0;
-        xQueueOverwrite(xAltDesQueue, &desired_alt);
     }
 }
 
