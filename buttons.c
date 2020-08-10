@@ -321,10 +321,6 @@ ButtonsCheck(void *pvParameters)
                 xSemaphoreGive(xUPBtnSemaphore);
             }
 
-
-
-
-
             if (uxSemaphoreGetCount(xUPBtnSemaphore) == 1) {
                 xSemaphoreTake(xUPBtnSemaphore, 10);
                 alt = 50;
