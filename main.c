@@ -167,16 +167,17 @@ void vBtnTimerCallback( TimerHandle_t xTimer )
         vTimerSetTimerID( xTimer, 0 ); //( void * ) ulCount
         xTimerStop( xTimer, 0 );
     }
+    UARTSend("Wrong timer callback\n");
 }
 
 void vLandTimerCallback( TimerHandle_t xTimerLand )
 {
-    uint32_t ulCount;
+    //uint32_t ulCount;
     UARTSend("LandTimer\n");
 
-    ulCount = ( uint32_t ) pvTimerGetTimerID( xTimerLand );
-    ulCount++;
-    vTimerSetTimerID( xTimerLand, (void *) ulCount );
+    //ulCount = ( uint32_t ) pvTimerGetTimerID( xTimerLand );
+    //ulCount++;
+    //vTimerSetTimerID( xTimerLand, (void *) ulCount );
 }
 
 /*

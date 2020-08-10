@@ -80,12 +80,14 @@ land(void)
     if (timerID == 0){
         xTimerStart(xTimerLand, 10); // Starts timer
         vTimerSetTimerID( xTimerLand, (void *) 1 );
+        descent = 10;
     }else{
         descent = descent - 2;
     }
 
     if (descent == 0 && meas <= 1) {
         state = LANDED;
+        vTimerSetTimerID( xTimerLand, (void *) 0 );
         xTimerStop( xTimerLand, 0 );
     }else{
         xQueueOverwrite(xAltDesQueue, &descent);
@@ -131,22 +133,22 @@ FSM(void *pvParameters) {
         xQueuePeek(xFSMQueue, &state, 10);
         switch(state) {
             case FIND_REF:
-                UARTSend("State 1: Finding Ref\n");
+                UARTSend("Finding Ref\n");
                 findYawRef();
                 break;
 
             case LANDED:
-                UARTSend("State 2: Landed\n");
+                UARTSend("Landed\n");
                 landed();
                 break;
 
             case FLYING:
-                UARTSend("State 3: Flying\n");
+                UARTSend("Flying\n");
                 hover();
                 break;
 
             case LANDING:
-                UARTSend("State 4: Landing\n");
+                UARTSend("Landing\n");
                 land();
                 break;
 
