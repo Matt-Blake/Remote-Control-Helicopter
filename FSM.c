@@ -21,7 +21,7 @@
 
 #include "FSM.h"
 
-typedef enum HELI_STATE {LANDED = 0, TAKEOFF = 1, HOVER = 2, LANDING = 3} HELI_STATE;
+typedef enum HELI_STATE {FIND_REF = 0, LANDED = 1, FLYING = 2, LANDING = 3} HELI_STATE;
 
 #define FSM_PERIOD              100
 
@@ -125,24 +125,23 @@ FSM(void *pvParameters) {
     {
         xQueuePeek(xFSMQueue, &state, 10);
         switch(state) {
-            case TAKEOFF:
-                UARTSend("State 1: Takeoff\n");
+            case FIND_REF:
+                UARTSend("State 1: Finding Ref\n");
                 findYawRef();
                 break;
 
-            case HOVER:
+            case LANDED:
                 UARTSend("State 2: Hover\n");
                 //hover_loop();
                 break;
 
-            case LANDING:
-                UARTSend("State 3: Landing\n");
-                land();
+            case FLYING:
+                UARTSend("State 3: Flying\n");
                 break;
 
-            case LANDED:
-                UARTSend("State 4: Landed\n");
-
+            case LANDING:
+                UARTSend("State 4: Landing\n");
+                land();
                 break;
 
             default:
