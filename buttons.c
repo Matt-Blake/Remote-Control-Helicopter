@@ -286,6 +286,7 @@ ButtonsCheck(void *pvParameters)
     portTickType ui16LastTime;
     uint32_t ui32SwitchDelay = 25;
     uint32_t state;
+    uint32_t ulCount;
     uint32_t alt;
     ulCount = ( uint32_t ) pvTimerGetTimerID( xTimer );
     //uint8_t state = 0;
