@@ -369,7 +369,7 @@ SwitchesCheck(void *pvParameters)
             L_PREV = GPIOPinRead(SW_PORT_BASE, L_SW_PIN);
             if(L_PREV == L_SW_PIN){
                 UARTSend ("Left Switch High\n");
-                state = 1;
+                state = 2;
 
 
             }else{
@@ -391,7 +391,7 @@ SwitchesCheck(void *pvParameters)
 //                state = 4;
             }
 
-            xQueueOverwrite(xFSMQueue, &state);
+//            xQueueOverwrite(xFSMQueue, &state);
         }
         vTaskDelayUntil(&ui16LastTaskTime, ui32SwitchDelay/portTICK_RATE_MS);
     }

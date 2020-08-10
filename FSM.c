@@ -136,7 +136,7 @@ FSM(void *pvParameters) {
                 break;
 
             case LANDED:
-                UARTSend("State 2: Hover\n");
+                UARTSend("State 2: Landed\n");
                 landed();
                 break;
 
