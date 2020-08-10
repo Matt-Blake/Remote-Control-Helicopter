@@ -75,7 +75,8 @@
 
 #define DISPLAY_PERIOD          200
 
-#define TIMER_PERIOD            500
+#define TIMER_PERIOD            250
+#define LAND_PERIOD             1000
 
 
 #define MAX_BUTTON_PRESSES      10      // The maximum number of concurrent button presses than can be stored for servicing
@@ -98,6 +99,7 @@ QueueHandle_t xFSMQueue;
 QueueHandle_t xYawSlotQueue;
 
 TimerHandle_t xTimer;
+TimerHandle_t xTimerLand;
 
 TaskHandle_t MainPWM;
 TaskHandle_t TailPWM;
@@ -119,7 +121,7 @@ EventGroupHandle_t xFoundYawReference;
 // Tasks
 //******************************************************
 
-void vTimerCallback( TimerHandle_t xTimer )
+void vBtnTimerCallback( TimerHandle_t xTimer )
 {
     uint32_t ulCount;
 
@@ -143,6 +145,16 @@ void vTimerCallback( TimerHandle_t xTimer )
         vTimerSetTimerID( xTimer, 0 ); //( void * ) ulCount
         xTimerStop( xTimer, 0 );
     }
+}
+
+void vLandTimerCallback( TimerHandle_t xTimerLand )
+{
+    uint32_t ulCount;
+    UARTSend("LandTimer\n");
+
+    ulCount = ( uint32_t ) pvTimerGetTimerID( xTimerLand );
+    ulCount++;
+    vTimerSetTimerID( xTimerLand, (void *) ulCount );
 }
 
 
@@ -344,8 +356,10 @@ createSemaphores(void)
 void
 createtimers(void)
 {
-    xTimer = xTimerCreate( "Button Timer", TIMER_PERIOD / portTICK_RATE_MS, pdFALSE, ( void * ) 0, vTimerCallback );
+    xTimer = xTimerCreate( "Button Timer", TIMER_PERIOD / portTICK_RATE_MS, pdFALSE, ( void * ) 0, vBtnTimerCallback );
+    xTimerLand = xTimerCreate( "Land Timer", LAND_PERIOD / portTICK_RATE_MS, pdTRUE, ( void * ) 0, vLandTimerCallback );
     xTimerStart(xTimer, 10);
+    xTimerStart(xTimerLand, 10);
 }
 
 /*

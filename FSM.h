@@ -28,6 +28,7 @@
 #include "FreeRTOS.h"
 #include "queue.h"
 #include "event_groups.h"
+#include "timers.h"
 
 #include "pwm.h"
 
@@ -36,6 +37,10 @@ extern TaskHandle_t TailPWM;
 extern TaskHandle_t BtnCheck;
 
 extern QueueHandle_t xFSMQueue;
+extern QueueHandle_t xAltMesQueue;
+extern QueueHandle_t xAltDesQueue;
+
+extern TimerHandle_t xTimerLand;
 
 //****************************************************************************
 //Check if found the reference yaw, if it has then set found reference to 1 and
