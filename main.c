@@ -2,7 +2,6 @@
  * TODO:
  *      - Figure out what the stack sizes should be
  *      - Suss interrupts
- *      - Disable buttons but not sliders
  */
 
 // Mutexes are for shared resources
@@ -44,21 +43,18 @@
 //******************************************************
 // Constants
 //******************************************************
-//#define OLED_REFRESH_RATE       200     // OLED Screen refresh rate (I think)
-//#define SAMPLE_RATE_HZ          200
-#define LED_PIN_RED             1       // RED LED pin
 
-#define LED_STACK_DEPTH         32
-#define OLED_STACK_DEPTH        128
+#define OLED_STACK_DEPTH        128     // Stack size in words
 #define BTN_STACK_DEPTH         128     // Stack size in words
+#define SWITCH_STACK_DEPTH      128     // Stack size in words
 #define ADC_STACK_DEPTH         128     // Stack size in words
 #define ALT_STACK_DEPTH         128     // Stack size in words
 #define YAW_STACK_DEPTH         128     // Stack size in words
 
 // Max priority is 8
-#define LED_TASK_PRIORITY       5       // LED task priority
 #define OLED_TASK_PRIORITY      5       // OLED priority
 #define BTN_TASK_PRIORITY       6       // Button polling task priority
+#define SWI_TASK_PRIORITY       6       // Switch polling task priority
 #define ADC_TASK_PRIORITY       7       // ADC sampling priority
 #define ALT_TASK_PRIORITY       8       // Altitude PWM priority
 #define YAW_TASK_PRIORITY       8       // Yaw PWM priority
@@ -77,9 +73,9 @@
 #define MAX_BUTTON_PRESSES      10      // The maximum number of concurrent button presses than can be stored for servicing
 
 
-/*
- * Globals
-*/
+//******************************************************
+// Globals
+//******************************************************
 QueueHandle_t xOLEDQueue;
 QueueHandle_t xAltBtnQueue;
 QueueHandle_t xYawBtnQueue;
@@ -96,13 +92,12 @@ QueueHandle_t xYawSlotQueue;
 TaskHandle_t MainPWM;
 TaskHandle_t TailPWM;
 TaskHandle_t BtnCheck;
+TaskHandle_t SwitchCheck;
 
 SemaphoreHandle_t xAltMutex;
 SemaphoreHandle_t xYawMutex;
 SemaphoreHandle_t xLBtnSemaphore;
 SemaphoreHandle_t xRBtnSemaphore;
-
-int32_t state;
 
 EventGroupHandle_t xFoundAltReference;
 EventGroupHandle_t xFoundYawReference;
@@ -111,24 +106,6 @@ EventGroupHandle_t xFoundYawReference;
 //******************************************************
 // Tasks
 //******************************************************
-/*
- * RTOS task that toggles LED state based off button presses
- */
-static void
-BlinkLED(void *pvParameters)
-{
-    uint8_t state = 0;
-
-    while(1)
-    {
-        state ^= GPIO_PIN_2;
-
-        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, state);
-
-        vTaskDelay(200 / portTICK_RATE_MS);
-    }
-}
-
 
 /*
  * RTOS task that displays number of LED flashes on the OLED display. - Remove in final version.
@@ -184,19 +161,6 @@ initClk(void)
 }
 
 /*
- * Initialise the LED pin and peripherals.
- */
-void
-initLED(void)
-{
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);                // Activate internal bus clocking for GPIO port F
-    while (!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOF));        // Busy-wait until GPIOF's bus clock is ready
-    GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_2);         // PF_2 as output
-    GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD);    // Doesn't need too much drive strength as the RGB LEDs on the TM4C123 launchpad are switched via N-type transistors
-    GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_PIN_2);               // Off by default
-}
-
-/*
  * Initialize the altitude and yaw PI controllers
  */
 void
@@ -213,7 +177,6 @@ void
 init(void)
 {
     initClk();
-    initLED();
     initPWM();
     OLEDInitialise();
     initBtns();
@@ -231,13 +194,14 @@ init(void)
 void
 createTasks(void)
 {
-   // xTaskCreate(BlinkLED,       "LED Task",     LED_STACK_DEPTH,        NULL,       LED_TASK_PRIORITY,      NULL);
     xTaskCreate(OLEDDisplay,    "OLED Task",    OLED_STACK_DEPTH,       NULL,       OLED_TASK_PRIORITY,     NULL);
     xTaskCreate(ButtonsCheck,   "Btn Poll",     BTN_STACK_DEPTH,        NULL,       BTN_TASK_PRIORITY,      &BtnCheck);
+    xTaskCreate(SwitchesCheck,  "Switch Poll",  SWITCH_STACK_DEPTH,     NULL,       SWI_TASK_PRIORITY,      &SwitchCheck);
     xTaskCreate(Trigger_ADC,    "ADC Handler",  ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      NULL);
     xTaskCreate(Mean_ADC,       "ADC Mean",     ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      NULL);
     xTaskCreate(Set_Main_Duty,  "Altitude PWM", ALT_STACK_DEPTH,        NULL,       ALT_TASK_PRIORITY,      &MainPWM);
     xTaskCreate(Set_Tail_Duty,  "Yaw PWM",      YAW_STACK_DEPTH,        NULL,       YAW_TASK_PRIORITY,      &TailPWM);
+    xTaskCreate(FSM,            "FSM",          YAW_STACK_DEPTH,        NULL,       FSM_TASK_PRIORITY,      NULL);
     xTaskCreate(FSM,            "FSM",          YAW_STACK_DEPTH,        NULL,       FSM_TASK_PRIORITY,      NULL);
 }
 
@@ -289,10 +253,6 @@ createSemaphores(void)
     // Create mutexs to avoid race conditions with the altitude and yaw values
     xAltMutex = xSemaphoreCreateMutex();
     xYawMutex = xSemaphoreCreateMutex();
-
-    // Create semaphores to keep track of how many times the yaw buttons have been pushed
-    xLBtnSemaphore = xSemaphoreCreateCounting(MAX_BUTTON_PRESSES, 0);
-    xRBtnSemaphore = xSemaphoreCreateCounting(MAX_BUTTON_PRESSES, 0);
 
     // Create event groups to act as flags
     xFoundAltReference = xEventGroupCreate();

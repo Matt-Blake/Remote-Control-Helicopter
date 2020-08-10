@@ -34,6 +34,7 @@
 extern TaskHandle_t MainPWM;
 extern TaskHandle_t TailPWM;
 extern TaskHandle_t BtnCheck;
+extern TaskHandle_t SwitchCheck;
 
 extern QueueHandle_t xFSMQueue;
 

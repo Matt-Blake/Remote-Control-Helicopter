@@ -280,19 +280,13 @@ ButtonsCheck(void *pvParameters)
      * If Button State is PUSHED:
      *      Update Target Altitude/Yaw accordingly
      *      If Target Alt/Yaw is now beyond the limits:
-     *          Update targets to be at limit (0-100 for Alt, -180-180 for Yaw).
+     *          Update targets to be at limit (0->100 for Alt, -180->179 for Yaw).
      */
 
-    portTickType ui16LastTime;
-    uint32_t ui32SwitchDelay = 25;
-    uint32_t state;
-    //uint8_t state = 0;
-    uint16_t L_PREV = GPIOPinRead(SW_PORT_BASE, L_SW_PIN);
-    uint16_t R_PREV = GPIOPinRead(SW_PORT_BASE, R_SW_PIN);
-    //uint16_t TARGET_ALT;
+    portTickType ui16LastTaskTime;
+    uint32_t ui32ButtonsDelay = 25;
 
-    // Get the current tick count.
-    ui16LastTime = xTaskGetTickCount();
+    ui16LastTaskTime = xTaskGetTickCount(); // Get the current tick count.
 
     // Loop forever.
     while(1)
@@ -324,15 +318,32 @@ ButtonsCheck(void *pvParameters)
         }
         if(checkButton(LEFT) == PUSHED)
         {
-            xSemaphoreGive(xLBtnSemaphore); // Increment the semaphore to indicate how many times the button has been pushed
             leftButtonPush();
         }
         if(checkButton(RIGHT) == PUSHED)
         {
-            xSemaphoreGive(xRBtnSemaphore); // Increment the semaphore to indicate how many times the button has been pushed
             rightButtonPush();
         }
 
+        vTaskDelayUntil(&ui16LastTaskTime, ui32ButtonsDelay/portTICK_RATE_MS); // Wait for the required amount of time to check back.
+    }
+}
+
+/*
+ * FreeRTOS task which polls the switches
+ */
+void
+SwitchesCheck(void *pvParameters)
+{
+    portTickType ui16LastTaskTime;
+    uint32_t ui32SwitchDelay = 25;
+    uint32_t state;
+    uint16_t L_PREV = GPIOPinRead(SW_PORT_BASE, L_SW_PIN);
+    uint16_t R_PREV = GPIOPinRead(SW_PORT_BASE, R_SW_PIN);
+
+    ui16LastTaskTime = xTaskGetTickCount(); // Get the current tick count.
+
+    while(1) {
         if(GPIOPinRead(SW_PORT_BASE, L_SW_PIN) != L_PREV)
         {
             L_PREV = GPIOPinRead(SW_PORT_BASE, L_SW_PIN);
@@ -362,8 +373,6 @@ ButtonsCheck(void *pvParameters)
 
             xQueueOverwrite(xFSMQueue, &state);
         }
-
-        // Wait for the required amount of time to check back.
-        vTaskDelayUntil(&ui16LastTime, ui32SwitchDelay / portTICK_RATE_MS);
+        vTaskDelayUntil(&ui16LastTaskTime, ui32SwitchDelay/portTICK_RATE_MS);
     }
 }

@@ -21,7 +21,7 @@
 
 #include "FSM.h"
 
-typedef enum HELI_STATE {LANDED = 0, TAKEOFF = 1, HOVER = 2, LANDING = 3} HELI_STATE;
+typedef enum HELI_STATE {LANDED = 0, TAKEOFF = 1, HOVER = 2, LANDING = 3, SWITCHING = 4} HELI_STATE;
 
 #define FSM_PERIOD              100
 
@@ -325,50 +325,25 @@ void land(void)
 //Checks the switch and updates the display and UART after the helicoptor is
 //landed
 //****************************************************************************
-/*
 void landed(void)
 {
-    //Initialize appropriate variables
-    uint32_t g_count;
-    uint32_t prev_uart_count;
-    int32_t yaw_degrees;
-    int32_t  heightVal;
-    int32_t  sample_mean_adc;
-    int32_t altitude_PWM;
-    int32_t yaw_PWM;
-    uint32_t prev_dis_count;
-
-    //Set the PWM back to zero
-    altitude_PWM = 0;
-    yaw_PWM = 0;
-    setMainRotorPWM(altitude_PWM);
-    setTailPWM(yaw_PWM);
-
-    //Landed while loop
-    while (g_heliState == LANDED) {
-        checkSwitch(); //Checks switch and changes state if necessary
-        yaw_degrees = getYawDegrees();
-        sample_mean_adc = getSampleMeanADC();
-        heightVal = getAltitudePercent(sample_mean_adc);
-
-        //Updates the display and UART at the appropriate frequencies
-        g_count = getGCount();
-
-        //Update UART
-        if ((g_count - prev_uart_count) >= (SYSTICK_RATE_HZ / UART_RATE_HZ)){
-            UARTDisplay(yaw_degrees, g_yawReference, heightVal, g_altitudeReference, altitude_PWM, yaw_PWM, g_heliState);
-            prev_uart_count = g_count;
-        }
-
-        //Update OLED Display
-        if ((g_count - prev_dis_count) >= (SYSTICK_RATE_HZ / DISPLAY_RATE_HZ))
-        {
-            display_screen(heightVal, yaw_degrees, altitude_PWM, yaw_PWM);
-            prev_dis_count = g_count;
-        }
-    }
+    vTaskSuspend(MainPWM); // Suspend the control system while landed
+    vTaskSuspend(TailPWM);
+    vTaskSuspend(BtnCheck); // Disable changes to yaw and altitude while landed
 }
-*/
+
+//****************************************************************************
+//Resumes tasks that have been previously suspended
+//****************************************************************************
+void switch_states(void)
+{
+    vTaskResume(MainPWN);
+    vTaskResume(TailPWM);
+    vTaskResiume(BtnCheck);
+    vTaskResume(Sw)
+}
+
+
 //****************************************************************************
 //Calls the appropriate function for the current state
 // the slider will switch between take_off and landing. The transition will be dependent on current state
@@ -401,6 +376,9 @@ FSM(void *pvParameters) {
                 UARTSend("State 4: Landed\n");
                 //landed();
                 break;
+            case SWITCHING:
+                UARTSend("State 5: Switching States\n");
+                switch_states();
 
             default:
                 UARTSend("QD Error\n");

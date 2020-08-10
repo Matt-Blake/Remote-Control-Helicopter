@@ -111,8 +111,6 @@ extern QueueHandle_t xFSMQueue;
 
 extern SemaphoreHandle_t xAltMutex;
 extern SemaphoreHandle_t xYawMutex;
-extern SemaphoreHandle_t xLBtnSemaphore;
-extern SemaphoreHandle_t xRBtnSemaphore;
 
 // Debounce algorithm: A state machine is associated with each button.
 // A state change occurs only after NUM_BUT_POLLS consecutive polls have
@@ -163,9 +161,15 @@ void leftButtonPush(void);
 void rightButtonPush(void);
 
 /* ******************************************************
- * buttonsCheck: checks if buttons associated with altitude and yaw have
+ * ButtonsCheck: checks if buttons associated with altitude and yaw have
  * been pushed and increments accordingly
  * *****************************************************/
 void ButtonsCheck(void *pvParameters);
+
+/* ******************************************************
+ * SwitchesCheck: checks if switches associated with helicopter's state
+ * been pushed and change the state accordingly
+ * *****************************************************/
+void SwitchesCheck(void *pvParameters);
 
 #endif /*BUTTONS_H*/
