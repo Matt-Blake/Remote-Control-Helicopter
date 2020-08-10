@@ -44,7 +44,7 @@
 // Constants
 //******************************************************
 
-#define LED_STACK_DEPTH         32      // Stack size in words
+#define LED_STACK_DEPTH         128     // Stack size in words
 #define OLED_STACK_DEPTH        128     // Stack size in words
 #define BTN_STACK_DEPTH         128     // Stack size in words
 #define SWITCH_STACK_DEPTH      128     // Stack size in words

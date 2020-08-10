@@ -29,7 +29,7 @@ ADCIntHandler(void)
     ground_flag = xEventGroupGetBits(xFoundAltReference);               // Calculate the current state of the ground flag
 
     if ((g_inBuffer.windex) == 19 && (ground_flag == GROUND_NOT_FOUND)) {
-        xEventGroupSetBits(xFoundAltReference, GROUND_BUFFER_FULL);      // Set flag indicating the buffer is full and can now be averaged
+        xEventGroupSetBits(xFoundAltReference, GROUND_BUFFER_FULL);     // Set flag indicating the buffer is full and can now be averaged
         UARTSend("Buff_Full\n");
     }
     ADCSequenceDataGet(ADC0_BASE, 3, &ulValue);                         // Runs the A-D Conversion and stores the value in ulValue
@@ -90,6 +90,7 @@ Trigger_ADC(void *pvParameters)
 {
     while(1){
         ADCProcessorTrigger(ADC0_BASE, 3);
+
         vTaskDelay(ADC_PERIOD / portTICK_RATE_MS);
     }
 }
@@ -114,16 +115,14 @@ Mean_ADC(void *pvParameters)
             xEventGroupClearBits(xFoundAltReference, GROUND_BUFFER_FULL); // Clear previous flag
             xEventGroupSetBits(xFoundAltReference, GROUND_FOUND); // Set flag indicating that the ground reference has been set
             UARTSend("GroundFound\n");
-        } else if(ground_flag == GROUND_FOUND){
+        } else if (ground_flag == GROUND_FOUND) {
             mean = calculateMean();
             altitude = percentageHeight(ground, mean);
             usnprintf(cMessage, sizeof(cMessage), "Alt: %d\n", altitude);
             UARTSend(cMessage);
         }
-        //if (altitude <= 1) {
-        //    xQueueOverwrite(xFSMQueue, &FSM_state);
-        //}
         xQueueOverwrite(xAltMeasQueue, &altitude);
+
         vTaskDelay(ALTITUDE_PERIOD / portTICK_RATE_MS);
     }
 }
