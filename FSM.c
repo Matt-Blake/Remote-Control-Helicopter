@@ -35,11 +35,12 @@ findYawRef(void)
     int32_t PWM_main = 50; // place holder for now
     int32_t state = FIND_REF;
     int32_t found_yaw;
+    int32_t ref_yaw = 0;
 
     vTaskSuspend(MainPWM); // suspend the control system until ref is found
     vTaskSuspend(TailPWM);
     vTaskSuspend(BtnCheck);
-    vTaskResume(SwitchCheck);
+    vTaskSuspend(SwitchCheck);
 
     found_yaw = xEventGroupGetBits(xFoundYawReference);
 
@@ -50,6 +51,7 @@ findYawRef(void)
         vTaskResume(SwitchCheck);
         state = LANDED;
         xEventGroupClearBitsFromISR(xFoundYawReference, YAW_REFERENCE_FLAG);
+        xQueueOverwrite(xYawDesQueue, &ref_yaw);
 
     } else { // finding ref mode
         setRotorPWM(PWM_main, 1); // set the main rotor to on, the torque from the main rotor should work better than using the tail, have to test and actually see whats best
