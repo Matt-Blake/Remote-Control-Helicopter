@@ -167,17 +167,17 @@ void vBtnTimerCallback( TimerHandle_t xTimer )
         vTimerSetTimerID( xTimer, 0 ); //( void * ) ulCount
         xTimerStop( xTimer, 0 );
     }
-    UARTSend("Wrong timer callback\n");
+    UARTSend("Button Timer Callback\n");
 }
 
 void vLandTimerCallback( TimerHandle_t xTimerLand )
 {
-    //uint32_t ulCount;
-    UARTSend("LandTimer\n");
+    uint32_t ulCount;
+    UARTSend("Landing Timer Callback\n");
 
-    //ulCount = ( uint32_t ) pvTimerGetTimerID( xTimerLand );
-    //ulCount++;
-    //vTimerSetTimerID( xTimerLand, (void *) ulCount );
+    ulCount = ( uint32_t ) pvTimerGetTimerID( xTimerLand );
+    ulCount++;
+    vTimerSetTimerID( xTimerLand, (void *) ulCount );
 }
 
 /*
@@ -293,7 +293,6 @@ void
 createQueues(void)
 {
     int32_t queue_init = 0; // Value used to initalise queues
-    int32_t first_state = 1;
 
     // Create queues
     xOLEDQueue      = xQueueCreate(1, sizeof( uint32_t ) );
@@ -319,7 +318,7 @@ createQueues(void)
     xQueueOverwrite(xYawDesQueue, &queue_init);
     xQueueOverwrite(xMainPWMQueue, &queue_init);
     xQueueOverwrite(xTailPWMQueue, &queue_init);
-    xQueueOverwrite(xFSMQueue, &first_state);
+    xQueueOverwrite(xFSMQueue, &queue_init);
     xQueueOverwrite(xYawSlotQueue, &queue_init);
 }
 
@@ -350,8 +349,8 @@ createtimers(void)
 {
     xTimer = xTimerCreate( "Button Timer", TIMER_PERIOD / portTICK_RATE_MS, pdFALSE, ( void * ) 0, vBtnTimerCallback );
     xTimerLand = xTimerCreate( "Land Timer", LAND_PERIOD / portTICK_RATE_MS, pdTRUE, ( void * ) 0, vLandTimerCallback );
-    xTimerStart(xTimer, 10);
-    xTimerStart(xTimerLand, 10);
+    //xTimerStart(xTimer, 10);
+    //xTimerStart(xTimerLand, 10);
 }
 
 /*

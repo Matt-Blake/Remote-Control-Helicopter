@@ -23,7 +23,7 @@
 
 typedef enum HELI_STATE {FIND_REF = 0, LANDED = 1, FLYING = 2, LANDING = 3} HELI_STATE;
 
-#define FSM_PERIOD              100
+#define FSM_PERIOD              200
 
 //****************************************************************************
 //Check if found the reference yaw, if it has then set found reference to 1 and
@@ -43,6 +43,7 @@ findYawRef(void)
     vTaskSuspend(SwitchCheck);
 
     found_yaw = xEventGroupGetBits(xFoundYawReference);
+    UARTSend("Finding Ref\n");
 
     if(found_yaw) {
         vTaskResume(MainPWM); // re enable the control system
@@ -66,6 +67,7 @@ land(void)
     int32_t meas;
     int32_t state = LANDING;
     static int32_t descent = 10;
+    static int32_t prev_timerID = 0;
 
     int32_t timerID = ( uint32_t ) pvTimerGetTimerID( xTimerLand );
 
@@ -81,17 +83,18 @@ land(void)
         xTimerStart(xTimerLand, 10); // Starts timer
         vTimerSetTimerID( xTimerLand, (void *) 1 );
         descent = 10;
-    }else{
+    }else if (timerID != prev_timerID){
         descent = descent - 2;
     }
+    prev_timerID = timerID;
 
     if (descent == 0 && meas <= 1) {
         state = LANDED;
         vTimerSetTimerID( xTimerLand, (void *) 0 );
+        prev_timerID = 0;
         xTimerStop( xTimerLand, 0 );
-    }else{
-        xQueueOverwrite(xAltDesQueue, &descent);
     }
+    xQueueOverwrite(xAltDesQueue, &descent);
     xQueueOverwrite(xFSMQueue, &state);
 }
 

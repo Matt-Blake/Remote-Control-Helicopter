@@ -23,7 +23,7 @@ circBuf_t g_inBuffer;
 void
 ADCIntHandler(void)
 {
-    uint32_t ulValue;                                                   // Initialise variable to be used to store ADC value
+    uint32_t ulValue;                                                   // Initialize variable to be used to store ADC value
     uint32_t ground_flag;
 
     ground_flag = xEventGroupGetBits(xFoundAltReference);               // Calculate the current state of the ground flag
