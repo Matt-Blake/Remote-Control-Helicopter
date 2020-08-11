@@ -93,7 +93,7 @@ extern QueueHandle_t xAltDesQueue;
 extern QueueHandle_t xYawDesQueue;
 extern QueueHandle_t xFSMQueue;
 
-extern TimerHandle_t xTimer;
+extern TimerHandle_t xUpBtnTimer;
 
 extern SemaphoreHandle_t xAltMutex;
 extern SemaphoreHandle_t xYawMutex;

@@ -293,7 +293,7 @@ ButtonsCheck(void *pvParameters)
     // Loop forever.
     while(1)
     {
-        inTimeLoop = ( uint32_t ) pvTimerGetTimerID( xTimer );
+        inTimeLoop = ( uint32_t ) pvTimerGetTimerID( xUpBtnTimer );
         /*
          * Check if any buttons have been pressed. Update button state.
          */
@@ -309,9 +309,9 @@ ButtonsCheck(void *pvParameters)
             //xSemaphoreGive(xUPBtnSemaphore);
 
             if(inTimeLoop == 0) { // check to see if the timer has ran out
-                vTimerSetTimerID(xTimer, (void *) 1);
+                vTimerSetTimerID(xUpBtnTimer, (void *) 1);
                 //xSemaphoreGive(xUPBtnSemaphore, 10);
-                xTimerStart(xTimer, 10); // Restarts timer
+                xTimerStart(xUpBtnTimer, 10); // Restarts timer
             } else {
                 xSemaphoreGive(xUpBtnSemaphore);
             }

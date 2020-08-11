@@ -41,7 +41,7 @@ extern QueueHandle_t xFSMQueue;
 extern QueueHandle_t xAltMesQueue;
 extern QueueHandle_t xAltDesQueue;
 
-extern TimerHandle_t xTimerLand;
+extern TimerHandle_t xLandingTimer;
 
 //****************************************************************************
 //Check if found the reference yaw, if it has then set found reference to 1 and

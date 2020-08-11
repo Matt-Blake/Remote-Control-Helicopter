@@ -6,24 +6,23 @@
  *      - refine control
  */
 
-//******************************************************
-// Includes
-//******************************************************
+/*
+ * Includes
+ */
+// Basic/Board includes
 #include <stdbool.h>
 #include <stdint.h>
-
 #include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
-
 #include "driverlib/gpio.h"
 #include "driverlib/interrupt.h"
 #include "driverlib/pin_map.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/systick.h"
-
 #include "utils/ustdlib.h"
 #include "OrbitOLED/OrbitOLEDInterface.h"
 
+// FreeRTOS includes
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
@@ -31,6 +30,7 @@
 #include "event_groups.h"
 #include "timers.h"
 
+// Local includes
 #include "pwm.h"
 #include "reset.h"
 #include "yaw.h"
@@ -40,10 +40,9 @@
 #include "pidController.h"
 #include "FSM.h"
 
-//******************************************************
-// Constants
-//******************************************************
-
+/*
+ * Constants
+ */
 #define LED_STACK_DEPTH         128     // Stack size in words
 #define OLED_STACK_DEPTH        128     // Stack size in words
 #define BTN_STACK_DEPTH         128     // Stack size in words
@@ -66,14 +65,14 @@
 #define ROW_ZERO                0       // Row zero on the OLED display
 #define ROW_ONE                 1       // Row one on the OLED display
 #define ROW_TWO                 2       // Row two on the OLED display
-#define ROW_THREE               3       // Row thre on the OLED display
+#define ROW_THREE               3       // Row three on the OLED display
 #define COLUMN_ZERO             0       // Column zero on the OLED display
-#define DISPLAY_SIZE            17      // Size of stirngs for the OLED display
+#define DISPLAY_SIZE            17      // Size of strings for the OLED display
 
 #define DISPLAY_PERIOD          200
 
-#define TIMER_PERIOD            250
-#define LAND_PERIOD             1000
+#define DBL_BTN_TMR_PERIOD      250
+#define LAND_TMR_PERIOD         1000
 
 
 //******************************************************
@@ -92,8 +91,8 @@ QueueHandle_t xTailPWMQueue;
 QueueHandle_t xFSMQueue;
 QueueHandle_t xYawSlotQueue;
 
-TimerHandle_t xTimer;
-TimerHandle_t xTimerLand;
+TimerHandle_t xUpBtnTimer;
+TimerHandle_t xLandingTimer;
 
 TaskHandle_t MainPWM;
 TaskHandle_t TailPWM;
@@ -347,8 +346,8 @@ createSemaphores(void)
 void
 createtimers(void)
 {
-    xTimer = xTimerCreate( "Button Timer", TIMER_PERIOD / portTICK_RATE_MS, pdFALSE, ( void * ) 0, vBtnTimerCallback );
-    xTimerLand = xTimerCreate( "Land Timer", LAND_PERIOD / portTICK_RATE_MS, pdTRUE, ( void * ) 0, vLandTimerCallback );
+    xUpBtnTimer     = xTimerCreate( "Button Timer", DBL_BTN_TMR_PERIOD / portTICK_RATE_MS, pdFALSE, ( void * ) 0, vBtnTimerCallback );
+    xLandingTimer   = xTimerCreate( "Land Timer", LAND_TMR_PERIOD / portTICK_RATE_MS, pdTRUE, ( void * ) 0, vLandTimerCallback );
     //xTimerStart(xTimer, 10);
     //xTimerStart(xTimerLand, 10);
 }

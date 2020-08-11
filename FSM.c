@@ -69,7 +69,7 @@ land(void)
     static int32_t descent = 10;
     static int32_t prev_timerID = 0;
 
-    int32_t timerID = ( uint32_t ) pvTimerGetTimerID( xTimerLand );
+    int32_t timerID = ( uint32_t ) pvTimerGetTimerID( xLandingTimer );
 
     vTaskSuspend(MainPWM); // Suspend the control system while landed
     vTaskSuspend(TailPWM);
@@ -80,8 +80,8 @@ land(void)
     xQueuePeek(xAltMeasQueue, &meas, 10);
 
     if (timerID == 0){
-        xTimerStart(xTimerLand, 10); // Starts timer
-        vTimerSetTimerID( xTimerLand, (void *) 1 );
+        xTimerStart(xLandingTimer, 10); // Starts timer
+        vTimerSetTimerID( xLandingTimer, (void *) 1 );
         descent = 10;
     }else if (timerID != prev_timerID){
         descent = descent - 2;
@@ -90,9 +90,9 @@ land(void)
 
     if (descent == 0 && meas <= 1) {
         state = LANDED;
-        vTimerSetTimerID( xTimerLand, (void *) 0 );
+        vTimerSetTimerID( xLandingTimer, (void *) 0 );
         prev_timerID = 0;
-        xTimerStop( xTimerLand, 0 );
+        xTimerStop( xLandingTimer, 0 );
     }
     xQueueOverwrite(xAltDesQueue, &descent);
     xQueueOverwrite(xFSMQueue, &state);
