@@ -87,7 +87,7 @@ takeoff(void)
         xQueuePeek(xAltMeasQueue, &alt, 10); // Retrieve the current altitude value
         xQueuePeek(xYawMeasQueue, &yaw, 10); // Retrieve the current yaw value
         if ((yaw > (-YAW_TOLERANCE)) || (yaw < YAW_TOLERANCE)) { // If reached desired yaw
-            if (alt < (desired_alt - ALT_TOLERANCE) || (alt > ALT_TOLERANCE)) { // If reached desired altitude
+            if (alt > (desired_alt - ALT_TOLERANCE) || (alt < (desired_alt + ALT_TOLERANCE)) { // If reached desired altitude
                 state = FLYING;
                 xQueueOverwrite(xFSMQueue, &state); // Set state to hover mode
             }
