@@ -21,6 +21,8 @@
 
 #include "buttons.h"
 
+typedef enum HELI_STATE {LANDED = 0, TAKEOFF = 1, FLYING = 2, LANDING = 3} HELI_STATE;
+
 // *****************************************************
 // Globals
 // *****************************************************
@@ -369,12 +371,12 @@ SwitchesCheck(void *pvParameters)
             L_PREV = GPIOPinRead(SW_PORT_BASE, L_SW_PIN);
             if(L_PREV == L_SW_PIN){
                 UARTSend ("Left Switch High\n");
-                state = 2;
+                state = TAKEOFF;
 
 
             }else{
                 UARTSend ("Left Switch Low\n");
-                state = 3;
+                state = LANDING;
             }
 
             xQueueOverwrite(xFSMQueue, &state);

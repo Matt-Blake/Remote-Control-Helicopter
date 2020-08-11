@@ -82,12 +82,14 @@ takeoff(void)
     } else {
         vTaskResume(MainPWM); // Re-enable the control system
         vTaskResume(TailPWM);
-        xQueueOverwrite(xYawDesQueue, &desired_alt); // Ascend to 20 % altitude
+        xQueueOverwrite(xAltDesQueue, &desired_alt); // Ascend to 20 % altitude
         xQueueOverwrite(xYawDesQueue, &desired_yaw); // Rotate to reference yaw
         xQueuePeek(xAltMeasQueue, &alt, 10); // Retrieve the current altitude value
         xQueuePeek(xYawMeasQueue, &yaw, 10); // Retrieve the current yaw value
-        if ((yaw > (-YAW_TOLERANCE)) || (yaw < YAW_TOLERANCE)) { // If reached desired yaw
-            if ((alt > (desired_alt - ALT_TOLERANCE)) || (alt < (desired_alt + ALT_TOLERANCE))) { // If reached desired altitude
+
+        if ((yaw > (-YAW_TOLERANCE)) && (yaw < YAW_TOLERANCE)) { // If reached desired yaw
+            if (alt > (desired_alt - ALT_TOLERANCE) && (alt < (desired_alt + ALT_TOLERANCE))) { // If reached desired altitude
+
                 state = FLYING;
                 xQueueOverwrite(xFSMQueue, &state); // Set state to hover mode
             }

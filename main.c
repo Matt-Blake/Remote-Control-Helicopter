@@ -67,7 +67,7 @@
 #define YAW_TASK_PRIORITY       8       // Yaw PWM priority
 #define FSM_TASK_PRIORITY       8       // FSM priority
 #define TIMER_TASK_PRIORITY     5       // Time module priority
-#define STACK_TASK_PRIORITY     3
+#define STACK_TASK_PRIORITY     5
 
 #define ROW_ZERO                0       // Row zero on the OLED display
 #define ROW_ONE                 1       // Row one on the OLED display
@@ -112,6 +112,7 @@ TaskHandle_t FSMTask;
 
 SemaphoreHandle_t xAltMutex;
 SemaphoreHandle_t xYawMutex;
+SemaphoreHandle_t xUARTMutex;
 SemaphoreHandle_t xUpBtnSemaphore;
 
 EventGroupHandle_t xFoundAltReference;
@@ -342,7 +343,7 @@ createTasks(void)
     xTaskCreate(Set_Main_Duty,  "Altitude PWM", ALT_STACK_DEPTH,        NULL,       ALT_TASK_PRIORITY,      &MainPWM);
     xTaskCreate(Set_Tail_Duty,  "Yaw PWM",      YAW_STACK_DEPTH,        NULL,       YAW_TASK_PRIORITY,      &TailPWM);
     xTaskCreate(FSM,            "FSM",          YAW_STACK_DEPTH,        NULL,       FSM_TASK_PRIORITY,      &FSMTask);
-    //xTaskCreate(GetStackUsage,  "Stack usage",  TASK_STACK_DEPTH,       NULL,       STACK_TASK_PRIORITY,    NULL);
+    xTaskCreate(GetStackUsage,  "Stack usage",  TASK_STACK_DEPTH,       NULL,       STACK_TASK_PRIORITY,    NULL);
 }
 
 /*
@@ -389,9 +390,13 @@ createSemaphores(void)
 {
     int event_init = 0; //  Value used to initalise event groups
 
-    // Create mutexs to avoid race conditions with the altitude and yaw values
+    // Create mutexs to avoid race conditions
     xAltMutex = xSemaphoreCreateMutex();
     xYawMutex = xSemaphoreCreateMutex();
+    xUARTMutex =  xSemaphoreCreateMutex();
+    xUARTMutex =
+
+
     xUpBtnSemaphore = xSemaphoreCreateCounting(2, 0);
 
     // Create event groups to act as flags

@@ -47,7 +47,7 @@
 
 #define configMAX_SYSCALL_INTERRUPT_PRIORITY (1 << 5) // Leaves IRQ priority 0 for any non-RTOS Real Time interrupts
 
-#define configTOTAL_HEAP_SIZE (8 * 1024) // Adjustable - TM4C123 should support at least 24KB heap
+#define configTOTAL_HEAP_SIZE (16 * 1024) // Adjustable - TM4C123 should support at least 24KB heap
 
 #define configCPU_CLOCK_HZ 80000000UL // Full 80MHz clock
 
