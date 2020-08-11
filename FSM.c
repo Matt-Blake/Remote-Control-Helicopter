@@ -135,22 +135,22 @@ FSM(void *pvParameters) {
         xQueuePeek(xFSMQueue, &state, 10);
         switch(state) {
             case FIND_REF:
-                UARTSend("Finding Ref\n");
+//                UARTSend("Finding Ref\n");
                 findYawRef();
                 break;
 
             case LANDED:
-                UARTSend("Landed\n");
+//                UARTSend("Landed\n");
                 landed();
                 break;
 
             case FLYING:
-                UARTSend("Flying\n");
+//                UARTSend("Flying\n");
                 hover();
                 break;
 
             case LANDING:
-                UARTSend("Landing\n");
+//                UARTSend("Landing\n");
                 land();
                 break;
 

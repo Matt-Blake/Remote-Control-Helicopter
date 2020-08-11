@@ -118,8 +118,8 @@ Mean_ADC(void *pvParameters)
         } else if (ground_flag == GROUND_FOUND) {
             mean = calculateMean();
             altitude = percentageHeight(ground, mean);
-            usnprintf(cMessage, sizeof(cMessage), "Alt: %d\n", altitude);
-            UARTSend(cMessage);
+//            usnprintf(cMessage, sizeof(cMessage), "Alt: %d\n", altitude);
+//            UARTSend(cMessage);
         }
         xQueueOverwrite(xAltMeasQueue, &altitude);
 

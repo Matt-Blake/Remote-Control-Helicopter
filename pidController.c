@@ -81,13 +81,6 @@ int32_t getControlSignal(controller_t* piController, int32_t reference, int32_t 
 
     dutyCycle = controlSignal/(piController->divisor);
 
-    if(derivativeError > 200){
-        while(1){
-            break;
-        }
-    }
-
-
 
     piController->previousError = errorSignal;
 
