@@ -93,6 +93,7 @@ land(void)
         vTimerSetTimerID( xLandingTimer, (void *) 0 );
         prev_timerID = 0;
         xTimerStop( xLandingTimer, 0 );
+        vTaskResume(SwitchCheck);
     }
     xQueueOverwrite(xAltDesQueue, &descent);
     xQueueOverwrite(xFSMQueue, &state);
