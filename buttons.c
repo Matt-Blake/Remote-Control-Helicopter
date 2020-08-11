@@ -369,7 +369,7 @@ SwitchesCheck(void *pvParameters)
             L_PREV = GPIOPinRead(SW_PORT_BASE, L_SW_PIN);
             if(L_PREV == L_SW_PIN){
                 UARTSend ("Left Switch High\n");
-                state = 2;
+                state = 1;
 
 
             }else{

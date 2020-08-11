@@ -33,23 +33,23 @@
  * Constants
  * *****************************************************/
 
-#define DEGREES_CIRCLE      360         // The number of degrees in a circle
-#define MAX_DUTY            98          // The maximum duty cycle for the rotors
-#define MIN_DUTY            2           // The minimum duty cycle for the rotors
-#define MS_TO_SECONDS       1000        // Conversion factor from ms to s
+#define DEGREES_CIRCLE          360         // The number of degrees in a circle
+#define MAX_DUTY                98          // The maximum duty cycle for the rotors
+#define MIN_DUTY                2           // The minimum duty cycle for the rotors
+#define MS_TO_SECONDS           1000        // Conversion factor from ms to s
 
 #define DEGREES_CIRCLE          360         // The number of degrees in a circle
 #define MAX_DUTY                98          // The maximum duty cycle for the rotors
 #define MIN_DUTY                2           // The minimum duty cycle for the rotors
 #define MS_TO_SECONDS           1000        // Conversion factor from ms to s
 
-#define ALT_KP                  100       // Altitude proportional gain
-#define ALT_KI                  60       // Altitude integral gain
-#define ALT_KD                  -50       // Altitude derivative gain // Bro why does this have to be negative?
-#define YAW_KP                  100       // Yaw proportional gain
-#define YAW_KI                  30       // Yaw integral gain
-#define YAW_KD                  80       // Yaw derivative gain
-#define CONTROL_DIVISOR         100           // Divisor used to achieve certain gains without the use of floating point numbers
+#define ALT_KP                  100         // Altitude proportional gain
+#define ALT_KI                  20          // Altitude integral gain
+#define ALT_KD                  20         // Altitude derivative gain // Bro why does this have to be negative?
+#define YAW_KP                  100         // Yaw proportional gain
+#define YAW_KI                  20          // Yaw integral gain
+#define YAW_KD                  20          // Yaw derivative gain
+#define CONTROL_DIVISOR         100         // Divisor used to achieve certain gains without the use of floating point numbers
 
 
 /* ******************************************************
@@ -57,9 +57,9 @@
  * for both the altitude control and the yaw control.
  * *****************************************************/
 typedef struct Controllers {
-    uint32_t    Kp;             // Proportional gain
-    uint32_t    Ki;             // Integral gain
-    uint32_t    Kd;             // Derivative gain
+    int32_t     Kp;             // Proportional gain
+    int32_t     Ki;             // Integral gain
+    int32_t     Kd;             // Derivative gain
     uint32_t    timeStep;       // The time step used to calculate derivative and integral control (in ms)
     int32_t     divisor;        // Divisor used to correct gains without the use of floating point numbers
 
@@ -70,7 +70,7 @@ typedef struct Controllers {
 /* ******************************************************
  * Sets all initial PID Controller struct values
  * *****************************************************/
-void initController(controller_t* controllerPointer, uint32_t K_P, uint32_t K_I, uint32_t K_D, uint32_t time_step, int32_t divisor_value);
+void initController(controller_t* controllerPointer, int32_t K_P, int32_t K_I, int32_t K_D, uint32_t time_step, int32_t divisor_value);
 
 /* ******************************************************
  * Function reverses error signal for yaw and processes

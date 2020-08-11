@@ -24,7 +24,7 @@
 /*
  * Sets all initial PID Controller struct values
  */
-void initController(controller_t* controllerPointer, uint32_t K_P, uint32_t K_I, uint32_t K_D, uint32_t time_step, int32_t divisor_value)
+void initController(controller_t* controllerPointer, int32_t K_P, int32_t K_I, int32_t K_D, uint32_t time_step, int32_t divisor_value)
 {
     controllerPointer->Kp = K_P;
     controllerPointer->Ki = K_I;

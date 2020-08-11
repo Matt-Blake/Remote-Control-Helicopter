@@ -27,7 +27,7 @@ ADCIntHandler(void)
     uint32_t ground_flag;
 
     ground_flag = xEventGroupGetBits(xFoundAltReference);               // Calculate the current state of the ground flag
-
+    UARTSend(".\n");
     if ((g_inBuffer.windex) == 19 && (ground_flag == GROUND_NOT_FOUND)) {
         xEventGroupSetBitsFromISR(xFoundAltReference, GROUND_BUFFER_FULL, pdFALSE);     // Set flag indicating the buffer is full and can now be averaged
         UARTSend("Buff_Full\n");
@@ -114,6 +114,8 @@ Mean_ADC(void *pvParameters)
             xEventGroupClearBits(xFoundAltReference, GROUND_BUFFER_FULL); // Clear previous flag
             xEventGroupSetBits(xFoundAltReference, GROUND_FOUND); // Set flag indicating that the ground reference has been set
             UARTSend("GroundFound\n");
+            usnprintf(cMessage, sizeof(cMessage), "GROUND %d\n", ground);
+            UARTSend(cMessage);
         } else if (ground_flag == GROUND_FOUND) {
             mean = calculateMean();
             altitude = percentageHeight(ground, mean);

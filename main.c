@@ -254,7 +254,7 @@ OLEDDisplay (void *pvParameters)
     uint32_t   tail_PWM;        // Current tail duty cycle
     uint32_t   state;           // Current state in the FSM
 
-    char* states[4] = {"Find Ref", "Landed", "Flying", "Landing"};
+    char* states[4] = {"Landed", "Take Off", "Flying", "Landing"};
 
     while(1)
     {
