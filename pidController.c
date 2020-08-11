@@ -50,8 +50,11 @@ int32_t getControlSignal(controller_t* piController, int32_t reference, int32_t 
 {
     int32_t dutyCycle;
     int32_t controlSignal;
-    int32_t errorSignal;
-    int32_t derivativeError;
+    //int32_t errorSignal;
+    //int32_t derivativeError;
+
+    float errorSignal;
+    float derivativeError;
 
 
     // Calculate error signal
@@ -78,6 +81,14 @@ int32_t getControlSignal(controller_t* piController, int32_t reference, int32_t 
 
     dutyCycle = controlSignal/(piController->divisor);
 
+    if(derivativeError > 200){
+        while(1){
+            break;
+        }
+    }
+
+
+
     piController->previousError = errorSignal;
 
     //Enforce duty cycle output limits
@@ -86,7 +97,6 @@ int32_t getControlSignal(controller_t* piController, int32_t reference, int32_t 
         piController->integratedError -= piController->timeStep * errorSignal/MS_TO_SECONDS;
     } else if(dutyCycle < MIN_DUTY) {
         dutyCycle = MIN_DUTY;
-        piController->integratedError -= piController->timeStep * errorSignal/MS_TO_SECONDS;
     }
     return dutyCycle;
 }

@@ -38,17 +38,18 @@ enum STATE_QUADRATURE {STATE_00 = 0, STATE_01 = 1, STATE_10 = 2, STATE_11 = 3};
 void
 referenceInterrupt(void)
 {
-    int32_t queue_init = 0;
-    int32_t yaw;
-    int32_t desired_yaw;
-    int32_t referenced_desired_yaw;
+    int32_t reset = 0;
+    //int32_t yaw;
+    //int32_t desired_yaw;
+    //int32_t referenced_desired_yaw;
 
     // Adjust yaw and desired yaw around the reference signal
-    xQueuePeek(xYawMeasQueue, &yaw, 10);
-    xQueuePeek(xYawDesQueue, &desired_yaw, 10);
-    referenced_desired_yaw = desired_yaw - yaw; // Adjusted desired yaw value due to reference
-    xQueueOverwrite(xYawMeasQueue, &queue_init);// Adjust the current yaw value to 0 (reference position)
-    xQueueOverwrite(xYawDesQueue,  &referenced_desired_yaw); // Store adjusted desired yaw value in queue
+    //xQueuePeek(xYawMeasQueue, &yaw, 10);
+    //xQueuePeek(xYawDesQueue, &desired_yaw, 10);
+    //referenced_desired_yaw = desired_yaw - yaw; // Adjusted desired yaw value due to reference
+    xQueueOverwrite(xYawMeasQueue, &reset);// Adjust the current yaw value to 0 (reference position)
+    //xQueueOverwrite(xYawDesQueue,  &queue_init); // Store adjusted desired yaw value in queue
+    xQueueOverwrite(xYawSlotQueue, &reset);
 
     xEventGroupSetBits(xFoundYawReference, YAW_REFERENCE_FLAG); // Set reference flag
     GPIOIntClear(YAW_REFERENCE_BASE, YAW_REFERENCE_PIN);
@@ -158,7 +159,7 @@ void initReferenceYaw(void)
 
     GPIOPinTypeGPIOInput(YAW_REFERENCE_BASE, YAW_REFERENCE_PIN);
 
-    GPIOIntTypeSet(YAW_REFERENCE_BASE, YAW_REFERENCE_PIN, GPIO_BOTH_EDGES);
+    GPIOIntTypeSet(YAW_REFERENCE_BASE, YAW_REFERENCE_PIN, GPIO_FALLING_EDGE);
 
     GPIOIntEnable(YAW_REFERENCE_BASE, YAW_REFERENCE_PIN);
 }

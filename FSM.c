@@ -71,8 +71,6 @@ land(void)
 
     int32_t timerID = ( uint32_t ) pvTimerGetTimerID( xLandingTimer );
 
-    vTaskSuspend(MainPWM); // Suspend the control system while landed
-    vTaskSuspend(TailPWM);
     vTaskSuspend(BtnCheck); // Disable changes to yaw and altitude while landing
     vTaskSuspend(SwitchCheck);
 
@@ -83,7 +81,7 @@ land(void)
         xTimerStart(xLandingTimer, 10); // Starts timer
         vTimerSetTimerID( xLandingTimer, (void *) 1 );
         descent = 10;
-    }else if (timerID != prev_timerID){
+    }else if ((timerID != prev_timerID) && (meas <= 10)){
         descent = descent - 2;
     }
     prev_timerID = timerID;

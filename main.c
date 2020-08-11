@@ -353,8 +353,6 @@ createtimers(void)
 {
     xUpBtnTimer     = xTimerCreate( "Button Timer", DBL_BTN_TMR_PERIOD / portTICK_RATE_MS, pdFALSE, ( void * ) 0, vBtnTimerCallback );
     xLandingTimer   = xTimerCreate( "Land Timer", LAND_TMR_PERIOD / portTICK_RATE_MS, pdTRUE, ( void * ) 0, vLandTimerCallback );
-    //xTimerStart(xTimer, 10);
-    //xTimerStart(xTimerLand, 10);
 }
 
 /*
