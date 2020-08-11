@@ -54,6 +54,7 @@
 #define ADC_STACK_DEPTH         128
 #define ALT_STACK_DEPTH         128
 #define YAW_STACK_DEPTH         128
+#define TASK_STACK_DEPTH        128
 
 // Max priority is 8
 #define LED_TASK_PRIORITY       5       // LED task priority
@@ -64,7 +65,8 @@
 #define ALT_TASK_PRIORITY       8       // Altitude PWM priority
 #define YAW_TASK_PRIORITY       8       // Yaw PWM priority
 #define FSM_TASK_PRIORITY       8       // FSM priority
-#define TIMER_TASK_PRIORITY     5
+#define TIMER_TASK_PRIORITY     5       // Time module priority
+#define STACK_TASK_PRIORITY     3
 
 #define ROW_ZERO                0       // Row zero on the OLED display
 #define ROW_ONE                 1       // Row one on the OLED display
@@ -98,15 +100,18 @@ QueueHandle_t xYawSlotQueue;
 TimerHandle_t xUpBtnTimer;
 TimerHandle_t xLandingTimer;
 
-TaskHandle_t MainPWM;
-TaskHandle_t TailPWM;
+TaskHandle_t Blinky;
+TaskHandle_t OLEDDisp;
 TaskHandle_t BtnCheck;
 TaskHandle_t SwitchCheck;
+TaskHandle_t ADCTrig;
+TaskHandle_t ADCMean;
+TaskHandle_t MainPWM;
+TaskHandle_t TailPWM;
+TaskHandle_t FSMTask;
 
 SemaphoreHandle_t xAltMutex;
 SemaphoreHandle_t xYawMutex;
-//SemaphoreHandle_t xLBtnSemaphore;
-//SemaphoreHandle_t xRBtnSemaphore;
 SemaphoreHandle_t xUpBtnSemaphore;
 
 EventGroupHandle_t xFoundAltReference;
@@ -144,6 +149,51 @@ initLED(void)
     GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_2);         // PF_2 as output
     GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD);    // Doesn't need too much drive strength as the RGB LEDs on the TM4C123 launchpad are switched via N-type transistors
     GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_PIN_2);               // Off by default
+}
+
+
+/*
+ * Calculate the maximum stack usage all of the RTOS tasks.
+ */
+void
+GetStackUsage(void *pvParameters)
+{
+    char cMessage[17];
+
+    uint32_t Blinky_stack;
+    uint32_t OLEDDisp_stack;
+    uint32_t BtnCheck_stack;
+    uint32_t SwitchCheck_stack;
+    uint32_t ADCTrig_stack;
+    uint32_t ADCMean_stack;
+    uint32_t MainPWM_stack;
+    uint32_t TailPWM_stack;
+    uint32_t FSMTask_stack;
+
+    while(1){
+
+        // Retrieve stack usage information from each task
+        Blinky_stack      = uxTaskGetStackHighWaterMark(Blinky);
+        OLEDDisp_stack    = uxTaskGetStackHighWaterMark(OLEDDisp);
+        BtnCheck_stack    = uxTaskGetStackHighWaterMark(BtnCheck);
+        SwitchCheck_stack = uxTaskGetStackHighWaterMark(SwitchCheck);
+        ADCTrig_stack     = uxTaskGetStackHighWaterMark(ADCTrig);
+        ADCMean_stack     = uxTaskGetStackHighWaterMark(ADCMean);
+        MainPWM_stack     = uxTaskGetStackHighWaterMark(MainPWM);
+        TailPWM_stack     = uxTaskGetStackHighWaterMark(TailPWM);
+        FSMTask_stack     = uxTaskGetStackHighWaterMark(FSMTask);
+
+        // Send stack information via UART
+        usnprintf(cMessage, sizeof(cMessage), "Blinky unused: %d words\n",      Blinky_stack);
+        usnprintf(cMessage, sizeof(cMessage), "OLEDDisp unused: %d words\n",    OLEDDisp_stack);
+        usnprintf(cMessage, sizeof(cMessage), "BtnCheck Unused: %d words\n",    BtnCheck_stack);
+        usnprintf(cMessage, sizeof(cMessage), "SwitchCheck Unused: %d words\n", SwitchCheck_stack);
+        usnprintf(cMessage, sizeof(cMessage), "ADCTrig Unused: %d words\n",     ADCTrig_stack);
+        usnprintf(cMessage, sizeof(cMessage), "ADCMean Unused: %d words\n",     ADCMean_stack);
+        usnprintf(cMessage, sizeof(cMessage), "MainPWM Unused: %d words\n",     MainPWM_stack);
+        usnprintf(cMessage, sizeof(cMessage), "TailPWM Unused: %d words\n",     TailPWM_stack);
+        usnprintf(cMessage, sizeof(cMessage), "FSMTask Unused: %d words\n",     FSMTask_stack);
+    }
 }
 
 void vBtnTimerCallback( TimerHandle_t xTimer )
@@ -190,16 +240,12 @@ static void
 OLEDDisplay (void *pvParameters)
 {
     char string[DISPLAY_SIZE];
-
     int32_t    des_alt;         // Desired altitude
     int32_t    act_alt;         // Actual altitude
-
     int32_t    des_yaw;         // Desired yaw
     int32_t    act_yaw;         // Actual yaw
-
     uint32_t   main_PWM;        // Current main duty cycle
     uint32_t   tail_PWM;        // Current tail duty cycle
-
     uint32_t   state;           // Current state in the FSM
 
     char* states[4] = {"Find Ref", "Landed", "Flying", "Landing"};
@@ -280,15 +326,16 @@ init(void)
 void
 createTasks(void)
 {
-    xTaskCreate(BlinkLED,       "LED Task",     LED_STACK_DEPTH,        NULL,       LED_TASK_PRIORITY,      NULL);
-    xTaskCreate(OLEDDisplay,    "OLED Task",    OLED_STACK_DEPTH,       NULL,       OLED_TASK_PRIORITY,     NULL);
+    xTaskCreate(BlinkLED,       "LED Task",     LED_STACK_DEPTH,        NULL,       LED_TASK_PRIORITY,      &Blinky);
+    xTaskCreate(OLEDDisplay,    "OLED Task",    OLED_STACK_DEPTH,       NULL,       OLED_TASK_PRIORITY,     &OLEDDisp);
     xTaskCreate(ButtonsCheck,   "Btn Poll",     BTN_STACK_DEPTH,        NULL,       BTN_TASK_PRIORITY,      &BtnCheck);
     xTaskCreate(SwitchesCheck,  "Switch Poll",  SWITCH_STACK_DEPTH,     NULL,       SWI_TASK_PRIORITY,      &SwitchCheck);
-    xTaskCreate(Trigger_ADC,    "ADC Handler",  ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      NULL);
-    xTaskCreate(Mean_ADC,       "ADC Mean",     ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      NULL);
+    xTaskCreate(Trigger_ADC,    "ADC Handler",  ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      &ADCTrig);
+    xTaskCreate(Mean_ADC,       "ADC Mean",     ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      &ADCMean);
     xTaskCreate(Set_Main_Duty,  "Altitude PWM", ALT_STACK_DEPTH,        NULL,       ALT_TASK_PRIORITY,      &MainPWM);
     xTaskCreate(Set_Tail_Duty,  "Yaw PWM",      YAW_STACK_DEPTH,        NULL,       YAW_TASK_PRIORITY,      &TailPWM);
-    xTaskCreate(FSM,            "FSM",          YAW_STACK_DEPTH,        NULL,       FSM_TASK_PRIORITY,      NULL);
+    xTaskCreate(FSM,            "FSM",          YAW_STACK_DEPTH,        NULL,       FSM_TASK_PRIORITY,      &FSMTask);
+    xTaskCreate(GetStackUsage,  "Stack usage",  TASK_STACK_DEPTH,       NULL,       STACK_TASK_PRIORITY,    NULL);
 }
 
 /*
