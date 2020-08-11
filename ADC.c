@@ -1,7 +1,8 @@
 /*
  * ADC.c
  *
- * Module for Analogue to Digital Conversion and Altitude Calculations
+ * Module for Analogue to Digital Conversion and Altitude
+ * Calculations.
  * Uses Successive-Approximation Quantiser
  * Includes initialisers, interrupts and calculation functions
  *
@@ -11,14 +12,25 @@
  *
  * Based off ADCdemo1.c - P.J. Bones, UCECE, 2018
  */
-
+                                                                               |
 #include "ADC.h"
 
 circBuf_t g_inBuffer;
 
-// ********************** ADC FUNCTIONS ****************************
+/*********************** ADC FUNCTIONS ****************************/
 /*
- * Handles the ADC Interrupts (Occur Every SysTick)
+ * Function:    ADCIntHandler
+ * ---------------------------
+ * Handles each interrupt caused by the ADC trigger task.
+ * Reads data from the ADC channel and writes to the circular
+ * buffer.
+ * Sets flag when buffer is filled.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
  */
 void
 ADCIntHandler(void)
@@ -38,7 +50,21 @@ ADCIntHandler(void)
 }
 
 
-/* Initialises the ADC module */
+/*
+ * Function:    initADC
+ * ---------------------
+ * Initializes the Analog-Digital conversion.
+ * Enables the ADC0 peripheral.
+ * Configures the ADC0 sequence on Channel 9.
+ * Configures and enables the ADC interrupt.
+ * Initializes the circular buffer used to store ADC values.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
 void initADC(void)
 {
     SysCtlPeripheralEnable(SYSCTL_PERIPH_ADC0);                         // Enables ADC peripheral
@@ -54,7 +80,21 @@ void initADC(void)
     initCircBuf (&g_inBuffer, BUF_SIZE);
 }
 
-/* Calculates the mean value of the circular buffer */
+
+/*
+ * Function:    calculateMean
+ * ---------------------------
+ * Sums up all values in the circular buffer and then divides by the
+ * number of elements in order to calculate the average value of
+ * the circular buffer.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - int32_t (sum/BUF_SIZE): The average value of the circular
+ *      buffer.
+ * ---------------------
+ */
 int32_t calculateMean(void)
 {
     uint8_t i;
@@ -69,9 +109,25 @@ int32_t calculateMean(void)
     return (sum /BUF_SIZE) ;                       // Returns mean value
 }
 
-/* Calculates the altitude as a percentage of the maximum height */
+
+/*
+ * Function:    percentageHeight
+ * ------------------------------
+ * Converts the average value of the circular buffer to a percentage
+ * value of the maximum height.
+ *
+ * @params:
+ *      - int32_t groundLevel: The ADC value when the helicopter is
+ *      grounded. Used as a reference to 0% height.
+ *      - int32_t currentValue: The current circular buffer average
+ *      to be converted to a percentage height.
+ * @return:
+ *      - int32_t percent: The current circular buffer average as a
+ *      percentage of the total height range.
+ * ---------------------
+ */
 int32_t
-percentageHeight(int32_t ground_level, int32_t current)
+percentageHeight(int32_t groundLevel, int32_t currentValue)
 {
     int32_t maxHeight = 0;
     int32_t percent = 0;
@@ -82,8 +138,18 @@ percentageHeight(int32_t ground_level, int32_t current)
     return percent;                                                     // Returns percentage value
 }
 
+
 /*
- * RTOS task that periodically triggers the ADC interrupt. - Aim to merge the ADC handler into this.
+ * Function:    Trigger_ADC
+ * -------------------------
+ * FreeRTOS task that periodically triggers the ADC interrupt in
+ * order to run the ADC interrupt handler.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
  */
 void
 Trigger_ADC(void *pvParameters)
@@ -95,8 +161,19 @@ Trigger_ADC(void *pvParameters)
     }
 }
 
+
 /*
- * RTOS task that periodically calculates the average value of the circular ADC buffer.
+ * Function:    Mean_ADC
+ * ----------------------
+ * FreeRTOS task that periodically calls functions to calculate the
+ * current average value of the circular buffer, and then converts
+ * to percentage height.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
  */
 void
 Mean_ADC(void *pvParameters)
