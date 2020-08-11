@@ -46,11 +46,11 @@ referenceInterrupt(void)
     GPIOIntClear(YAW_REFERENCE_BASE, YAW_REFERENCE_PIN);
 }
 
-/********************************************************
+/*
  * This function checks whether the yaw has reached the
  * positive or negative thresholds and resets it to the
  * opposite threshold if necessary.
-********************************************************/
+ */
 void checkYawThresholds(void)
 {
     int32_t yaw;
@@ -92,38 +92,30 @@ void quadratureFSMInterrupt(void)
 
     switch (state_code){
         case (0b0010):
-                //UARTSend("CCW\n");
                 yaw_slot--;
                 break;
         case (0b0001):
-                //UARTSend("CW\n");
                 yaw_slot++;
                 break;
         case (0b0100):
-                //UARTSend("CCW\n");
                 yaw_slot--;
                 break;
         case (0b0111):
-                //UARTSend("CW\n");
                 yaw_slot++;
                 break;
         case (0b1101):
-                //UARTSend("CCW\n");
                 yaw_slot--;
                 break;
         case (0b1110):
-                //UARTSend("CW\n");
                 yaw_slot++;
                 break;
         case (0b1011):
-                //UARTSend("CCW\n");
                 yaw_slot--;
                 break;
         case (0b1000):
-                //UARTSend("CW\n");
                 yaw_slot++;
                 break;
-        // Goes into default when a state is skipped. Usually happens when you turn too fast.
+        // Goes into default when a state is skipped. Happens when you turn too fast.
         //default:
                 //UARTSend("QD Error\n");
     }

@@ -43,7 +43,7 @@
 #define SAMPLE_RATE_HZ      200
 //#define VOLTAGE_DROP_ADC    1241                // Voltage drop between ground and maximum height
 //#define VOLTAGE_DROP_ADC    4096                // FOR ORBIT BOARD POTENTIOMETER
-#define VOLTAGE_DROP_ADC    2400                // FOR EMULATOR
+#define VOLTAGE_DROP_ADC    1323                // FOR EMULATOR
 
 #define GROUND_NOT_FOUND    (0 << 0)            // Flag value to indicate that ground reference hasn't been found
 #define GROUND_BUFFER_FULL  (1 << 0)            // Flag value to indicate that the ADC buffer is full

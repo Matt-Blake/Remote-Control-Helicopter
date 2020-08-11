@@ -73,8 +73,8 @@ int32_t calculateMean(void)
 int32_t
 percentageHeight(int32_t ground_level, int32_t current)
 {
-    int32_t maxHeight;
-    int32_t percent;
+    int32_t maxHeight = 0;
+    int32_t percent = 0;
 
     maxHeight = ground_level - VOLTAGE_DROP_ADC;                        // ADC value at maximum height
     percent = 100 - (100 * (current - maxHeight) / (VOLTAGE_DROP_ADC));  // Calculates percentage
@@ -106,7 +106,6 @@ Mean_ADC(void *pvParameters)
     int32_t altitude = 0;
     static int32_t ground;
     int32_t ground_flag;
-    uint32_t FSM_state = 0;
 
     while(1){
         ground_flag = xEventGroupGetBits(xFoundAltReference); // Retrieve the current state of the ground reference

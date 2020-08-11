@@ -1,16 +1,16 @@
-//*****************************************************
-//
-// yaw.c - Initializes quadrature decoder to deal with yaw.
-// Controls the increase and decrease of yaw using button
-// based interrupts. Finds the yaw zero reference. Converts
-// quadrature values into degrees.
-//
-// Creators: Brendain Hennessy   57190084
-//           Sarah Kennelly      76389950
-//           Matt Blake          57190084
-// Last modified: 9/05/2019
-//
-//******************************************************
+/*
+ *
+ * yaw.c - Initializes quadrature decoder to deal with yaw.
+ * Controls the increase and decrease of yaw using button
+ * based interrupts. Finds the yaw zero reference. Converts
+ * quadrature values into degrees.
+ *
+ * Creators: Brendain Hennessy   57190084
+ *           Sarah Kennelly      76389950
+ *           Matt Blake          57190084
+ * Last modified: 9/05/2019
+ *
+ */
 
 #ifndef YAW_H_
 #define YAW_H_
