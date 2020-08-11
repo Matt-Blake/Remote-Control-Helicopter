@@ -373,7 +373,6 @@ SwitchesCheck(void *pvParameters)
                 UARTSend ("Left Switch High\n");
                 state = TAKEOFF;
 
-
             }else{
                 UARTSend ("Left Switch Low\n");
                 state = LANDING;

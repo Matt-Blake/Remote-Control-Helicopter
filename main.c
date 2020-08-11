@@ -193,8 +193,6 @@ GetStackUsage(void *pvParameters)
         usnprintf(cMessage, sizeof(cMessage), "MainPWM Unused: %d words\n",     MainPWM_stack);
         usnprintf(cMessage, sizeof(cMessage), "TailPWM Unused: %d words\n",     TailPWM_stack);
         usnprintf(cMessage, sizeof(cMessage), "FSMTask Unused: %d words\n",     FSMTask_stack);
-
-        vTaskDelay(100 / portTICK_RATE_MS); // Block the task for the reminder of the task period
     }
 }
 
@@ -256,7 +254,7 @@ OLEDDisplay (void *pvParameters)
     uint32_t   tail_PWM;        // Current tail duty cycle
     uint32_t   state;           // Current state in the FSM
 
-    char* states[4] = {"Landed", "Takeoff", "Flying", "Landing"};
+    char* states[4] = {"Landed", "Take Off", "Flying", "Landing"};
 
     while(1)
     {
@@ -429,7 +427,7 @@ vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 
 int
 main(void)
-{
+ {
     init();
     createTasks();
     createQueues();
