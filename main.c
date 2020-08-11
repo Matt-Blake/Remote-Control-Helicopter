@@ -8,9 +8,10 @@
  *      - For some reason the main duty sometimes drops to 2..
  */
 
-/*
- * Includes
- */
+//******************************************************
+// Includes
+//******************************************************
+
 // Basic/Board includes
 #include <stdbool.h>
 #include <stdint.h>
@@ -159,7 +160,6 @@ void
 GetStackUsage(void *pvParameters)
 {
     char cMessage[17];
-
     uint32_t Blinky_stack;
     uint32_t OLEDDisp_stack;
     uint32_t BtnCheck_stack;
@@ -196,6 +196,9 @@ GetStackUsage(void *pvParameters)
     }
 }
 
+/*
+ * WRITE DESCRIPTION
+ */
 void vBtnTimerCallback( TimerHandle_t xTimer )
 {
     uint32_t ulCount;
@@ -223,6 +226,9 @@ void vBtnTimerCallback( TimerHandle_t xTimer )
     UARTSend("Button Timer Callback\n");
 }
 
+/*
+ * WRITE DESCRIPTION
+ */
 void vLandTimerCallback( TimerHandle_t xTimerLand )
 {
     uint32_t ulCount;

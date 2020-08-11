@@ -21,7 +21,7 @@
 
 #include "FSM.h"
 
-typedef enum HELI_STATE {FIND_REF = 0, LANDED = 1, FLYING = 2, LANDING = 3} HELI_STATE;
+typedef enum HELI_STATE {LANDED = 0, TAKEOFF = 1, FLYING = 2, LANDING = 3} HELI_STATE;
 
 #define FSM_PERIOD              200
 
@@ -33,7 +33,6 @@ void
 findYawRef(void)
 {
     int32_t PWM_main = 50; // place holder for now
-    int32_t state = FIND_REF;
     int32_t found_yaw;
     int32_t ref_yaw = 0;
 
@@ -46,20 +45,71 @@ findYawRef(void)
     UARTSend("Finding Ref\n");
 
     if(found_yaw) {
-        vTaskResume(MainPWM); // re enable the control system
+        vTaskResume(MainPWM); // Re-enable the control system
         vTaskResume(TailPWM);
         vTaskResume(BtnCheck);
         vTaskResume(SwitchCheck);
-        state = LANDED;
         xEventGroupClearBitsFromISR(xFoundYawReference, YAW_REFERENCE_FLAG);
         xQueueOverwrite(xYawDesQueue, &ref_yaw);
 
     } else { // finding ref mode
         setRotorPWM(PWM_main, 1); // set the main rotor to on, the torque from the main rotor should work better than using the tail, have to test and actually see whats best
     }
-    xQueueOverwrite(xFSMQueue, &state);
 }
 
+//****************************************************************************
+// Helicopter rotates to reference yaw and ascends to 20% altitude
+//****************************************************************************
+void
+takeoff(void)
+{
+    int32_t yaw;
+    int32_t alt;
+    int32_t desired_yaw = 0;
+    int32_t desired_alt = 20;
+    int32_t found_yaw;
+    int32_t state;
+
+    vTaskSuspend(MainPWM); // suspend the control system until ref is found
+    vTaskSuspend(TailPWM);
+    vTaskSuspend(BtnCheck);
+    vTaskSuspend(SwitchCheck);
+
+    found_yaw = xEventGroupGetBits(xFoundYawReference);
+
+    if(found_yaw) { // If the reference yaw has been found
+        findYawRef(); // Find the reference yaw
+    } else {
+        vTaskResume(MainPWM); // Re-enable the control system
+        vTaskResume(TailPWM);
+        xQueueOverwrite(xYawDesQueue, &desired_alt); // Ascend to 20 % altitude
+        xQueueOverwrite(xYawDesQueue, &desired_yaw); // Rotate to reference yaw
+        xQueuePeek(xAltMeasQueue, &alt, 10); // Retrieve the current altitude value
+        xQueuePeek(xYawMeasQueue, &yaw, 10); // Retrieve the current yaw value
+        if ((yaw < (-YAW_TOLERANCE)) || (yaw > YAW_TOLERANCE)) { // If reached desired yaw
+            if (alt < (desired_alt - ALT_TOLERANCE) || (alt > ALT_TOLERANCE)) { // If reached desired altitude
+                state = FLYING;
+                xQueueOverwrite(xFSMQueue, &state); // Set state to hover mode
+            }
+        }
+    }
+}
+
+//****************************************************************************
+// Helicopter tracks reference altitude and yaw
+//****************************************************************************
+void hover(void)
+{
+    // Resume suspended tasks
+    vTaskResume(MainPWM);
+    vTaskResume(TailPWM);
+    vTaskResume(BtnCheck);
+    vTaskResume(SwitchCheck);
+}
+
+//****************************************************************************
+// Helicopter rotates to reference yaw then incrementally descends to 0 altitude
+//****************************************************************************
 void
 land(void)
 {
@@ -98,18 +148,6 @@ land(void)
 }
 
 //****************************************************************************
-// Helicopter tracks reference altitude and yaw
-//****************************************************************************
-void hover(void)
-{
-    // Resume suspended tasks
-    vTaskResume(MainPWM);
-    vTaskResume(TailPWM);
-    vTaskResume(BtnCheck);
-    //vTaskResume(SwitchCheck);
-}
-
-//****************************************************************************
 //Checks the switch and updates the display and UART after the helicoptor is
 //landed
 //****************************************************************************
@@ -134,16 +172,14 @@ FSM(void *pvParameters) {
     {
         xQueuePeek(xFSMQueue, &state, 10);
         switch(state) {
-            case FIND_REF:
-//                UARTSend("Finding Ref\n");
-                findYawRef();
-                break;
-
             case LANDED:
 //                UARTSend("Landed\n");
                 landed();
                 break;
-
+            case TAKEOFF:
+//                UARTSend("Taking off\n");
+                takeoff();
+                break;
             case FLYING:
 //                UARTSend("Flying\n");
                 hover();

@@ -29,7 +29,7 @@ ADCIntHandler(void)
     ground_flag = xEventGroupGetBits(xFoundAltReference);               // Calculate the current state of the ground flag
 
     if ((g_inBuffer.windex) == 19 && (ground_flag == GROUND_NOT_FOUND)) {
-        xEventGroupSetBits(xFoundAltReference, GROUND_BUFFER_FULL);     // Set flag indicating the buffer is full and can now be averaged
+        xEventGroupSetBitsFromISR(xFoundAltReference, GROUND_BUFFER_FULL, pdFALSE);     // Set flag indicating the buffer is full and can now be averaged
         UARTSend("Buff_Full\n");
     }
     ADCSequenceDataGet(ADC0_BASE, 3, &ulValue);                         // Runs the A-D Conversion and stores the value in ulValue

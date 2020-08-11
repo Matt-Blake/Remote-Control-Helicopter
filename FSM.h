@@ -19,6 +19,9 @@
  * Last modified: 10/08/2020
  * ***************************************************************/
 
+//******************************************************
+// Includes
+//******************************************************
 #include <stdint.h>
 #include <stdbool.h>
 #include "driverlib/gpio.h"
@@ -29,9 +32,17 @@
 #include "queue.h"
 #include "event_groups.h"
 #include "timers.h"
-
 #include "pwm.h"
 
+//******************************************************
+// Constants
+//******************************************************
+#define ALT_TOLERANCE       2       // The tolerance in altitude value to trigger state change
+#define YAW_TOLERANCE       2       // The tolerance in yaw value to trigger state change
+
+//******************************************************
+// Globals
+//******************************************************
 extern TaskHandle_t MainPWM;
 extern TaskHandle_t TailPWM;
 extern TaskHandle_t BtnCheck;
@@ -57,10 +68,6 @@ void findYawRef(void);
 //****************************************************************************
 //int goToStartPoisition(yaw_degrees, adc_error_signal, heightVal, rotatedToReferenceYaw);
 
-//****************************************************************************
-//Gets the helicopter to find the reference yaw and get to altitude of 20%
-//****************************************************************************
-void take_off(void);
 
 //****************************************************************************
 // Helicopter tracks reference altitude and yaw
@@ -72,6 +79,11 @@ void hover(void);
 //height and a defined frequency
 //****************************************************************************
 void land(void);
+
+//****************************************************************************
+//Gets the helicopter to find the reference yaw and get to altitude of 20%
+//****************************************************************************
+void take_off(void);
 
 //****************************************************************************
 //Checks the switch and updates the display and UART after the helicoptor is
