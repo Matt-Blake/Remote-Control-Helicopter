@@ -258,6 +258,7 @@ void
 init(void)
 {
     initClk();
+    initReset();
     initPWM();
     initLED();
     OLEDInitialise();
