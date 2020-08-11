@@ -62,37 +62,48 @@ extern circBuf_t g_inBuffer;
  */
 
 /*
- * ADCIntHandler: The handler for the ADC interrupt.
- * Reads value from PE4 and writes to the circular buffer.
- */
-void ADCIntHandler(void);
-
-/*
- * initADC: Initializes Analog to Digital Conversion on Pin PE4.
+ * Function:    initADC
+ * ---------------------
+ * Initializes the Analog-Digital conversion.
+ * Enables the ADC0 peripheral.
+ * Configures the ADC0 sequence on Channel 9.
+ * Configures and enables the ADC interrupt.
+ * Initializes the circular buffer used to store ADC values.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
  */
 void initADC(void);
 
 /*
- * calculateMean: Calculate the mean value of the circular buffer.
- * @return  Mean value of all contents of circular buffer
- */
-int calculateMean(void);
-
-/*
- * percentageHeight: Calculate the percentage height (0% = Grounded, 100% = Maximum Height)
- * @param   ground_level  - The value calculated by calculateMean() when the helicopter is started/turned on.
- * @param   current       - The value calculated by calculateMean() at the moment percentageHeight is called.
- * @return  percent       - The current height as a percentage of the total/maximum height
- */
-int percentageHeight(int32_t ground_level, int32_t current);
-
-/*
- * Trigger_ADC: RTOS task that periodically triggers the ADC interrupt.
+ * Function:    Trigger_ADC
+ * -------------------------
+ * FreeRTOS task that periodically triggers the ADC interrupt in
+ * order to run the ADC interrupt handler.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
  */
 void Trigger_ADC(void *pvParameters);
 
 /*
- * Mean_ADC: RTOS task that periodically calls the calculateMean function.
+ * Function:    Mean_ADC
+ * ----------------------
+ * FreeRTOS task that periodically calls functions to calculate the
+ * current average value of the circular buffer, and then converts
+ * to percentage height.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
  */
 void Mean_ADC(void *pvParameters);
 

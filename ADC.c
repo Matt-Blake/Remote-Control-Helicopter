@@ -12,7 +12,7 @@
  *
  * Based off ADCdemo1.c - P.J. Bones, UCECE, 2018
  */
-                                                                               |
+
 #include "ADC.h"
 
 circBuf_t g_inBuffer;
@@ -132,8 +132,8 @@ percentageHeight(int32_t groundLevel, int32_t currentValue)
     int32_t maxHeight = 0;
     int32_t percent = 0;
 
-    maxHeight = ground_level - VOLTAGE_DROP_ADC;                        // ADC value at maximum height
-    percent = 100 - (100 * (current - maxHeight) / (VOLTAGE_DROP_ADC));  // Calculates percentage
+    maxHeight = groundLevel - VOLTAGE_DROP_ADC;                        // ADC value at maximum height
+    percent = 100 - (100 * (currentValue - maxHeight) / (VOLTAGE_DROP_ADC));  // Calculates percentage
 
     return percent;                                                     // Returns percentage value
 }
