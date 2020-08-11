@@ -77,7 +77,6 @@
 #define DISPLAY_SIZE            17      // Size of strings for the OLED display
 
 #define DISPLAY_PERIOD          200
-
 #define DBL_BTN_TMR_PERIOD      250
 #define LAND_TMR_PERIOD         1000
 
@@ -193,6 +192,8 @@ GetStackUsage(void *pvParameters)
         usnprintf(cMessage, sizeof(cMessage), "MainPWM Unused: %d words\n",     MainPWM_stack);
         usnprintf(cMessage, sizeof(cMessage), "TailPWM Unused: %d words\n",     TailPWM_stack);
         usnprintf(cMessage, sizeof(cMessage), "FSMTask Unused: %d words\n",     FSMTask_stack);
+
+        vTaskDelay(100 / portTICK_RATE_MS); // Block the task for the reminder of the task period
     }
 }
 
@@ -254,7 +255,7 @@ OLEDDisplay (void *pvParameters)
     uint32_t   tail_PWM;        // Current tail duty cycle
     uint32_t   state;           // Current state in the FSM
 
-    char* states[4] = {"Find Ref", "Landed", "Flying", "Landing"};
+    char* states[4] = {"Landed", "Takeoff", "Flying", "Landing"};
 
     while(1)
     {
@@ -341,7 +342,7 @@ createTasks(void)
     xTaskCreate(Set_Main_Duty,  "Altitude PWM", ALT_STACK_DEPTH,        NULL,       ALT_TASK_PRIORITY,      &MainPWM);
     xTaskCreate(Set_Tail_Duty,  "Yaw PWM",      YAW_STACK_DEPTH,        NULL,       YAW_TASK_PRIORITY,      &TailPWM);
     xTaskCreate(FSM,            "FSM",          YAW_STACK_DEPTH,        NULL,       FSM_TASK_PRIORITY,      &FSMTask);
-    //xTaskCreate(GetStackUsage,  "Stack usage",  TASK_STACK_DEPTH,       NULL,       STACK_TASK_PRIORITY,    NULL);
+    xTaskCreate(GetStackUsage,  "Stack usage",  TASK_STACK_DEPTH,       NULL,       STACK_TASK_PRIORITY,    NULL);
 }
 
 /*
@@ -423,7 +424,7 @@ vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 
 int
 main(void)
- {
+{
     init();
     createTasks();
     createQueues();

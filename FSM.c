@@ -77,7 +77,7 @@ takeoff(void)
 
     found_yaw = xEventGroupGetBits(xFoundYawReference);
 
-    if(found_yaw) { // If the reference yaw has been found
+    if(!found_yaw) { // If the reference yaw has been found
         findYawRef(); // Find the reference yaw
     } else {
         vTaskResume(MainPWM); // Re-enable the control system
@@ -86,7 +86,7 @@ takeoff(void)
         xQueueOverwrite(xYawDesQueue, &desired_yaw); // Rotate to reference yaw
         xQueuePeek(xAltMeasQueue, &alt, 10); // Retrieve the current altitude value
         xQueuePeek(xYawMeasQueue, &yaw, 10); // Retrieve the current yaw value
-        if ((yaw < (-YAW_TOLERANCE)) || (yaw > YAW_TOLERANCE)) { // If reached desired yaw
+        if ((yaw > (-YAW_TOLERANCE)) || (yaw < YAW_TOLERANCE)) { // If reached desired yaw
             if (alt < (desired_alt - ALT_TOLERANCE) || (alt > ALT_TOLERANCE)) { // If reached desired altitude
                 state = FLYING;
                 xQueueOverwrite(xFSMQueue, &state); // Set state to hover mode
