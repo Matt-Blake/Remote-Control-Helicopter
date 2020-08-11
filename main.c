@@ -245,7 +245,7 @@ void vLandTimerCallback( TimerHandle_t xTimerLand )
 static void
 OLEDDisplay (void *pvParameters)
 {
-    char string[DISPLAY_SIZE];
+    char string[DISPLAY_SIZE];  // String of the correct size to be displayed on the OLED screen
     int32_t    des_alt;         // Desired altitude
     int32_t    act_alt;         // Actual altitude
     int32_t    des_yaw;         // Desired yaw
@@ -338,10 +338,10 @@ createTasks(void)
     xTaskCreate(SwitchesCheck,  "Switch Poll",  SWITCH_STACK_DEPTH,     NULL,       SWI_TASK_PRIORITY,      &SwitchCheck);
     xTaskCreate(Trigger_ADC,    "ADC Handler",  ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      &ADCTrig);
     xTaskCreate(Mean_ADC,       "ADC Mean",     ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      &ADCMean);
-    xTaskCreate(Set_Main_Duty,  "Altitude PWM", ALT_STACK_DEPTH,        NULL,       ALT_TASK_PRIORITY,      &MainPWM);
+    xTaskCreate(Set_Main_Duty,  "Alt PWM",      ALT_STACK_DEPTH,        NULL,       ALT_TASK_PRIORITY,      &MainPWM);
     xTaskCreate(Set_Tail_Duty,  "Yaw PWM",      YAW_STACK_DEPTH,        NULL,       YAW_TASK_PRIORITY,      &TailPWM);
     xTaskCreate(FSM,            "FSM",          YAW_STACK_DEPTH,        NULL,       FSM_TASK_PRIORITY,      &FSMTask);
-    xTaskCreate(GetStackUsage,  "Stack usage",  TASK_STACK_DEPTH,       NULL,       STACK_TASK_PRIORITY,    NULL);
+    //xTaskCreate(GetStackUsage,  "Stack usage",  TASK_STACK_DEPTH,       NULL,       STACK_TASK_PRIORITY,    NULL);
 }
 
 /*
@@ -392,8 +392,6 @@ createSemaphores(void)
     xAltMutex = xSemaphoreCreateMutex();
     xYawMutex = xSemaphoreCreateMutex();
     xUARTMutex =  xSemaphoreCreateMutex();
-    xUARTMutex =
-
 
     xUpBtnSemaphore = xSemaphoreCreateCounting(2, 0);
 
@@ -406,11 +404,16 @@ createSemaphores(void)
     xEventGroupSetBits(xFoundYawReference, event_init);
 }
 
+/*
+ * Create all of the RTOS timers.
+ */
 void
-createtimers(void)
+createTimers(void)
 {
-    xUpBtnTimer     = xTimerCreate( "Button Timer", DBL_BTN_TMR_PERIOD / portTICK_RATE_MS, pdFALSE, ( void * ) 0, vBtnTimerCallback );
-    xLandingTimer   = xTimerCreate( "Land Timer", LAND_TMR_PERIOD / portTICK_RATE_MS, pdTRUE, ( void * ) 0, vLandTimerCallback );
+    xUpBtnTimer     = xTimerCreate( "Button Timer", DBL_BTN_TMR_PERIOD
+                                    / portTICK_RATE_MS, pdFALSE, ( void * ) 0, vBtnTimerCallback );
+    xLandingTimer   = xTimerCreate( "Land Timer", LAND_TMR_PERIOD
+                                    / portTICK_RATE_MS, pdTRUE, ( void * ) 0, vLandTimerCallback );
 }
 
 /*
@@ -425,6 +428,10 @@ vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
     while (1){}
 }
 
+/*
+ * Main function.
+ * Used to call initializing functions to create the RTOS environment.
+ */
 int
 main(void)
  {
@@ -432,7 +439,7 @@ main(void)
     createTasks();
     createQueues();
     createSemaphores();
-    createtimers();
+    createTimers();
     UARTSend("Starting...\n");
 
     vTaskStartScheduler();

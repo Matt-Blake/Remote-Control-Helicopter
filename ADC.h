@@ -37,6 +37,7 @@
 /*
  * DEFINES
  */
+
 #define ADC_PERIOD          80
 #define ALTITUDE_PERIOD     200
 #define BUF_SIZE            20

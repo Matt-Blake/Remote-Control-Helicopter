@@ -100,7 +100,8 @@ takeoff(void)
 //****************************************************************************
 // Helicopter tracks reference altitude and yaw
 //****************************************************************************
-void hover(void)
+void
+hover(void)
 {
     // Resume suspended tasks
     vTaskResume(MainPWM);
