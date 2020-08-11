@@ -23,6 +23,7 @@
 
 #include "uart.h"
 
+char statusStr[MAX_STR_LEN + 1];
 
 //********************************************************
 // initialiseUSB_UART - 8 bits, 1 stop bit, no parity
@@ -92,16 +93,16 @@ UARTDisplay (int32_t yaw_degrees, int32_t yaw_desired, int32_t altitude, int32_t
     UARTSend (statusStr);
 
     if (g_heliState == 0){
-        usprintf(statusStr, "Mode: Landed");
+        usprintf(statusStr, "Mode: Landed\r\n");
     } else if (g_heliState == 1){
-        usprintf(statusStr, "Mode: Take Off");
+        usprintf(statusStr, "Mode: Take Off\r\n");
     } else if (g_heliState == 2){
-        usprintf(statusStr, "Mode: Flying");
+        usprintf(statusStr, "Mode: Flying\r\n");
     } else {
-        usprintf(statusStr, "Mode: Landing");
+        usprintf(statusStr, "Mode: Landing\r\n");
     }
     UARTSend (statusStr);
 
-    usprintf (statusStr, "\r\n");
-    UARTSend (statusStr);
+    //usprintf (statusStr, "\r\n");
+    //UARTSend (statusStr);
 }
