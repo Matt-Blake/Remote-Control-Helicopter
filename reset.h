@@ -21,6 +21,6 @@
 //******************************************************
 // Initilize reset GPIO, sets up reset interrupt.
 //******************************************************
-void initResetGPIO(void);
+void initReset(void);
 
 #endif /* RESET_H_ */

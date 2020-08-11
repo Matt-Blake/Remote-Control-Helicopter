@@ -32,7 +32,7 @@ void resetInterrupt(void)
 //******************************************************
 // Initilize reset GPIO, sets up reset interrupt.
 //******************************************************
-void initResetGPIO(void)
+void initReset(void)
 {
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
 
