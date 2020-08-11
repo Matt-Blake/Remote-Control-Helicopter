@@ -118,19 +118,15 @@ initPWM (void);
 /* ******************************************************
  * Turns on the main rotor so a duty cycle can be passed to it
  * *****************************************************/
-void
-turnOnMainPWM (void);
+//void turnOnMainPWM (void);
 
 /* ******************************************************
  * Turns on the tail rotor so a duty cycle can be passed to it
  * *****************************************************/
-void
-turnOnTailPWM (void);
+//void turnOnTailPWM (void);
 
-void
-Set_Main_Duty(void *pvParameters);
+void Set_Main_Duty(void *pvParameters);
 
-void
-Set_Tail_Duty(void *pvParameters);
+void Set_Tail_Duty(void *pvParameters);
 
 #endif /* _PWM_H_ */

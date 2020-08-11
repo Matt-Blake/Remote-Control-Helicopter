@@ -62,7 +62,7 @@ extern TimerHandle_t xLandingTimer;
 //Check if found the reference yaw, if it has then set found reference to 1 and
 //reset the integrator error and update yaw reference
 //****************************************************************************
-void findYawRef(void);
+//void findYawRef(void);
 
 //****************************************************************************
 //If it has reached the appropriate height and yaw it will move to state 2
@@ -76,24 +76,24 @@ void findYawRef(void);
 //****************************************************************************
 // Helicopter tracks reference altitude and yaw
 //****************************************************************************
-void hover(void);
+//void hover(void);
 
 //****************************************************************************
 //Lands the helicoptor by rotating to the yaw reference then decrementing the
 //height and a defined frequency
 //****************************************************************************
-void land(void);
+//void land(void);
 
 //****************************************************************************
 //Gets the helicopter to find the reference yaw and get to altitude of 20%
 //****************************************************************************
-void take_off(void);
+//void take_off(void);
 
 //****************************************************************************
 //Checks the switch and updates the display and UART after the helicoptor is
 //landed
 //****************************************************************************
-void landed(void);
+//void landed(void);
 
 //****************************************************************************
 //Calls the appropriate function for the current state

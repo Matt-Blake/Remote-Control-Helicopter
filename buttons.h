@@ -40,8 +40,8 @@
 /*
  * Button Config
  */
-enum btnNames {UP = 0, DOWN, LEFT, RIGHT, NUM_BTNS};
-enum btnStates {RELEASED = 0, PUSHED, NO_CHANGE};
+enum btnNames   {UP = 0, DOWN, LEFT, RIGHT, NUM_BTNS};
+enum btnStates  {RELEASED = 0, PUSHED, NO_CHANGE};
 
 #define U_BTN_PERIPH        SYSCTL_PERIPH_GPIOE         // Up Peripheral
 #define U_BTN_PORT_BASE     GPIO_PORTE_BASE             // Up Port Base
@@ -116,7 +116,7 @@ void initBtns (void);
  * necessary.  It is efficient enough to be part of an ISR, e.g. from
  * a SysTick interrupt.
  * *****************************************************/
-void updateButtons (void);
+//void updateButtons (void);
 
 /* ******************************************************
  * checkButton: Function returns the new button state if the button state
@@ -124,28 +124,28 @@ void updateButtons (void);
  * NO_CHANGE.  The argument butName should be one of constants in the
  * enumeration butStates, excluding 'NUM_BUTS'. Safe under interrupt.
  * *****************************************************/
-uint8_t checkButton (uint8_t butName);
-// @param   butname - Name of the button to compare the state of (UP/DOWN/LEFT/RIGHT)
+//uint8_t checkButton (uint8_t butName);
+// @param   butName - Name of the button to compare the state of (UP/DOWN/LEFT/RIGHT)
 
-/*
+/* ******************************************************
  * Increment the altitude by 10% if the up button has been pushed
- */
-void upButtonPush(void);
+ * *****************************************************/
+//void upButtonPush(void);
 
-/*
+/* ******************************************************
  * Decrement the desired altitude by 10% if the down button has been pushed
- */
-void downButtonPush(void);
+ * *****************************************************/
+//void downButtonPush(void);
 
-/*
+/* ******************************************************
  * Decrement the desired yaw by 15 degrees if the left button has been pushed
- */
-void leftButtonPush(void);
+ * *****************************************************/
+//void leftButtonPush(void);
 
-/*
+/* ******************************************************
  * Increment the desired yaw by 15 degrees if the left button has been pushed
- */
-void rightButtonPush(void);
+ * *****************************************************/
+//void rightButtonPush(void);
 
 /* ******************************************************
  * ButtonsCheck: checks if buttons associated with altitude and yaw have
