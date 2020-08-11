@@ -74,7 +74,7 @@ land(void)
     vTaskSuspend(MainPWM); // Suspend the control system while landed
     vTaskSuspend(TailPWM);
     vTaskSuspend(BtnCheck); // Disable changes to yaw and altitude while landing
-    //vTaskResume(SwitchCheck);
+    vTaskSuspend(SwitchCheck);
 
     xQueueOverwrite(xYawDesQueue, &yaw);
     xQueuePeek(xAltMeasQueue, &meas, 10);

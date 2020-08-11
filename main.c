@@ -45,7 +45,7 @@
 //******************************************************
 
 // Stack sizes in words, calculated experimentally using uxTaskGetStackHighWaterMark()
-#define LED_STACK_DEPTH         128
+#define LED_STACK_DEPTH         32
 #define OLED_STACK_DEPTH        128
 #define BTN_STACK_DEPTH         128
 #define SWITCH_STACK_DEPTH      128
