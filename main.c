@@ -43,6 +43,7 @@
 //******************************************************
 // Constants
 //******************************************************
+
 // Stack sizes in words, calculated experimentally using uxTaskGetStackHighWaterMark()
 #define LED_STACK_DEPTH         128
 #define OLED_STACK_DEPTH        128
