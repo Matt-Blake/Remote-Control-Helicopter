@@ -4,6 +4,8 @@
  *      - Suss interrupts
  *      - double click to do 180
  *      - refine control
+ *      - Make it so that tail PWM duty doesn't go negative.
+ *      - For some reason the main duty sometimes drops to 2..
  */
 
 /*
