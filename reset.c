@@ -1,13 +1,12 @@
-//*****************************************************
-//
-// reset.c - Initialises the helicopter to have a hard reset interrupt
-//
-// Tue am Group 1
-// Creators: Brendain Hennessy   57190084
-//           Sarah Kennelly      76389950
-//           Matt Blake          58979250
-// Last modified: 9/05/2019
-//******************************************************
+/*
+ * reset.c - Initialises the helicopter to have a hard reset interrupt
+ *
+ * Tue am Group 1
+ * Creators: Brendain Hennessy   57190084
+ *           Sarah Kennelly      76389950
+ *           Matt Blake          58979250
+ * Last modified: 9/05/2019
+ */
 
 #include "reset.h"
 

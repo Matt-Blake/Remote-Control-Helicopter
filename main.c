@@ -160,28 +160,28 @@ GetStackUsage(void *pvParameters)
 {
     char cMessage[17];
 
-    TaskHandle_t Blinky_stack;
-    TaskHandle_t OLEDDisp_stack;
-    TaskHandle_t BtnCheck_stack;
-    TaskHandle_t SwitchCheck_stack;
-    TaskHandle_t ADCTrig_stack;
-    TaskHandle_t ADCMean_stack;
-    TaskHandle_t MainPWM_stack;
-    TaskHandle_t TailPWM_stack;
-    TaskHandle_t FSMTask_stack;
+    uint32_t Blinky_stack;
+    uint32_t OLEDDisp_stack;
+    uint32_t BtnCheck_stack;
+    uint32_t SwitchCheck_stack;
+    uint32_t ADCTrig_stack;
+    uint32_t ADCMean_stack;
+    uint32_t MainPWM_stack;
+    uint32_t TailPWM_stack;
+    uint32_t FSMTask_stack;
 
     while(1){
 
         // Retrieve stack usage information from each task
-        Blinky_stack      = uxTaskGetStackHighWaterMark(Blinky)
-        OLEDDisp_stack    = uxTaskGetStackHighWaterMark(OLEDDisp)
-        BtnCheck_stack    = uxTaskGetStackHighWaterMark(BtnCheck)
-        SwitchCheck_stack = uxTaskGetStackHighWaterMark(SwitchCheck)
-        ADCTrig_stack     = uxTaskGetStackHighWaterMark(ADCTrig)
-        ADCMean_stack     = uxTaskGetStackHighWaterMark(ADCMean)
-        MainPWM_stack     = uxTaskGetStackHighWaterMark(MainPWM)
-        TailPWM_stack     = uxTaskGetStackHighWaterMark(TailPWM)
-        FSMTask_stack     = uxTaskGetStackHighWaterMark(FSMTask)
+        Blinky_stack      = uxTaskGetStackHighWaterMark(Blinky);
+        OLEDDisp_stack    = uxTaskGetStackHighWaterMark(OLEDDisp);
+        BtnCheck_stack    = uxTaskGetStackHighWaterMark(BtnCheck);
+        SwitchCheck_stack = uxTaskGetStackHighWaterMark(SwitchCheck);
+        ADCTrig_stack     = uxTaskGetStackHighWaterMark(ADCTrig);
+        ADCMean_stack     = uxTaskGetStackHighWaterMark(ADCMean);
+        MainPWM_stack     = uxTaskGetStackHighWaterMark(MainPWM);
+        TailPWM_stack     = uxTaskGetStackHighWaterMark(TailPWM);
+        FSMTask_stack     = uxTaskGetStackHighWaterMark(FSMTask);
 
         // Send stack information via UART
         usnprintf(cMessage, sizeof(cMessage), "Blinky unused: %d words\n",      Blinky_stack);
@@ -240,16 +240,17 @@ static void
 OLEDDisplay (void *pvParameters)
 {
     char string[DISPLAY_SIZE];
-    int32_t    des_alt;
-    int32_t    act_alt;
 
-    int32_t    des_yaw;
-    int32_t    act_yaw;
+    int32_t    des_alt;         // Desired altitude
+    int32_t    act_alt;         // Actual altitude
 
-    uint32_t   main_PWM;
-    uint32_t   tail_PWM;
+    int32_t    des_yaw;         // Desired yaw
+    int32_t    act_yaw;         // Actual yaw
 
-    uint32_t   state;
+    uint32_t   main_PWM;        // Current main duty cycle
+    uint32_t   tail_PWM;        // Current tail duty cycle
+
+    uint32_t   state;           // Current state in the FSM
 
     char* states[4] = {"Find Ref", "Landed", "Flying", "Landing"};
 
@@ -338,7 +339,7 @@ createTasks(void)
     xTaskCreate(Set_Main_Duty,  "Altitude PWM", ALT_STACK_DEPTH,        NULL,       ALT_TASK_PRIORITY,      &MainPWM);
     xTaskCreate(Set_Tail_Duty,  "Yaw PWM",      YAW_STACK_DEPTH,        NULL,       YAW_TASK_PRIORITY,      &TailPWM);
     xTaskCreate(FSM,            "FSM",          YAW_STACK_DEPTH,        NULL,       FSM_TASK_PRIORITY,      &FSMTask);
-    xTaskCreate(GetStackUsage,  "Stack usage",  TASK_STACK_DEPTH,       NULL,       STACK_TASK_PRIORITY,    NULL);)
+    xTaskCreate(GetStackUsage,  "Stack usage",  TASK_STACK_DEPTH,       NULL,       STACK_TASK_PRIORITY,    NULL);
 }
 
 /*
@@ -404,8 +405,6 @@ createtimers(void)
 {
     xUpBtnTimer     = xTimerCreate( "Button Timer", DBL_BTN_TMR_PERIOD / portTICK_RATE_MS, pdFALSE, ( void * ) 0, vBtnTimerCallback );
     xLandingTimer   = xTimerCreate( "Land Timer", LAND_TMR_PERIOD / portTICK_RATE_MS, pdTRUE, ( void * ) 0, vLandTimerCallback );
-    //xTimerStart(xTimer, 10);
-    //xTimerStart(xTimerLand, 10);
 }
 
 /*
