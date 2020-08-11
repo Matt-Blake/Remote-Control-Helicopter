@@ -30,16 +30,8 @@ void
 referenceInterrupt(void)
 {
     int32_t reset = 0;
-    //int32_t yaw;
-    //int32_t desired_yaw;
-    //int32_t referenced_desired_yaw;
 
-    // Adjust yaw and desired yaw around the reference signal
-    //xQueuePeek(xYawMeasQueue, &yaw, 10);
-    //xQueuePeek(xYawDesQueue, &desired_yaw, 10);
-    //referenced_desired_yaw = desired_yaw - yaw; // Adjusted desired yaw value due to reference
     xQueueOverwriteFromISR(xYawMeasQueue, &reset, pdFALSE);// Adjust the current yaw value to 0 (reference position)
-    //xQueueOverwrite(xYawDesQueue,  &queue_init); // Store adjusted desired yaw value in queue
     xQueueOverwriteFromISR(xYawSlotQueue, &reset, pdFALSE);
 
     xEventGroupSetBitsFromISR(xFoundYawReference, YAW_REFERENCE_FLAG, pdFALSE); // Set reference flag
@@ -88,7 +80,7 @@ void quadratureFSMInterrupt(void)
     // Bit shift the old reading and combine with new reading. Creates a 4-bit code unique to each state.
     uint8_t state_code = currentChannelReading << 2 | newChannelReading;
 
-    xQueuePeek(xYawSlotQueue, &yaw_slot, 10);; // Get the current number of slots traveled
+    xQueuePeekFromISR(xYawSlotQueue, &yaw_slot);; // Get the current number of slots traveled
 
     switch (state_code){
         case (0b0010):

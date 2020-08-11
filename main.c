@@ -77,7 +77,6 @@
 #define DISPLAY_SIZE            17      // Size of strings for the OLED display
 
 #define DISPLAY_PERIOD          200
-
 #define DBL_BTN_TMR_PERIOD      250
 #define LAND_TMR_PERIOD         1000
 

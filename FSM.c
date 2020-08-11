@@ -86,8 +86,10 @@ takeoff(void)
         xQueueOverwrite(xYawDesQueue, &desired_yaw); // Rotate to reference yaw
         xQueuePeek(xAltMeasQueue, &alt, 10); // Retrieve the current altitude value
         xQueuePeek(xYawMeasQueue, &yaw, 10); // Retrieve the current yaw value
+
         if ((yaw > (-YAW_TOLERANCE)) && (yaw < YAW_TOLERANCE)) { // If reached desired yaw
             if (alt > (desired_alt - ALT_TOLERANCE) && (alt < (desired_alt + ALT_TOLERANCE))) { // If reached desired altitude
+
                 state = FLYING;
                 xQueueOverwrite(xFSMQueue, &state); // Set state to hover mode
             }
@@ -173,20 +175,20 @@ FSM(void *pvParameters) {
         xQueuePeek(xFSMQueue, &state, 10);
         switch(state) {
             case LANDED:
-//                UARTSend("Landed\n");
+                UARTSend("Landed\n");
                 landed();
                 break;
             case TAKEOFF:
-//                UARTSend("Taking off\n");
+                UARTSend("Taking off\n");
                 takeoff();
                 break;
             case FLYING:
-//                UARTSend("Flying\n");
+                UARTSend("Flying\n");
                 hover();
                 break;
 
             case LANDING:
-//                UARTSend("Landing\n");
+                UARTSend("Landing\n");
                 land();
                 break;
 
