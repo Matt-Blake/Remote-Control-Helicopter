@@ -240,16 +240,12 @@ static void
 OLEDDisplay (void *pvParameters)
 {
     char string[DISPLAY_SIZE];
-
     int32_t    des_alt;         // Desired altitude
     int32_t    act_alt;         // Actual altitude
-
     int32_t    des_yaw;         // Desired yaw
     int32_t    act_yaw;         // Actual yaw
-
     uint32_t   main_PWM;        // Current main duty cycle
     uint32_t   tail_PWM;        // Current tail duty cycle
-
     uint32_t   state;           // Current state in the FSM
 
     char* states[4] = {"Find Ref", "Landed", "Flying", "Landing"};
