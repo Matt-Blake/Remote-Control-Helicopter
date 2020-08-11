@@ -275,7 +275,7 @@ OLEDDisplay (void *pvParameters)
         usnprintf(string, sizeof(string), "Yaw   %4d|%3d ", des_yaw, act_yaw);
         OLEDStringDraw(string, COLUMN_ZERO, ROW_ONE);
 
-        usnprintf(string, sizeof(string), "PWM(%%) %3d|%3d ", main_PWM);
+        usnprintf(string, sizeof(string), "PWM(%%) %3d|%3d ", main_PWM, tail_PWM);
         OLEDStringDraw(string, COLUMN_ZERO, ROW_TWO);
 
         //usnprintf(string, sizeof(string), "State = %d", state);
@@ -341,7 +341,7 @@ createTasks(void)
     xTaskCreate(Set_Main_Duty,  "Altitude PWM", ALT_STACK_DEPTH,        NULL,       ALT_TASK_PRIORITY,      &MainPWM);
     xTaskCreate(Set_Tail_Duty,  "Yaw PWM",      YAW_STACK_DEPTH,        NULL,       YAW_TASK_PRIORITY,      &TailPWM);
     xTaskCreate(FSM,            "FSM",          YAW_STACK_DEPTH,        NULL,       FSM_TASK_PRIORITY,      &FSMTask);
-    xTaskCreate(GetStackUsage,  "Stack usage",  TASK_STACK_DEPTH,       NULL,       STACK_TASK_PRIORITY,    NULL);
+    //xTaskCreate(GetStackUsage,  "Stack usage",  TASK_STACK_DEPTH,       NULL,       STACK_TASK_PRIORITY,    NULL);
 }
 
 /*
