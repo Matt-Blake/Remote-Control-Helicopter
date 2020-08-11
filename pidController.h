@@ -30,12 +30,10 @@
 /* ******************************************************
  * Constants
  * *****************************************************/
-#define DEGREES_CIRCLE      360         // The number of degrees in a circle
-#define MAX_DUTY            98          // The maximum duty cycle for the rotors
-#define MIN_DUTY            2           // The minimum duty cycle for the rotors
-#define MS_TO_SECONDS       1000        // Conversion factor from ms to s
-#define CONTROL_DIVISOR     1           // Divisor used to achieve certain gains without the use of floating point numbers
-
+#define DEGREES_CIRCLE          360         // The number of degrees in a circle
+#define MAX_DUTY                98          // The maximum duty cycle for the rotors
+#define MIN_DUTY                2           // The minimum duty cycle for the rotors
+#define MS_TO_SECONDS           1000        // Conversion factor from ms to s
 
 #define ALT_KP                  1       // Altitude proportional gain
 #define ALT_KI                  0       // Altitude integral gain
@@ -43,6 +41,7 @@
 #define YAW_KP                  1       // Yaw proportional gain
 #define YAW_KI                  0       // Yaw integral gain
 #define YAW_KD                  0       // Yaw derivative gain
+#define CONTROL_DIVISOR         1           // Divisor used to achieve certain gains without the use of floating point numbers
 
 /* ******************************************************
  * Sets up PID controller struct values that will be used
