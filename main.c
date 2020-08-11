@@ -40,16 +40,18 @@
 #include "pidController.h"
 #include "FSM.h"
 
-/*
- * Constants
- */
-#define LED_STACK_DEPTH         128     // Stack size in words
-#define OLED_STACK_DEPTH        128     // Stack size in words
-#define BTN_STACK_DEPTH         128     // Stack size in words
-#define SWITCH_STACK_DEPTH      128     // Stack size in words
-#define ADC_STACK_DEPTH         128     // Stack size in words
-#define ALT_STACK_DEPTH         128     // Stack size in words
-#define YAW_STACK_DEPTH         128     // Stack size in words
+//******************************************************
+// Constants
+//******************************************************
+
+// Stack sizes in words, calculated experimentally using uxTaskGetStackHighWaterMark()
+#define LED_STACK_DEPTH         128
+#define OLED_STACK_DEPTH        128
+#define BTN_STACK_DEPTH         128
+#define SWITCH_STACK_DEPTH      128
+#define ADC_STACK_DEPTH         128
+#define ALT_STACK_DEPTH         128
+#define YAW_STACK_DEPTH         128
 
 // Max priority is 8
 #define LED_TASK_PRIORITY       5       // LED task priority
