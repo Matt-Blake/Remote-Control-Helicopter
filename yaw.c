@@ -22,9 +22,20 @@
 enum STATE_QUADRATURE {STATE_00 = 0, STATE_01 = 1, STATE_10 = 2, STATE_11 = 3};
 
 
+
 /*
- * Interrupt which is triggered if the helicopter has
- * found the zero yaw reference.
+ * Function:    referenceInterrupt
+ * --------------------------------
+ * Handler for the interrupt which occurs when the helicopter
+ * reaches the reference yaw position.
+ * Resets the current yaw position and the number of quadrature
+ * slots from reference to be 0.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
  */
 void
 referenceInterrupt(void)
@@ -38,12 +49,22 @@ referenceInterrupt(void)
     GPIOIntClear(YAW_REFERENCE_BASE, YAW_REFERENCE_PIN);
 }
 
+
 /*
+ * Function:    checkYawThresholds
+ * --------------------------------
  * This function checks whether the yaw has reached the
  * positive or negative thresholds and resets it to the
  * opposite threshold if necessary.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
  */
-void checkYawThresholds(void)
+void
+checkYawThresholds(void)
 {
     int32_t yaw;
     int32_t yaw_slot;
@@ -64,13 +85,23 @@ void checkYawThresholds(void)
     }
 }
 
-/********************************************************
+
+/*
+ * Function:    quadratureFSMInterrupt
+ * ------------------------------------
  * Pin change interrupt handler for the quadrature decoder
  * Contains a Finite State Machine which increments the
  * yaw (rotation) according to the values obtained by the
  * quadrature decoder.
-********************************************************/
-void quadratureFSMInterrupt(void)
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
+void
+quadratureFSMInterrupt(void)
 {
     int32_t yaw;
     int32_t yaw_slot;
@@ -123,10 +154,20 @@ void quadratureFSMInterrupt(void)
 
 }
 
-/********************************************************
- * Initializes the quadrature decoders used to calculate the yaw
-********************************************************/
-void initReferenceYaw(void)
+
+/*
+ * Function:    initReferenceYaw
+ * ------------------------------
+ * Initialises the pins and interrupt for the yaw reference.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
+void
+initReferenceYaw(void)
 {
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOC);
 
@@ -139,11 +180,20 @@ void initReferenceYaw(void)
     GPIOIntEnable(YAW_REFERENCE_BASE, YAW_REFERENCE_PIN);
 }
 
-/********************************************************
- * Initialize the GPIO ports/pins used for quadrature
- * decoding.
-********************************************************/
-void initQuadrature(void)
+
+/*
+ * Function:    initQuadrature
+ * ----------------------------
+ * Initialises the pins and interrupts for quadrature decoding.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
+void
+initQuadrature(void)
 {
     /*
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);

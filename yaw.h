@@ -45,16 +45,30 @@ extern QueueHandle_t xYawSlotQueue;
 extern EventGroupHandle_t xFoundYawReference;
 
 
-/* ******************************************************
- * Initialization of the GPIO peripherals and interrupts
- * used for the quadrature decoding.
- * *****************************************************/
+/*
+ * Function:    initQuadrature
+ * ----------------------------
+ * Initialises the pins and interrupts for quadrature decoding.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
 void initQuadrature(void);
 
-/* ******************************************************
- * Initializes the quadrature decoders used to calculate
- * the yaw.
- * *****************************************************/
+/*
+ * Function:    initReferenceYaw
+ * ------------------------------
+ * Initialises the pins and interrupt for the yaw reference.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
 void initReferenceYaw(void);
 
 #endif /* YAW_H_ */
