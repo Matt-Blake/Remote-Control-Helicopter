@@ -34,7 +34,8 @@ static bool btn_normal[NUM_BTNS];   // Corresponds to the electrical state
 // *****************************************************
 // initButtons: Initialise the variables associated with the set of buttons
 // defined by the constants in the buttons2.h header file.
-void initBtns(void)
+void
+initBtns(void)
 {
     uint8_t i;
 
@@ -96,7 +97,8 @@ void initBtns(void)
 // A state change occurs only after NUM_BTN_POLLS consecutive polls have
 // read the pin in the opposite condition, before the state changes and
 // a flag is set.  Set NUM_BTN_POLLS according to the polling rate.
-void updateButtons(void)
+void
+updateButtons(void)
 {
     bool btn_value[NUM_BTNS];
     int i;
@@ -128,7 +130,8 @@ void updateButtons(void)
 // checkButton: Function returns the new button logical state if the button
 // logical state (PUSHED or RELEASED) has changed since the last call,
 // otherwise returns NO_CHANGE.
-uint8_t checkButton(uint8_t btnName)
+uint8_t
+checkButton(uint8_t btnName)
 {
     if (btn_flag[btnName])
     {
@@ -144,7 +147,8 @@ uint8_t checkButton(uint8_t btnName)
 /*
  * Increment the altitude by 10% if the up button has been pushed
  */
-void upButtonPush(void)
+void
+upButtonPush(void)
 {
     uint8_t state;
     int16_t alt_desired = 0;
@@ -177,7 +181,8 @@ void upButtonPush(void)
 /*
  * Decrement the desired altitude by 10% if the down button has been pushed
  */
-void downButtonPush(void)
+void
+downButtonPush(void)
 {
     uint8_t state;
     int16_t alt_desired = 0;
@@ -210,7 +215,8 @@ void downButtonPush(void)
 /*
  * Decrement the desired yaw by 15 degrees if the left button has been pushed
  */
-void leftButtonPush(void)
+void
+leftButtonPush(void)
 {
     uint8_t state;
     static int32_t yaw_desired = 0;
@@ -241,7 +247,8 @@ void leftButtonPush(void)
 /*
  * Increment the desired yaw by 15 degrees if the left button has been pushed
  */
-void rightButtonPush(void)
+void
+rightButtonPush(void)
 {
     uint8_t state;
     static int32_t yaw_desired = 0;
