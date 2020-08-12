@@ -183,7 +183,7 @@ SetMainDuty(void *pvParameters)
     int32_t alt_meas = 0;
     int32_t alt_desired = 0;
 
-    char cMessage[20];
+    //char cMessage[20];
 
     while (1)
     {
@@ -226,7 +226,7 @@ SetTailDuty(void *pvParameters)
     int32_t yaw_desired = 0;
     int32_t alt_PWM = 0;
 
-    char cMessage[20];
+    //char cMessage[20];
 
     while (1)
     {
