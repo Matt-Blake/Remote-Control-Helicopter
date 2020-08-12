@@ -94,10 +94,12 @@ extern QueueHandle_t xYawDesQueue;
 extern QueueHandle_t xFSMQueue;
 
 extern TimerHandle_t xUpBtnTimer;
+extern TimerHandle_t xYawFlipTimer;
 
 extern SemaphoreHandle_t xAltMutex;
 extern SemaphoreHandle_t xYawMutex;
 extern SemaphoreHandle_t xUpBtnSemaphore;
+extern SemaphoreHandle_t xYawFlipSemaphore;
 
 // Debounce algorithm: A state machine is associated with each button.
 // A state change occurs only after NUM_BUT_POLLS consecutive polls have
@@ -109,43 +111,6 @@ extern SemaphoreHandle_t xUpBtnSemaphore;
  * defined by the constants above.
  * *****************************************************/
 void initBtns (void);
-
-/* ******************************************************
- * updateButtons: Function designed to be called regularly. It polls all
- * buttons once and updates variables associated with the buttons if
- * necessary.  It is efficient enough to be part of an ISR, e.g. from
- * a SysTick interrupt.
- * *****************************************************/
-//void updateButtons (void);
-
-/* ******************************************************
- * checkButton: Function returns the new button state if the button state
- * (PUSHED or RELEASED) has changed since the last call, otherwise returns
- * NO_CHANGE.  The argument butName should be one of constants in the
- * enumeration butStates, excluding 'NUM_BUTS'. Safe under interrupt.
- * *****************************************************/
-//uint8_t checkButton (uint8_t butName);
-// @param   butName - Name of the button to compare the state of (UP/DOWN/LEFT/RIGHT)
-
-/* ******************************************************
- * Increment the altitude by 10% if the up button has been pushed
- * *****************************************************/
-//void upButtonPush(void);
-
-/* ******************************************************
- * Decrement the desired altitude by 10% if the down button has been pushed
- * *****************************************************/
-//void downButtonPush(void);
-
-/* ******************************************************
- * Decrement the desired yaw by 15 degrees if the left button has been pushed
- * *****************************************************/
-//void leftButtonPush(void);
-
-/* ******************************************************
- * Increment the desired yaw by 15 degrees if the left button has been pushed
- * *****************************************************/
-//void rightButtonPush(void);
 
 /* ******************************************************
  * ButtonsCheck: checks if buttons associated with altitude and yaw have

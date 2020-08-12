@@ -1,11 +1,7 @@
 /*
  * TODO:
- *      - Figure out what the stack sizes should be
- *      - Suss interrupts
- *      - double click to do 180
- *      - refine control
- *      - Make it so that tail PWM duty doesn't go negative.
- *      - For some reason the main duty sometimes drops to 2..
+ *      - Change the gains for 180 degree yaw rotation and alt to 50%
+ *      - Refine control
  */
 
 //******************************************************
@@ -78,8 +74,9 @@
 #define DISPLAY_SIZE            17      // Size of strings for the OLED display
 
 #define DISPLAY_PERIOD          200
-#define DBL_BTN_TMR_PERIOD      250
-#define LAND_TMR_PERIOD         500
+#define DBL_BTN_TMR_PERIOD      1000//250
+#define YAW_FLIP_TMR_PERIOD     1000//250
+#define LAND_TMR_PERIOD         200
 
 
 //******************************************************
@@ -99,6 +96,7 @@ QueueHandle_t xFSMQueue;
 QueueHandle_t xYawSlotQueue;
 
 TimerHandle_t xUpBtnTimer;
+TimerHandle_t xYawFlipTimer;
 TimerHandle_t xLandingTimer;
 
 TaskHandle_t Blinky;
@@ -115,6 +113,7 @@ SemaphoreHandle_t xAltMutex;
 SemaphoreHandle_t xYawMutex;
 SemaphoreHandle_t xUARTMutex;
 SemaphoreHandle_t xUpBtnSemaphore;
+SemaphoreHandle_t xYawFlipSemaphore;
 
 EventGroupHandle_t xFoundAltReference;
 EventGroupHandle_t xFoundYawReference;
@@ -230,14 +229,27 @@ void vBtnTimerCallback( TimerHandle_t xTimer )
 /*
  * WRITE DESCRIPTION
  */
-void vLandTimerCallback( TimerHandle_t xTimerLand )
+void vLandTimerCallback( TimerHandle_t xTimer )
 {
     uint32_t ulCount;
     UARTSend("Landing Timer Callback\n");
 
-    ulCount = ( uint32_t ) pvTimerGetTimerID( xTimerLand );
+    ulCount = ( uint32_t ) pvTimerGetTimerID( xTimer );
     ulCount++;
-    vTimerSetTimerID( xTimerLand, (void *) ulCount );
+    vTimerSetTimerID( xTimer, (void *) ulCount );
+}
+
+/*
+ * WRITE DESCRIPTION
+ */
+void vYawFlipTimerCallback( TimerHandle_t xTimer )
+{
+    uint32_t ulCount;
+    UARTSend("Yaw Flip Timer Callback\n");
+
+    ulCount = ( uint32_t ) pvTimerGetTimerID( xTimer );
+    ulCount++;
+    vTimerSetTimerID( xTimer, (void *) ulCount );
 }
 
 /*
@@ -322,7 +334,7 @@ void
 init(void)
 {
     initClk();
-    initReset();
+    //initReset();
     initPWM();
     initLED();
     OLEDInitialise();
@@ -403,6 +415,7 @@ createSemaphores(void)
     xUARTMutex =  xSemaphoreCreateMutex();
 
     xUpBtnSemaphore = xSemaphoreCreateCounting(2, 0);
+    xYawFlipSemaphore = xSemaphoreCreateCounting(2, 0);
 
     // Create event groups to act as flags
     xFoundAltReference = xEventGroupCreate();

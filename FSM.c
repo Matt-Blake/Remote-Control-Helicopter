@@ -167,7 +167,8 @@ hover(void)
 void
 land(void)
 {
-    int32_t yaw = 0;
+    int32_t ref_yaw = 0;
+    int32_t yaw;
     int32_t meas;
     int32_t state = LANDING;
     static int32_t descent = 30;
@@ -180,17 +181,21 @@ land(void)
 
     xQueueOverwrite(xYawDesQueue, &yaw);
     xQueuePeek(xAltMeasQueue, &meas, 10);
+    xQueuePeek(xYawMeasQueue, &yaw, 10);
 
     if (timerID == 0){
         xTimerStart(xLandingTimer, 10); // Starts timer
         vTimerSetTimerID( xLandingTimer, (void *) 1 );
         descent = meas;
     }else if ((timerID != prev_timerID) && (meas <= descent)){
-        descent = descent - 5;
+        descent -= 15;
+        if (descent <= 0){
+            descent = 0;
+        }
     }
     prev_timerID = timerID;
 
-    if (descent < 2 && meas <= 1) {
+    if (descent < 2 && meas <= 1 && (yaw <= 2) && (yaw >= -2)) {
         UARTSend("LANDING_SEQ_FIN\n\r");
         state = LANDED;
         vTimerSetTimerID( xLandingTimer, (void *) 0 );
@@ -220,6 +225,8 @@ void landed(void)
     vTaskSuspend(MainPWM); // Suspend the control system while landed
     vTaskSuspend(TailPWM);
     vTaskSuspend(BtnCheck); // Disable changes to yaw and altitude while landed
+    setRotorPWM(MIN_DUTY, 1);
+    setRotorPWM(MIN_DUTY, 0);
     //vTaskResume(SwitchCheck);
 }
 

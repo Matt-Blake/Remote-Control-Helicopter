@@ -294,30 +294,28 @@ ButtonsCheck(void *pvParameters)
 
     portTickType ui16LastTaskTime;
     uint32_t ui32ButtonsDelay = 25;
-    uint32_t inTimeLoop;
+    uint32_t inUpTimeLoop;
+    uint32_t inYawTimeLoop;
     int32_t desired_alt;
+    int32_t desired_yaw;
 
     ui16LastTaskTime = xTaskGetTickCount(); // Get the current tick count.
 
     // Loop forever.
     while(1)
     {
-        inTimeLoop = ( uint32_t ) pvTimerGetTimerID( xUpBtnTimer );
+        inUpTimeLoop = ( uint32_t ) pvTimerGetTimerID( xUpBtnTimer );
+        inYawTimeLoop = ( uint32_t ) pvTimerGetTimerID( xYawFlipTimer );
+
+        xQueuePeek(xYawDesQueue, &desired_yaw, 10);
         /*
          * Check if any buttons have been pressed. Update button state.
          */
         updateButtons();
 
-//            while(xSemaphoreGive(xYawMutex) != pdPASS){
-//                UARTSend("Couldn't give Yaw Mutex\n");
-//            }
-//        }
-//
         if(checkButton(UP) == PUSHED)
         {
-            //xSemaphoreGive(xUPBtnSemaphore);
-
-            if(inTimeLoop == 0) { // check to see if the timer has ran out
+            if(inUpTimeLoop == 0) { // check to see if the timer has ran out
                 vTimerSetTimerID(xUpBtnTimer, (void *) 1);
                 //xSemaphoreGive(xUPBtnSemaphore, 10);
                 xTimerStart(xUpBtnTimer, 10); // Restarts timer
@@ -334,16 +332,36 @@ ButtonsCheck(void *pvParameters)
                  * Call the up button handler to increase target altitude by 10%
                  */
                 upButtonPush();
-
             }
         }
 
         if(checkButton(DOWN) == PUSHED)
         {
-            /*
-             * Call the down button handler to decrease target altitude by 10%
-             */
-            downButtonPush();
+            if(inYawTimeLoop == 0) { // check to see if the timer has ran out
+                vTimerSetTimerID(xYawFlipTimer, (void *) 1);
+                //xSemaphoreGive(xUPBtnSemaphore, 10);
+                xTimerStart(xYawFlipTimer, 10); // Restarts timer
+            } else {
+                xSemaphoreGive(xYawFlipSemaphore);
+            }
+
+            if (uxSemaphoreGetCount(xYawFlipSemaphore) == 1) {
+                xSemaphoreTake(xYawFlipSemaphore, 10);
+                //desired_yaw += 180;
+                if (desired_yaw >= 0) {
+                    desired_yaw = desired_yaw - 180;
+                } else {
+                    desired_yaw = DEGREES_CIRCLE - 180 + desired_yaw;
+                }
+                desired_alt += 10;
+                xQueueOverwrite(xYawDesQueue, &desired_yaw);
+                xQueueOverwrite(xAltDesQueue, &desired_alt);
+            }else {
+                /*
+                 * Call the down button handler to decrease target altitude by 10%
+                 */
+                downButtonPush();
+            }
         }
         if(checkButton(LEFT) == PUSHED)
         {
@@ -392,7 +410,7 @@ SwitchesCheck(void *pvParameters)
         }
         if(GPIOPinRead(SW_PORT_BASE, L_SW_PIN) != L_PREV)
         {
-            R_PREV = GPIOPinRead(SW_PORT_BASE, L_SW_PIN);
+            L_PREV = GPIOPinRead(SW_PORT_BASE, L_SW_PIN);
             if(L_PREV == L_SW_PIN){
                 UARTSend ("LEFTSWITCH\n\r");
                 //state = TAKEOFF;
@@ -402,7 +420,7 @@ SwitchesCheck(void *pvParameters)
                 //state = LANDING;
             }
 
-            xQueueOverwrite(xFSMQueue, &state);
+            //xQueueOverwrite(xFSMQueue, &state);
         }
         vTaskDelayUntil(&ui16LastTaskTime, ui32SwitchDelay/portTICK_RATE_MS);
     }
