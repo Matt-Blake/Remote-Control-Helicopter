@@ -113,7 +113,7 @@ getControlSignal(controller_t* piController, int32_t reference, int32_t measurem
 
     controlSignal = (piController->Kp * errorSignal)  + (piController->Ki * piController->integratedError)/MS_TO_SECONDS + (piController->Kd) * derivativeError * MS_TO_SECONDS;
 
-    dutyCycle = controlSignal/(piController->divisor);
+    dutyCycle = (controlSignal/(piController->divisor));
 
 
     piController->previousError = errorSignal;

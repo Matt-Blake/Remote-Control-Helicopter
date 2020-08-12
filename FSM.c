@@ -170,7 +170,7 @@ land(void)
     int32_t yaw = 0;
     int32_t meas;
     int32_t state = LANDING;
-    static int32_t descent = 10;
+    static int32_t descent = 30;
     static int32_t prev_timerID = 0;
 
     int32_t timerID = ( uint32_t ) pvTimerGetTimerID( xLandingTimer );
@@ -184,13 +184,14 @@ land(void)
     if (timerID == 0){
         xTimerStart(xLandingTimer, 10); // Starts timer
         vTimerSetTimerID( xLandingTimer, (void *) 1 );
-        descent = 10;
-    }else if ((timerID != prev_timerID) && (meas <= 10)){
-        descent = descent - 2;
+        descent = meas;
+    }else if ((timerID != prev_timerID) && (meas <= descent)){
+        descent = descent - 5;
     }
     prev_timerID = timerID;
 
-    if (descent == 0 && meas <= 1) {
+    if (descent < 2 && meas <= 1) {
+        UARTSend("LANDING_SEQ_FIN\n\r");
         state = LANDED;
         vTimerSetTimerID( xLandingTimer, (void *) 0 );
         prev_timerID = 0;
@@ -244,20 +245,20 @@ FSM(void *pvParameters) {
         xQueuePeek(xFSMQueue, &state, 10);
         switch(state) {
             case LANDED:
-                UARTSend("Landed\n");
+//                UARTSend("Landed\n");
                 landed();
                 break;
             case TAKEOFF:
-                UARTSend("Taking off\n");
+//                UARTSend("Taking off\n");
                 takeoff();
                 break;
             case FLYING:
-                UARTSend("Flying\n");
+//                UARTSend("Flying\n");
                 hover();
                 break;
 
             case LANDING:
-                UARTSend("Landing\n");
+//                UARTSend("Landing\n");
                 land();
                 break;
 

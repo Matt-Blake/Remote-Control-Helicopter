@@ -18,6 +18,7 @@
  */
 
 #include "yaw.h"
+#include "uart.h"
 
 enum STATE_QUADRATURE {STATE_00 = 0, STATE_01 = 1, STATE_10 = 2, STATE_11 = 3};
 
@@ -44,7 +45,7 @@ referenceInterrupt(void)
 
     xQueueOverwriteFromISR(xYawMeasQueue, &reset, pdFALSE);// Adjust the current yaw value to 0 (reference position)
     xQueueOverwriteFromISR(xYawSlotQueue, &reset, pdFALSE);
-
+    UARTSend("REF_INTERRUPT\n\r");
     xEventGroupSetBitsFromISR(xFoundYawReference, YAW_REFERENCE_FLAG, pdFALSE); // Set reference flag
     GPIOIntClear(YAW_REFERENCE_BASE, YAW_REFERENCE_PIN);
 }
@@ -170,13 +171,9 @@ void
 initReferenceYaw(void)
 {
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOC);
-
-    GPIOIntRegister(YAW_REFERENCE_BASE, referenceInterrupt);
-
     GPIOPinTypeGPIOInput(YAW_REFERENCE_BASE, YAW_REFERENCE_PIN);
-
+    GPIOIntRegister(YAW_REFERENCE_BASE, referenceInterrupt);
     GPIOIntTypeSet(YAW_REFERENCE_BASE, YAW_REFERENCE_PIN, GPIO_FALLING_EDGE);
-
     GPIOIntEnable(YAW_REFERENCE_BASE, YAW_REFERENCE_PIN);
 }
 

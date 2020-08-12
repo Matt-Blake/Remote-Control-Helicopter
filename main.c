@@ -55,6 +55,7 @@
 #define ADC_STACK_DEPTH         128
 #define ALT_STACK_DEPTH         128
 #define YAW_STACK_DEPTH         128
+#define FSM_STACK_DEPTH         128
 #define TASK_STACK_DEPTH        128
 
 // Max priority is 8
@@ -78,7 +79,7 @@
 
 #define DISPLAY_PERIOD          200
 #define DBL_BTN_TMR_PERIOD      250
-#define LAND_TMR_PERIOD         1000
+#define LAND_TMR_PERIOD         500
 
 
 //******************************************************
@@ -245,7 +246,8 @@ void vLandTimerCallback( TimerHandle_t xTimerLand )
 static void
 OLEDDisplay (void *pvParameters)
 {
-    char string[DISPLAY_SIZE];  // String of the correct size to be displayed on the OLED screen
+    //char string[DISPLAY_SIZE];  // String of the correct size to be displayed on the OLED screen
+    char string[20];  // String of the correct size to be displayed on the OLED screen
     int32_t    des_alt;         // Desired altitude
     int32_t    act_alt;         // Actual altitude
     int32_t    des_yaw;         // Desired yaw
@@ -269,18 +271,25 @@ OLEDDisplay (void *pvParameters)
 
         xQueuePeek(xFSMQueue, &state, 10);
 
-        usnprintf(string, sizeof(string), "Alt(%%) %3d|%3d ", des_alt, act_alt);
-        OLEDStringDraw(string, COLUMN_ZERO, ROW_ZERO);
+        //usnprintf(string, sizeof(string), "Alt(%%) %3d|%3d ", des_alt, act_alt);
+        //OLEDStringDraw(string, COLUMN_ZERO, ROW_ZERO);
+        usnprintf(string, sizeof(string), "Alt(%%) %3d|%3d\n\r", des_alt, act_alt);
+        UARTSend(string);
 
-        usnprintf(string, sizeof(string), "Yaw   %4d|%3d ", des_yaw, act_yaw);
-        OLEDStringDraw(string, COLUMN_ZERO, ROW_ONE);
+        //usnprintf(string, sizeof(string), "Yaw   %4d|%3d ", des_yaw, act_yaw);
+        //OLEDStringDraw(string, COLUMN_ZERO, ROW_ONE);
+        usnprintf(string, sizeof(string), "Yaw   %4d|%3d\n\r", des_yaw, act_yaw);
+        UARTSend(string);
 
-        usnprintf(string, sizeof(string), "PWM(%%) %3d|%3d ", main_PWM, tail_PWM);
-        OLEDStringDraw(string, COLUMN_ZERO, ROW_TWO);
+        //usnprintf(string, sizeof(string), "PWM(%%) %3d|%3d ", main_PWM, tail_PWM);
+        //OLEDStringDraw(string, COLUMN_ZERO, ROW_TWO);
+        usnprintf(string, sizeof(string), "PWM(%%) %3d|%3d\r\n", main_PWM, tail_PWM);
+        UARTSend(string);
 
-        //usnprintf(string, sizeof(string), "State = %d", state);
-        usnprintf(string, sizeof(string), "%s     ", states[state]);
-        OLEDStringDraw(string, COLUMN_ZERO, ROW_THREE);
+        //usnprintf(string, sizeof(string), "%s     ", states[state]);
+        //OLEDStringDraw(string, COLUMN_ZERO, ROW_THREE);
+        usnprintf(string, sizeof(string), "%s\r\n", states[state]);
+        UARTSend(string);
 
         vTaskDelay(DISPLAY_PERIOD / portTICK_RATE_MS);
     }
@@ -313,7 +322,7 @@ void
 init(void)
 {
     initClk();
-    //initReset();
+    initReset();
     initPWM();
     initLED();
     OLEDInitialise();
@@ -338,9 +347,9 @@ createTasks(void)
     xTaskCreate(SwitchesCheck,  "Switch Poll",  SWITCH_STACK_DEPTH,     NULL,       SWI_TASK_PRIORITY,      &SwitchCheck);
     xTaskCreate(Trigger_ADC,    "ADC Handler",  ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      &ADCTrig);
     xTaskCreate(Mean_ADC,       "ADC Mean",     ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      &ADCMean);
-    xTaskCreate(SetMainDuty,  "Alt PWM",        ALT_STACK_DEPTH,        NULL,       ALT_TASK_PRIORITY,      &MainPWM);
-    xTaskCreate(SetTailDuty,  "Yaw PWM",        YAW_STACK_DEPTH,        NULL,       YAW_TASK_PRIORITY,      &TailPWM);
-    xTaskCreate(FSM,            "FSM",          YAW_STACK_DEPTH,        NULL,       FSM_TASK_PRIORITY,      &FSMTask);
+    xTaskCreate(SetMainDuty,    "Alt PWM",      ALT_STACK_DEPTH,        NULL,       ALT_TASK_PRIORITY,      &MainPWM);
+    xTaskCreate(SetTailDuty,    "Yaw PWM",      YAW_STACK_DEPTH,        NULL,       YAW_TASK_PRIORITY,      &TailPWM);
+    xTaskCreate(FSM,            "FSM",          FSM_STACK_DEPTH,        NULL,       FSM_TASK_PRIORITY,      &FSMTask);
     //xTaskCreate(GetStackUsage,  "Stack usage",  TASK_STACK_DEPTH,       NULL,       STACK_TASK_PRIORITY,    NULL);
 }
 
@@ -411,6 +420,8 @@ void
 createTimers(void)
 {
     xUpBtnTimer     = xTimerCreate( "Button Timer", DBL_BTN_TMR_PERIOD
+                                    / portTICK_RATE_MS, pdFALSE, ( void * ) 0, vBtnTimerCallback );
+    xYawFlipTimer   = xTimerCreate( "Yaw Flip Timer", YAW_FLIP_TMR_PERIOD
                                     / portTICK_RATE_MS, pdFALSE, ( void * ) 0, vBtnTimerCallback );
     xLandingTimer   = xTimerCreate( "Land Timer", LAND_TMR_PERIOD
                                     / portTICK_RATE_MS, pdTRUE, ( void * ) 0, vLandTimerCallback );

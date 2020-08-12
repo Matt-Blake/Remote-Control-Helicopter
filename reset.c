@@ -9,6 +9,7 @@
  */
 
 #include "reset.h"
+#include "uart.h"
 
 //******************************************************
 // Constants
@@ -31,6 +32,7 @@
 void resetInterrupt(void)
 {
     int32_t resetRead = GPIOPinRead(GPIO_PORTB_BASE, RESET_GPIO_PIN);
+    UARTSend("RESET/n/r");
     if (resetRead == 0){
         SysCtlReset();
     }

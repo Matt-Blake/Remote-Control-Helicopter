@@ -83,8 +83,8 @@ initBtns(void)
 
     // Switches
     SysCtlPeripheralEnable(SW_PERIPH);
-    GPIOPinTypeGPIOInput(SW_PORT_BASE, L_SW_PIN | R_SW_PIN);
-    GPIOPadConfigSet(SW_PORT_BASE, L_SW_PIN | R_SW_PIN, GPIO_STRENGTH_2MA,
+    GPIOPinTypeGPIOInput(SW_PORT_BASE, R_SW_PIN | L_SW_PIN);
+    GPIOPadConfigSet(SW_PORT_BASE, R_SW_PIN | L_SW_PIN, GPIO_STRENGTH_2MA,
                      GPIO_PIN_TYPE_STD_WPD);
 }
 
@@ -367,39 +367,42 @@ SwitchesCheck(void *pvParameters)
     portTickType ui16LastTaskTime;
     uint32_t ui32SwitchDelay = 25;
     uint32_t state;
-    uint16_t L_PREV = GPIOPinRead(SW_PORT_BASE, L_SW_PIN);
     uint16_t R_PREV = GPIOPinRead(SW_PORT_BASE, R_SW_PIN);
+    uint16_t L_PREV = GPIOPinRead(SW_PORT_BASE, L_SW_PIN);
 
     ui16LastTaskTime = xTaskGetTickCount(); // Get the current tick count.
 
     while(1) {
-        if(GPIOPinRead(SW_PORT_BASE, L_SW_PIN) != L_PREV)
-        {
-            L_PREV = GPIOPinRead(SW_PORT_BASE, L_SW_PIN);
-            if(L_PREV == L_SW_PIN){
-                UARTSend ("Left Switch High\n");
-                state = TAKEOFF;
-
-            }else{
-                UARTSend ("Left Switch Low\n");
-                state = LANDING;
-            }
-
-            xQueueOverwrite(xFSMQueue, &state);
-        }
+        xQueuePeek(xFSMQueue, &state, 10);
         if(GPIOPinRead(SW_PORT_BASE, R_SW_PIN) != R_PREV)
         {
             R_PREV = GPIOPinRead(SW_PORT_BASE, R_SW_PIN);
             if(R_PREV == R_SW_PIN){
-                UARTSend ("Right Switch High\n");
-//                state = 3;
+                UARTSend ("Switch High\n");
+                state = TAKEOFF;
 
             }else{
-                UARTSend ("Right Switch Low\n");
-//                state = 4;
+                UARTSend ("Switch Low\n");
+                if(state == FLYING){
+                    state = LANDING;
+                }
             }
 
-//            xQueueOverwrite(xFSMQueue, &state);
+            xQueueOverwrite(xFSMQueue, &state);
+        }
+        if(GPIOPinRead(SW_PORT_BASE, L_SW_PIN) != L_PREV)
+        {
+            R_PREV = GPIOPinRead(SW_PORT_BASE, L_SW_PIN);
+            if(L_PREV == L_SW_PIN){
+                UARTSend ("LEFTSWITCH\n\r");
+                //state = TAKEOFF;
+
+            }else{
+                UARTSend ("LEFTSWITCH\n\r");
+                //state = LANDING;
+            }
+
+            xQueueOverwrite(xFSMQueue, &state);
         }
         vTaskDelayUntil(&ui16LastTaskTime, ui32SwitchDelay/portTICK_RATE_MS);
     }

@@ -198,8 +198,8 @@ SetMainDuty(void *pvParameters)
             setRotorPWM(alt_PWM, 1); // Set main rotor to calculated PWM
             xQueueOverwrite(xMainPWMQueue, &alt_PWM); // Store the main PWM duty cycle in a queue
 //            xSemaphoreGive(xAltMutex); // Give alt mutex so other mutually exclusive altitude tasks can run
-            //usnprintf(cMessage, sizeof(cMessage), "Main: %d\n", alt_PWM);
-            //UARTSend(cMessage);
+//            usnprintf(cMessage, sizeof(cMessage), "Main: %d\n\r", alt_PWM);
+//            UARTSend(cMessage);
 //        }
         vTaskDelay(CONTROL_PERIOD / portTICK_RATE_MS); // Block task so lower priority tasks can run
     }
@@ -226,7 +226,7 @@ SetTailDuty(void *pvParameters)
     int32_t yaw_desired = 0;
     int32_t alt_PWM = 0;
 
-    //char cMessage[20];
+//    char cMessage[20];
 
     while (1)
     {
@@ -244,8 +244,8 @@ SetTailDuty(void *pvParameters)
             xQueueOverwrite(xTailPWMQueue, &yaw_PWM); // Store the tail PWM duty cycle in a queue
 //            xSemaphoreGive(xYawMutex); // Give yaw mutex so other mutually exclusive yaw tasks can run
 
-            //usnprintf(cMessage, sizeof(cMessage), "Tail: %d\n", yaw_PWM);
-            //UARTSend(cMessage);
+//            usnprintf(cMessage, sizeof(cMessage), "Tail: %d\n\r", yaw_PWM);
+//            UARTSend(cMessage);
 //        }
         vTaskDelay(CONTROL_PERIOD / portTICK_RATE_MS); // Block task so lower priority tasks can run
     }

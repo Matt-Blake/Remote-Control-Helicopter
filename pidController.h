@@ -38,7 +38,7 @@
 #define MIN_DUTY            2           // The minimum duty cycle for the rotors
 #define MS_TO_SECONDS       1000        // Conversion factor from ms to s
 
-#define ALT_KP              100         // Altitude proportional gain
+#define ALT_KP              50         // Altitude proportional gain
 #define ALT_KI              20          // Altitude integral gain
 #define ALT_KD              20         // Altitude derivative gain // Bro why does this have to be negative?
 #define YAW_KP              100         // Yaw proportional gain
