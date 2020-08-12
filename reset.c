@@ -16,10 +16,18 @@
 #define RESET_GPIO_BASE  GPIO_PORTA_BASE //Sets the base for pins J1-03 (PB0, channel A) and J1-04 (PB1, channel B)
 #define RESET_GPIO_PIN   GPIO_INT_PIN_6
 
-//******************************************************
-// reset interrupt that is checking if the reset button
-// is clicked. Resets the System if it is clicked.
-//******************************************************
+/*
+ * Function:    resetInterrupt
+ * ----------------------------
+ * Handler for the reset interrupt.
+ * Performs a system reset.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
 void resetInterrupt(void)
 {
     int32_t resetRead = GPIOPinRead(GPIO_PORTB_BASE, RESET_GPIO_PIN);
@@ -28,9 +36,17 @@ void resetInterrupt(void)
     }
 }
 
-//******************************************************
-// Initilize reset GPIO, sets up reset interrupt.
-//******************************************************
+/*
+ * Function:    initReset
+ * ----------------------------
+ * Initializes the reset interrupt on Port A Pin 6.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
 void initReset(void)
 {
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);

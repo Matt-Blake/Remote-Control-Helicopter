@@ -18,9 +18,17 @@
 #include "driverlib/sysctl.h"
 #include "inc/hw_memmap.h"
 
-//******************************************************
-// Initilize reset GPIO, sets up reset interrupt.
-//******************************************************
+/*
+ * Function:    initReset
+ * ----------------------------
+ * Initializes the reset interrupt on Port A Pin 6.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
 void initReset(void);
 
 #endif /* RESET_H_ */
