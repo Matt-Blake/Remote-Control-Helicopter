@@ -58,46 +58,18 @@ extern QueueHandle_t xMainPWMQueue; // Delete this once debugging done
 
 extern TimerHandle_t xLandingTimer;
 
-//****************************************************************************
-//Check if found the reference yaw, if it has then set found reference to 1 and
-//reset the integrator error and update yaw reference
-//****************************************************************************
-//void findYawRef(void);
 
-//****************************************************************************
-//If it has reached the appropriate height and yaw it will move to state 2
-//Otherwise if it still needs to rotate to reference yaw set altitude to 25
-//Finally if needed to reach height then sets altitude_PWM
-//Altitude PWM is returned
-//****************************************************************************
-//int goToStartPoisition(yaw_degrees, adc_error_signal, heightVal, rotatedToReferenceYaw);
-
-
-//****************************************************************************
-// Helicopter tracks reference altitude and yaw
-//****************************************************************************
-//void hover(void);
-
-//****************************************************************************
-//Lands the helicoptor by rotating to the yaw reference then decrementing the
-//height and a defined frequency
-//****************************************************************************
-//void land(void);
-
-//****************************************************************************
-//Gets the helicopter to find the reference yaw and get to altitude of 20%
-//****************************************************************************
-//void take_off(void);
-
-//****************************************************************************
-//Checks the switch and updates the display and UART after the helicoptor is
-//landed
-//****************************************************************************
-//void landed(void);
-
-//****************************************************************************
-//Calls the appropriate function for the current state
-// the slider will switch between take_off and landing. The transition will be dependent on current state
-//****************************************************************************
+/*
+ * Function:    FSM
+ * ------------------------
+ * FreeRTOS task that periodically checks the current state of the
+ * helicopter and runs the appropriate function.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
 void FSM(void *pvParameters);
 

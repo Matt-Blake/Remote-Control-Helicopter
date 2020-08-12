@@ -35,7 +35,8 @@ typedef enum HELI_STATE {LANDED = 0, TAKEOFF = 1, FLYING = 2, LANDING = 3} HELI_
  * Disables the PWM control, buttons, and switches.
  * Sets the main PWM to be 50% duty cycle in order for the
  * helicopter to spin.
- * Once the yaw reference flag has been set, all tasks resume,
+ * Once the yaw reference flag has been set by an interrupt,
+ * all tasks resume.
  *
  * @params:
  *      - NULL
@@ -71,9 +72,22 @@ findYawRef(void)
     }
 }
 
-//****************************************************************************
-// Helicopter rotates to reference yaw and ascends to 20% altitude
-//****************************************************************************
+
+/*
+ * Function:    takeoff
+ * ---------------------
+ * If the reference has not be found, the findYawRef function is
+ * called.
+ * If the reference flag has been set, the helicopter ascends to
+ * 20% height, and rotates to 0 degrees yaw.
+ * Once this position has been reached, the state changes to FLYING.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
 void
 takeoff(void)
 {
@@ -111,9 +125,20 @@ takeoff(void)
     }
 }
 
-//****************************************************************************
-// Helicopter tracks reference altitude and yaw
-//****************************************************************************
+
+/*
+ * Function:    hover
+ * -------------------
+ * Basic flying mode. All tasks are functional.
+ * Movement is controlled by the GPIO buttons and the PID
+ * controller.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
 void
 hover(void)
 {
@@ -124,9 +149,21 @@ hover(void)
     vTaskResume(SwitchCheck);
 }
 
-//****************************************************************************
-// Helicopter rotates to reference yaw then incrementally descends to 0 altitude
-//****************************************************************************
+
+/*
+ * Function:    land
+ * ------------------
+ * Function that sets the desired altitude to 10%, and then
+ * decreases this value by 2% every second.
+ * Once the desired position is reached, the state is changed to
+ * LANDED.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
 void
 land(void)
 {
@@ -164,10 +201,19 @@ land(void)
     xQueueOverwrite(xFSMQueue, &state);
 }
 
-//****************************************************************************
-//Checks the switch and updates the display and UART after the helicoptor is
-//landed
-//****************************************************************************
+
+/*
+ * Function:    landed
+ * ------------------------
+ * Disables all input with the exception of the switches.
+ * Helicopter is in an idle state.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
 void landed(void)
 {
     vTaskSuspend(MainPWM); // Suspend the control system while landed
@@ -176,10 +222,18 @@ void landed(void)
     //vTaskResume(SwitchCheck);
 }
 
-//****************************************************************************
-//Calls the appropriate function for the current state
-// the slider will switch between take_off and landing. The transition will be dependent on current state
-//****************************************************************************
+/*
+ * Function:    FSM
+ * ------------------------
+ * FreeRTOS task that periodically checks the current state of the
+ * helicopter and runs the appropriate function.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
 void
 FSM(void *pvParameters) {
 
