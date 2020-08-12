@@ -29,6 +29,20 @@ typedef enum HELI_STATE {LANDED = 0, TAKEOFF = 1, FLYING = 2, LANDING = 3} HELI_
 //Check if found the reference yaw, if it has then set found reference to 1 and
 //reset the integrator error and update yaw reference
 //****************************************************************************
+/*
+ * Function:    findYawRef
+ * ------------------------
+ * Disables the PWM control, buttons, and switches.
+ * Sets the main PWM to be 50% duty cycle in order for the
+ * helicopter to spin.
+ * Once the yaw reference flag has been set, all tasks resume,
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
 void
 findYawRef(void)
 {
