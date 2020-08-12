@@ -106,6 +106,7 @@ quadratureFSMInterrupt(void)
 {
     int32_t yaw;
     int32_t yaw_slot;
+    static int32_t dir = 0; // Direction
     int32_t newChannelReading = GPIOPinRead(GPIO_PORTB_BASE, YAW_PIN0_GPIO_PIN | YAW_PIN1_GPIO_PIN);
     static int32_t currentChannelReading = 0;
 
@@ -116,35 +117,55 @@ quadratureFSMInterrupt(void)
 
     switch (state_code){
         case (0b0010):
-                yaw_slot--;
+//                yaw_slot--;
+                dir = 1;
                 break;
         case (0b0001):
-                yaw_slot++;
+//                yaw_slot++;
+                dir = 0;
                 break;
         case (0b0100):
-                yaw_slot--;
+//                yaw_slot--;
+                dir = 1;
                 break;
         case (0b0111):
-                yaw_slot++;
+//                yaw_slot++;
+                dir = 0;
                 break;
         case (0b1101):
-                yaw_slot--;
+//                yaw_slot--;
+                dir = 1;
                 break;
         case (0b1110):
-                yaw_slot++;
+//                yaw_slot++;
+                dir = 0;
                 break;
         case (0b1011):
-                yaw_slot--;
+//                yaw_slot--;
+                dir = 1;
                 break;
         case (0b1000):
-                yaw_slot++;
+//                yaw_slot++;
+                dir = 0;
                 break;
         // Goes into default when a state is skipped. Happens when you turn too fast.
-        //default:
+//        default:
                 //UARTSend("QD Error\n");
+//            if(dir == 0){
+//                yaw_slot++;
+//            }else if(dir == 1){
+//                yaw_slot--;
+//            }
     }
 
     currentChannelReading = newChannelReading;
+
+    // TEMPORARY
+    if(dir == 0){
+        yaw_slot++;
+    }else{
+        yaw_slot--;
+    }
 
     // Calculate yaw in degrees and store the results
     yaw = yaw_slot * MOUNT_SLOT_COUNT/DEGREES_HALF_CIRCLE; // Convert to degrees
