@@ -38,8 +38,15 @@ controller_t g_alt_controller;
 controller_t g_yaw_controller;
 
 /*
- * initialise PWM for the main rotor.
- * M0PWM7 (J4-05, PC5) is used for the main rotor motor
+ * Function:    initPWM
+ * ---------------------
+ * Initializes the PWM output used to drive the helicopter motors.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
  */
 void
 initPWM (void)
@@ -89,7 +96,17 @@ initPWM (void)
 
 
 /*
- * Function to set the freq, duty cycle of M0PWM7.
+ * Function:    setRotorPWM
+ * -------------------------
+ * Sets the PWM duty cycle and period of each motor.
+ *
+ * @params:
+ *      - uint32_t ui32Duty: The duty cycle to be set for the PWM.
+ *      - bool SET_MAIN: If True, sets the main rotor PWM params.
+ *      If False, sets the tail rotor PWM params
+ * @return:
+ *      - NULL
+ * ---------------------
  */
 void
 setRotorPWM (uint32_t ui32Duty, bool SET_MAIN)
@@ -109,8 +126,17 @@ setRotorPWM (uint32_t ui32Duty, bool SET_MAIN)
     }
 }
 
+
 /*
- * Turns on the main rotor so a duty cycle can be passed to it
+ * Function:    turnOnMainPWM
+ * ---------------------------
+ * Turns on the main motor PWM output.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
  */
 void
 turnOnMainPWM(void)
@@ -118,8 +144,17 @@ turnOnMainPWM(void)
     PWMOutputState(PWM_MAIN_BASE, PWM_MAIN_OUTBIT, true);
 }
 
+
 /*
- * Turns on the tail rotor so a duty cycle can be passed to it
+ * Function:    turnOnTailPWM
+ * ---------------------------
+ * Turns on the tail motor PWM output.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
  */
 void
 turnOnTailPWM(void)
@@ -127,11 +162,22 @@ turnOnTailPWM(void)
     PWMOutputState(PWM_TAIL_BASE, PWM_TAIL_OUTBIT, true);
 }
 
+
 /*
- * RTOS task that controls the main rotor speed in order to reach the desired altitude.
+ * Function:    SetMainDuty
+ * -------------------------
+ * FreeRTOS task that periodically calls functions to set the PWM
+ * duty cycle of the main rotor required to reach the desired
+ * altitude.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
  */
 void
-Set_Main_Duty(void *pvParameters)
+SetMainDuty(void *pvParameters)
 {
     int32_t alt_PWM = 0;
     int32_t alt_meas = 0;
@@ -159,11 +205,21 @@ Set_Main_Duty(void *pvParameters)
     }
 }
 
+
 /*
- * RTOS task that controls the tail rotor speed in order to reach the desire yaw.
+ * Function:    SetTailDuty
+ * -------------------------
+ * FreeRTOS task that periodically calls functions to set the PWM
+ * duty cycle of the tail rotor required to reach the desired yaw.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
  */
 void
-Set_Tail_Duty(void *pvParameters)
+SetTailDuty(void *pvParameters)
 {
     int32_t yaw_PWM = 0;
     int32_t yaw_meas = 0;

@@ -102,31 +102,62 @@ extern QueueHandle_t xYawDesQueue;
 extern QueueHandle_t xMainPWMQueue;
 extern QueueHandle_t xTailPWMQueue;
 
- /* ******************************************************
- * Function to set the freq, duty cycle of M0PWM7.
- * *****************************************************/
-void
-setRotorPWM (uint32_t ui32Duty, bool SET_MAIN);
 
- /* ******************************************************
- * Initialise PWM for the main rotor.
- * M0PWM7 (J4-05, PC5) is used for the main rotor motor
- * *****************************************************/
-void
-initPWM (void);
+/*
+ * Function:    initPWM
+ * ---------------------
+ * Initializes the PWM output used to drive the helicopter motors.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
+void initPWM (void);
 
-/* ******************************************************
- * Turns on the main rotor so a duty cycle can be passed to it
- * *****************************************************/
-//void turnOnMainPWM (void);
+/*
+ * Function:    setRotorPWM
+ * -------------------------
+ * Sets the PWM duty cycle and period of each motor.
+ *
+ * @params:
+ *      - uint32_t ui32Duty: The duty cycle to be set for the PWM.
+ *      - bool SET_MAIN: If True, sets the main rotor PWM params.
+ *      If False, sets the tail rotor PWM params
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
+void setRotorPWM (uint32_t ui32Duty, bool SET_MAIN);
 
-/* ******************************************************
- * Turns on the tail rotor so a duty cycle can be passed to it
- * *****************************************************/
-//void turnOnTailPWM (void);
+/*
+ * Function:    SetMainDuty
+ * -------------------------
+ * FreeRTOS task that periodically calls functions to set the PWM
+ * duty cycle of the main rotor required to reach the desired
+ * altitude.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
+void SetMainDuty(void *pvParameters);
 
-void Set_Main_Duty(void *pvParameters);
-
-void Set_Tail_Duty(void *pvParameters);
+/*
+ * Function:    SetTailDuty
+ * -------------------------
+ * FreeRTOS task that periodically calls functions to set the PWM
+ * duty cycle of the tail rotor required to reach the desired yaw.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
+void SetTailDuty(void *pvParameters);
 
 #endif /* _PWM_H_ */
