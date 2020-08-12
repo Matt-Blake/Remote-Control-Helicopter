@@ -302,8 +302,8 @@ initClk(void)
 void
 initControllers(void)
 {
-    initController(&g_alt_controller, ALT_KP, ALT_KI, ALT_KD, CONTROL_PERIOD, CONTROL_DIVISOR); // Create altitude controller based of preset gains
-    initController(&g_yaw_controller, YAW_KP, YAW_KI, YAW_KD, CONTROL_PERIOD, CONTROL_DIVISOR); // Create yaw controller based of preset gains
+    initController(&g_alt_controller, false, CONTROL_PERIOD); // Create altitude controller based of preset gains
+    initController(&g_yaw_controller, true, CONTROL_PERIOD); // Create yaw controller based of preset gains
 }
 
 /*
@@ -338,8 +338,8 @@ createTasks(void)
     xTaskCreate(SwitchesCheck,  "Switch Poll",  SWITCH_STACK_DEPTH,     NULL,       SWI_TASK_PRIORITY,      &SwitchCheck);
     xTaskCreate(Trigger_ADC,    "ADC Handler",  ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      &ADCTrig);
     xTaskCreate(Mean_ADC,       "ADC Mean",     ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      &ADCMean);
-    xTaskCreate(Set_Main_Duty,  "Alt PWM",      ALT_STACK_DEPTH,        NULL,       ALT_TASK_PRIORITY,      &MainPWM);
-    xTaskCreate(Set_Tail_Duty,  "Yaw PWM",      YAW_STACK_DEPTH,        NULL,       YAW_TASK_PRIORITY,      &TailPWM);
+    xTaskCreate(SetMainDuty,  "Alt PWM",        ALT_STACK_DEPTH,        NULL,       ALT_TASK_PRIORITY,      &MainPWM);
+    xTaskCreate(SetTailDuty,  "Yaw PWM",        YAW_STACK_DEPTH,        NULL,       YAW_TASK_PRIORITY,      &TailPWM);
     xTaskCreate(FSM,            "FSM",          YAW_STACK_DEPTH,        NULL,       FSM_TASK_PRIORITY,      &FSMTask);
     //xTaskCreate(GetStackUsage,  "Stack usage",  TASK_STACK_DEPTH,       NULL,       STACK_TASK_PRIORITY,    NULL);
 }
