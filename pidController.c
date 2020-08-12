@@ -22,21 +22,42 @@
 #include "pidController.h"
 
 /*
- * Sets all initial PID Controller struct values
+ * Function:    initController
+ * ----------------------------
+ * Initializes controller struct values.
+ *
+ * @params:
+ *      - controller_t* controllerPointer: Pointer to the relevant
+ *      conroller struct.
+ *      - bool isYaw: True if the controller is for yaw. False if
+ *      controller is for altitude.
+ *      - uint32_t timeStep: Control period in ms.
+ * @return:
+ *      - NULL
+ * ---------------------
  */
-void initController(controller_t* controllerPointer, int32_t K_P, int32_t K_I, int32_t K_D, uint32_t time_step, int32_t divisor_value)
+void
+initController(controller_t* controllerPointer, bool isYaw, uint32_t timeStep)
 {
-    controllerPointer->Kp = K_P;
-    controllerPointer->Ki = K_I;
-    controllerPointer->Kd = K_D;
-    controllerPointer->timeStep = time_step;
-    controllerPointer->divisor = divisor_value;
+    if (isYaw){
+        controllerPointer->Kp = YAW_KP;
+        controllerPointer->Ki = YAW_KI;
+        controllerPointer->Kd = YAW_KD;
+    } else {
+        controllerPointer->Kp = ALT_KP;
+        controllerPointer->Ki = ALT_KI;
+        controllerPointer->Kd = ALT_KD;
+    }
+    controllerPointer->timeStep = timeStep;
+    controllerPointer->divisor = CONTROL_DIVISOR;
 
     controllerPointer->previousError = 0;
     controllerPointer->integratedError = 0;
 }
 
 /*
+ * Function:    getControlSignal
+ * ------------------------------
  * Function reverses error signal for yaw and processes
  * the error signal so it will work with the method used
  * to log yaw which is from 0 to 179 and -180 to 0.
@@ -45,8 +66,21 @@ void initController(controller_t* controllerPointer, int32_t K_P, int32_t K_I, i
  *
  * Duty cycle limits are set for altitude and yaw so as
  * to not overload the helicopter rig and emulator.
+ *
+ * @params:
+ *      - controller_t* piController: Pointer to the relevant
+ *      conroller struct.
+ *      - int32_t reference: Target yaw/altitude
+ *      - int32_t measurement: Actual yaw/altitude
+ *      - bool isYaw: True if the controller is for yaw. False if
+ *      controller is for altitude.
+ * @return:
+ *      - int32_t dutyCycle: Appropriate duty cycle for the relevant
+ *      PWM output as calculated by the control system
+ * ---------------------
  */
-int32_t getControlSignal(controller_t* piController, int32_t reference, int32_t measurement, bool isYaw)
+int32_t
+getControlSignal(controller_t* piController, int32_t reference, int32_t measurement, bool isYaw)
 {
     int32_t dutyCycle;
     int32_t controlSignal;
