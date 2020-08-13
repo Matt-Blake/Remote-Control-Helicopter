@@ -21,7 +21,6 @@
 
 #include "FSM.h"
 
-
 #define FSM_PERIOD              200
 
 typedef enum HELI_STATE {LANDED = 0, TAKEOFF = 1, FLYING = 2, LANDING = 3} HELI_STATE;
