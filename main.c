@@ -2,6 +2,7 @@
  * TODO:
  *      - Change the gains for 180 degree yaw rotation and alt to 50%
  *      - Refine control
+ *      - Code abstraction. (Separate altitude/ADC into two files, yaw/quadDecode, etc.)
  */
 
 //******************************************************
