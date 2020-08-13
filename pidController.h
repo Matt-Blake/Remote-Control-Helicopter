@@ -26,25 +26,15 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-
 #include "uart.h"
 
 /* ******************************************************
  * Constants
  * *****************************************************/
 
-#define DEGREES_CIRCLE      360         // The number of degrees in a circle
 #define MAX_DUTY            98          // The maximum duty cycle for the rotors
 #define MIN_DUTY            2           // The minimum duty cycle for the rotors
-#define MS_TO_SECONDS       1000        // Conversion factor from ms to s
-
-#define ALT_KP              50         // Altitude proportional gain
-#define ALT_KI              20          // Altitude integral gain
-#define ALT_KD              20         // Altitude derivative gain // Bro why does this have to be negative?
-#define YAW_KP              100         // Yaw proportional gain
-#define YAW_KI              20          // Yaw integral gain
-#define YAW_KD              20          // Yaw derivative gain
-#define CONTROL_DIVISOR     100         // Divisor used to achieve certain gains without the use of floating point numbers
+#define CONTROL_PERIOD      20      // Period used in the control loops (ms)
 
 
 /* ******************************************************
@@ -78,7 +68,7 @@ typedef struct Controllers {
  *      - NULL
  * ---------------------
  */
-void initController(controller_t* controllerPointer, bool isYaw, uint32_t timeStep);
+void initController(controller_t* controllerPointer, bool isYAw);
 
 
 /*

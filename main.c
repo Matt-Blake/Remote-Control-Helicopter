@@ -325,8 +325,8 @@ initClk(void)
 void
 initControllers(void)
 {
-    initController(&g_alt_controller, false, CONTROL_PERIOD); // Create altitude controller based of preset gains
-    initController(&g_yaw_controller, true, CONTROL_PERIOD); // Create yaw controller based of preset gains
+    initController(&g_alt_controller, false); // Create altitude controller based of preset gains
+    initController(&g_yaw_controller, true); // Create yaw controller based of preset gains
 }
 
 /*
