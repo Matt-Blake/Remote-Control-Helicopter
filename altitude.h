@@ -15,18 +15,12 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-
 #include "ADC.h"
-#include "driverlib/gpio.h"
-#include "driverlib/pin_map.h"
-#include "driverlib/sysctl.h"
-#include "inc/hw_memmap.h"
 #include "utils/ustdlib.h"
 #include "OrbitOLED/circBufT.h"
 #include "uart.h"
 #include "FreeRTOS.h"
 #include "queue.h"
-#include "semphr.h"
 #include "event_groups.h"
 
 extern QueueHandle_t    xAltMeasQueue;

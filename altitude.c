@@ -5,11 +5,9 @@
  *      Author: grayson-uc
  */
 
-
 #include "altitude.h"
 
-
-#define ALTITUDE_PERIOD     200
+#define ALTITUDE_PERIOD     200     // FreeRTOS task period
 
 
 /*
