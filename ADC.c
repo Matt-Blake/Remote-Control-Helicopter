@@ -15,6 +15,15 @@
 
 #include "ADC.h"
 
+
+#define SEQ_NUM             3
+#define ADC_PERIPH          SYSCTL_PERIPH_ADC0
+#define ADC_BASE            ADC0_BASE
+#define ADC_PRIORITY        1
+#define ADC_CHANNEL         ADC_CTL_CH9
+
+#define ADC_PERIOD          80
+
 circBuf_t g_inBuffer;
 
 /*********************** ADC FUNCTIONS ****************************/
@@ -65,77 +74,21 @@ ADCIntHandler(void)
  *      - NULL
  * ---------------------
  */
-void initADC(void)
+void
+initADC(void)
 {
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_ADC0);                         // Enables ADC peripheral
-    while(!SysCtlPeripheralReady(SYSCTL_PERIPH_ADC0));
+    SysCtlPeripheralEnable(ADC_PERIPH);                                 // Enables ADC peripheral
+    while(!SysCtlPeripheralReady(ADC_PERIPH));
 
-    ADCSequenceConfigure(ADC0_BASE, 3, ADC_TRIGGER_PROCESSOR, 1);       // Sets module, sample sequence, trigger, and priority
-    ADCSequenceStepConfigure(ADC0_BASE, 3, 0,                           // Configures the module, sample sequence, step, and channel            // Change to CH9 for heli
-                             ADC_CTL_CH9 | ADC_CTL_IE | ADC_CTL_END);
-    ADCSequenceEnable(ADC0_BASE, 3);                                    // Enables Sequencing on ADC module
-    ADCIntRegister(ADC0_BASE, 3, ADCIntHandler);                        // Registers the interrupt and sets ADCIntHandler to handle the interrupt
-    ADCIntEnable(ADC0_BASE, 3);                                         // Enables interrupts on ADC module
+    ADCSequenceConfigure(ADC_BASE, SEQ_NUM, ADC_TRIGGER_PROCESSOR,
+                         ADC_PRIORITY);                                 // Sets module, sample sequence, trigger, and priority
+    ADCSequenceStepConfigure(ADC_BASE, SEQ_NUM, 0,                      // Configures the module, sample sequence, step, and channel            // Change to CH9 for heli
+                         ADC_CTL_CH9 | ADC_CTL_IE | ADC_CTL_END);
+    ADCSequenceEnable(ADC_BASE, SEQ_NUM);                               // Enables Sequencing on ADC module
+    ADCIntRegister(ADC_BASE, SEQ_NUM, ADCIntHandler);                   // Registers the interrupt and sets ADCIntHandler to handle the interrupt
+    ADCIntEnable(ADC_BASE, SEQ_NUM);                                    // Enables interrupts on ADC module
 
     initCircBuf (&g_inBuffer, BUF_SIZE);
-}
-
-
-/*
- * Function:    calculateMean
- * ---------------------------
- * Sums up all values in the circular buffer and then divides by the
- * number of elements in order to calculate the average value of
- * the circular buffer.
- *
- * @params:
- *      - NULL
- * @return:
- *      - int32_t (sum/BUF_SIZE): The average value of the circular
- *      buffer.
- * ---------------------
- */
-int32_t calculateMean(void)
-{
-    uint8_t i;
-    int32_t sum = 0;                                                    // Initialize sum
-    int32_t reading;
-
-    for (i = 0; i < BUF_SIZE; i++){
-        reading = readCircBuf(&g_inBuffer);
-        sum = sum + reading;
-    }// Sum all values in circBuf
-
-    return (sum /BUF_SIZE) ;                       // Returns mean value
-}
-
-
-/*
- * Function:    percentageHeight
- * ------------------------------
- * Converts the average value of the circular buffer to a percentage
- * value of the maximum height.
- *
- * @params:
- *      - int32_t groundLevel: The ADC value when the helicopter is
- *      grounded. Used as a reference to 0% height.
- *      - int32_t currentValue: The current circular buffer average
- *      to be converted to a percentage height.
- * @return:
- *      - int32_t percent: The current circular buffer average as a
- *      percentage of the total height range.
- * ---------------------
- */
-int32_t
-percentageHeight(int32_t groundLevel, int32_t currentValue)
-{
-    int32_t maxHeight = 0;
-    int32_t percent = 0;
-
-    maxHeight = groundLevel - VOLTAGE_DROP_ADC;                        // ADC value at maximum height
-    percent = 100 - (100 * (currentValue - maxHeight) / (VOLTAGE_DROP_ADC));  // Calculates percentage
-
-    return percent;                                                     // Returns percentage value
 }
 
 
@@ -162,45 +115,3 @@ Trigger_ADC(void *pvParameters)
 }
 
 
-/*
- * Function:    Mean_ADC
- * ----------------------
- * FreeRTOS task that periodically calls functions to calculate the
- * current average value of the circular buffer, and then converts
- * to percentage height.
- *
- * @params:
- *      - NULL
- * @return:
- *      - NULL
- * ---------------------
- */
-void
-Mean_ADC(void *pvParameters)
-{
-    char cMessage[17];
-    int32_t mean;
-    int32_t altitude = 0;
-    static int32_t ground;
-    int32_t ground_flag;
-
-    while(1){
-        ground_flag = xEventGroupGetBits(xFoundAltReference); // Retrieve the current state of the ground reference
-        if (ground_flag == GROUND_BUFFER_FULL) {
-            ground = calculateMean();
-            xEventGroupClearBits(xFoundAltReference, GROUND_BUFFER_FULL); // Clear previous flag
-            xEventGroupSetBits(xFoundAltReference, GROUND_FOUND); // Set flag indicating that the ground reference has been set
-            UARTSend("GroundFound\n");
-            usnprintf(cMessage, sizeof(cMessage), "GROUND %d\n", ground);
-            UARTSend(cMessage);
-        } else if (ground_flag == GROUND_FOUND) {
-            mean = calculateMean();
-            altitude = percentageHeight(ground, mean);
-//            usnprintf(cMessage, sizeof(cMessage), "Alt: %d\n", altitude);
-//            UARTSend(cMessage);
-        }
-        xQueueOverwrite(xAltMeasQueue, &altitude);
-
-        vTaskDelay(ALTITUDE_PERIOD / portTICK_RATE_MS);
-    }
-}
