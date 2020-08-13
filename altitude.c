@@ -22,22 +22,24 @@
  * @params:
  *      - NULL
  * @return:
- *      - int32_t (sum/BUF_SIZE): The average value of the circular
+ *      - int32_t mean: The average value of the circular
  *      buffer.
  * ---------------------
  */
 int32_t calculateMean(void)
 {
     uint8_t i;
-    int32_t sum = 0;                                                    // Initialize sum
+    int32_t sum = 0;        // Initialize sum
     int32_t reading;
+    int32_t mean = 0;       // Initialize mean
 
     for (i = 0; i < BUF_SIZE; i++){
         reading = readCircBuf(&g_inBuffer);
         sum = sum + reading;
     }// Sum all values in circBuf
 
-    return (sum /BUF_SIZE) ;                       // Returns mean value
+    mean = (sum/BUF_SIZE);
+    return mean;                       // Returns mean value
 }
 
 

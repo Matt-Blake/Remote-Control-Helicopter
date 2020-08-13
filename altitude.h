@@ -33,7 +33,6 @@ extern QueueHandle_t    xAltMeasQueue;
 extern QueueHandle_t    xFSMQueue;
 extern circBuf_t        g_inBuffer;
 
-
 /*
  * Function:    Mean_ADC
  * ----------------------
