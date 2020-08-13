@@ -21,9 +21,10 @@
 
 #include "FSM.h"
 
-typedef enum HELI_STATE {LANDED = 0, TAKEOFF = 1, FLYING = 2, LANDING = 3} HELI_STATE;
 
 #define FSM_PERIOD              200
+
+typedef enum HELI_STATE {LANDED = 0, TAKEOFF = 1, FLYING = 2, LANDING = 3} HELI_STATE;
 
 //****************************************************************************
 //Check if found the reference yaw, if it has then set found reference to 1 and

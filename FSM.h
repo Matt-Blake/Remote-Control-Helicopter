@@ -43,6 +43,8 @@
 //******************************************************
 // Globals
 //******************************************************
+
+
 extern TaskHandle_t MainPWM;
 extern TaskHandle_t TailPWM;
 extern TaskHandle_t BtnCheck;
@@ -51,8 +53,6 @@ extern TaskHandle_t SwitchCheck;
 extern QueueHandle_t xFSMQueue;
 extern QueueHandle_t xAltMesQueue;
 extern QueueHandle_t xAltDesQueue;
-
-
 
 extern QueueHandle_t xMainPWMQueue; // Delete this once debugging done
 

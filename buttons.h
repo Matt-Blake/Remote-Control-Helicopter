@@ -28,6 +28,7 @@
 #include "driverlib/sysctl.h"
 #include "inc/tm4c123gh6pm.h"  // Board specific defines (for PF0)
 #include "uart.h"
+#include "FSM.h"
 #include "FreeRTOS.h"
 #include "queue.h"
 #include "semphr.h"

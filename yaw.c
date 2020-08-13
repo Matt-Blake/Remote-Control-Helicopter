@@ -18,11 +18,6 @@
  */
 
 #include "yaw.h"
-#include "uart.h"
-
-enum STATE_QUADRATURE {STATE_00 = 0, STATE_01 = 1, STATE_10 = 2, STATE_11 = 3};
-
-
 
 /*
  * Function:    referenceInterrupt
