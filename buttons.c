@@ -308,6 +308,7 @@ ButtonsCheck(void *pvParameters)
         inYawTimeLoop = ( uint32_t ) pvTimerGetTimerID( xYawFlipTimer );
 
         xQueuePeek(xYawDesQueue, &desired_yaw, 10);
+        xQueuePeek(xAltDesQueue, &desired_alt, 10);
         /*
          * Check if any buttons have been pressed. Update button state.
          */
@@ -317,7 +318,6 @@ ButtonsCheck(void *pvParameters)
         {
             if(inUpTimeLoop == 0) { // check to see if the timer has ran out
                 vTimerSetTimerID(xUpBtnTimer, (void *) 1);
-                //xSemaphoreGive(xUPBtnSemaphore, 10);
                 xTimerStart(xUpBtnTimer, 10); // Restarts timer
             } else {
                 xSemaphoreGive(xUpBtnSemaphore);
@@ -339,7 +339,6 @@ ButtonsCheck(void *pvParameters)
         {
             if(inYawTimeLoop == 0) { // check to see if the timer has ran out
                 vTimerSetTimerID(xYawFlipTimer, (void *) 1);
-                //xSemaphoreGive(xUPBtnSemaphore, 10);
                 xTimerStart(xYawFlipTimer, 10); // Restarts timer
             } else {
                 xSemaphoreGive(xYawFlipSemaphore);
