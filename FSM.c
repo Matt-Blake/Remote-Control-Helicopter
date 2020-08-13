@@ -179,7 +179,7 @@ land(void)
     vTaskSuspend(BtnCheck); // Disable changes to yaw and altitude while landing
     vTaskSuspend(SwitchCheck);
 
-    xQueueOverwrite(xYawDesQueue, &yaw);
+    xQueueOverwrite(xYawDesQueue, &ref_yaw);
     xQueuePeek(xAltMeasQueue, &meas, 10);
     xQueuePeek(xYawMeasQueue, &yaw, 10);
 
