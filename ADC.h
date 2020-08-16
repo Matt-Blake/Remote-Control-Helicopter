@@ -28,7 +28,7 @@
 /*
  * DEFINES
  */
-#define BUF_SIZE            20
+#define BUF_SIZE            8                   // Size of the circular buffer used for moving averages
 
 //#define VOLTAGE_DROP_ADC    1241                // Voltage drop between ground and maximum height
 //#define VOLTAGE_DROP_ADC    4096                // FOR ORBIT BOARD POTENTIOMETER
