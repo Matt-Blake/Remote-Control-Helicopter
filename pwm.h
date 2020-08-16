@@ -33,9 +33,8 @@
  * Last modified: 31/07/2020
  * ***************************************************************/
 
-#ifndef PWMMAINGEN_H_
-#define PWMMAINGEN_H_
 
+// Includes
 #include <stdint.h>
 #include <stdbool.h>
 #include "inc/hw_memmap.h"
@@ -51,7 +50,15 @@
 #include "queue.h"
 #include "semphr.h"
 
-// Initalise controllers
+
+// Includes
+#ifndef PWMMAINGEN_H_
+#define PWMMAINGEN_H_
+
+#define MAIN_ROTOR_FACTOR 1/4 // Factor used to compensate for the effect of main rotor
+
+
+// Globals
 extern controller_t g_alt_controller;
 extern controller_t g_yaw_controller;
 

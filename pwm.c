@@ -216,8 +216,6 @@ SetMainDuty(void *pvParameters)
     int32_t alt_meas = 0;
     int32_t alt_desired = 0;
 
-    //char cMessage[20];
-
     while (1)
     {
         // Retrieve altitude information
@@ -228,8 +226,7 @@ SetMainDuty(void *pvParameters)
         alt_PWM = getControlSignal(&g_alt_controller, alt_desired, alt_meas, false); // Use the error to calculate a PWM duty cycle for the main rotor
         setRotorPWM(alt_PWM, 1); // Set main rotor to calculated PWM
         xQueueOverwrite(xMainPWMQueue, &alt_PWM); // Store the main PWM duty cycle in a queue
-//        usnprintf(cMessage, sizeof(cMessage), "Main: %d\n\r", alt_PWM);
-//        UARTSend(cMessage);
+
         vTaskDelay(CONTROL_PERIOD / portTICK_RATE_MS); // Block task so lower priority tasks can run
     }
 }
@@ -262,15 +259,15 @@ SetTailDuty(void *pvParameters)
         // Retrieve yaw information
         xQueuePeek(xYawMeasQueue, &yaw_meas,   10); // Retrieve measured yaw data from the RTOS queue
         xQueuePeek(xYawDesQueue, &yaw_desired, 10); // Retrieve desired yaw data from the RTOS queue
-        xQueuePeek(xMainPWMQueue, &alt_PWM, 10);
+        xQueuePeek(xMainPWMQueue, &alt_PWM, 10); // Retrieve the main rotor's duty cycle
 
 
         // Set PWM duty cycle of tail rotor in order to spin to target yaw
         yaw_PWM = getControlSignal(&g_yaw_controller, yaw_desired, yaw_meas, true); // Use the error to calculate a PWM duty cycle for the tail rotor
+        yaw_PWM = yaw_PWM - alt_PWM * MAIN_ROTOR_FACTOR; // Compensate tail PWM due to effect of main rotor duty cycle
         setRotorPWM(yaw_PWM, 0); // Set tail rotor to calculated PWM
         xQueueOverwrite(xTailPWMQueue, &yaw_PWM); // Store the tail PWM duty cycle in a queue
-//        usnprintf(cMessage, sizeof(cMessage), "Tail: %d\n\r", yaw_PWM);
-//        UARTSend(cMessage);
+
         vTaskDelay(CONTROL_PERIOD / portTICK_RATE_MS); // Block task so lower priority tasks can run
     }
 }
