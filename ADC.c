@@ -22,7 +22,7 @@
 #define ADC_PRIORITY        1
 #define ADC_CHANNEL         ADC_CTL_CH9
 
-#define ADC_PERIOD          80
+#define ADC_PERIOD          10
 
 circBuf_t g_inBuffer;
 
