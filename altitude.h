@@ -40,6 +40,6 @@ extern circBuf_t        g_inBuffer;
  *      - NULL
  * ---------------------
  */
-void Mean_ADC(void *pvParameters);
+void MeanADC(void *pvParameters);
 
 #endif /* ALTITUDE_H_ */

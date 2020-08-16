@@ -79,7 +79,7 @@ void initADC(void);
  *      - NULL
  * ---------------------
  */
-void Trigger_ADC(void *pvParameters);
+void TriggerADC(void *pvParameters);
 
 
 

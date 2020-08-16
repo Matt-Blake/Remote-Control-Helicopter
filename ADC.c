@@ -105,7 +105,7 @@ initADC(void)
  * ---------------------
  */
 void
-Trigger_ADC(void *pvParameters)
+TriggerADC(void *pvParameters)
 {
     while(1){
         ADCProcessorTrigger(ADC0_BASE, 3);

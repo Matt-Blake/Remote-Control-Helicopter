@@ -84,7 +84,7 @@ percentageHeight(int32_t groundLevel, int32_t currentValue)
  * ---------------------
  */
 void
-Mean_ADC(void *pvParameters)
+MeanADC(void *pvParameters)
 {
     char cMessage[17];
     int32_t mean;
