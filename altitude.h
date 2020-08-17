@@ -26,6 +26,7 @@
 extern QueueHandle_t    xAltMeasQueue;
 extern QueueHandle_t    xFSMQueue;
 extern circBuf_t        g_inBuffer;
+extern TaskHandle_t     ADCMean;
 
 /*
  * Function:    Mean_ADC

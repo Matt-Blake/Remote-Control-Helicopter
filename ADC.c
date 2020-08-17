@@ -25,6 +25,7 @@
 #define ADC_PERIOD          10 // 100Hz
 
 circBuf_t g_inBuffer;
+TaskHandle_t ADCTrig;
 
 /*********************** ADC FUNCTIONS ****************************/
 /*

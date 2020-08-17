@@ -70,6 +70,12 @@
 controller_t g_alt_controller;
 controller_t g_yaw_controller;
 
+QueueHandle_t xMainPWMQueue;
+QueueHandle_t xTailPWMQueue;
+
+TaskHandle_t MainPWM;
+TaskHandle_t TailPWM;
+
 /*
  * Function:    initPWM
  * ---------------------

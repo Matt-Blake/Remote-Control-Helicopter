@@ -102,7 +102,8 @@ extern SemaphoreHandle_t xYawMutex;
 extern SemaphoreHandle_t xUpBtnSemaphore;
 extern SemaphoreHandle_t xYawFlipSemaphore;
 
-extern controller_t g_yaw_controller;
+extern TaskHandle_t BtnCheck;
+extern TaskHandle_t SwitchCheck;
 
 // Debounce algorithm: A state machine is associated with each button.
 // A state change occurs only after NUM_BUT_POLLS consecutive polls have

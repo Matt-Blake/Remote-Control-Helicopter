@@ -78,7 +78,7 @@
 #define MEAN_TASK_PRIORITY      7       // Mean calculation priority
 #define ALT_TASK_PRIORITY       8       // Altitude PWM priority
 #define YAW_TASK_PRIORITY       8       // Yaw PWM priority
-#define FSM_TASK_PRIORITY       5       // FSM priority
+#define FSM_TASK_PRIORITY       6       // FSM priority
 #define TIMER_TASK_PRIORITY     5       // Time module priority
 #define STACK_TASK_PRIORITY     5
 
@@ -98,27 +98,11 @@
 // Globals
 //******************************************************
 QueueHandle_t xOLEDQueue;
-QueueHandle_t xAltBtnQueue;
-QueueHandle_t xYawBtnQueue;
-QueueHandle_t xModeQueue;
-QueueHandle_t xAltMeasQueue;
-QueueHandle_t xAltDesQueue;
-QueueHandle_t xYawMeasQueue;
-QueueHandle_t xYawDesQueue;
-QueueHandle_t xMainPWMQueue;
-QueueHandle_t xTailPWMQueue;
-QueueHandle_t xFSMQueue;
-QueueHandle_t xYawSlotQueue;
 
 TaskHandle_t Blinky;
 TaskHandle_t OLEDDisp;
-TaskHandle_t BtnCheck;
-TaskHandle_t SwitchCheck;
-TaskHandle_t ADCTrig;
-TaskHandle_t ADCMean;
-TaskHandle_t MainPWM;
-TaskHandle_t TailPWM;
-TaskHandle_t FSMTask;
+
+
 
 SemaphoreHandle_t xAltMutex;
 SemaphoreHandle_t xYawMutex;
@@ -340,7 +324,6 @@ createQueues(void)
     xOLEDQueue      = xQueueCreate(1, sizeof( uint32_t ) );
     xAltBtnQueue    = xQueueCreate(1, sizeof( uint32_t ) );
     xYawBtnQueue    = xQueueCreate(1, sizeof( uint32_t ) );
-    xModeQueue      = xQueueCreate(1, sizeof( uint32_t ) );
     xAltMeasQueue   = xQueueCreate(1, sizeof( int32_t ) );
     xAltDesQueue    = xQueueCreate(2, sizeof( int32_t ) );
     xYawMeasQueue   = xQueueCreate(1, sizeof( int32_t ) );
@@ -353,7 +336,6 @@ createQueues(void)
     // Initalise queues
     xQueueOverwrite(xAltBtnQueue, &queue_init);
     xQueueOverwrite(xYawBtnQueue, &queue_init);
-    xQueueOverwrite(xModeQueue, &queue_init);
     xQueueOverwrite(xAltMeasQueue, &queue_init);
     xQueueOverwrite(xAltDesQueue, &queue_init);
     xQueueOverwrite(xYawMeasQueue, &queue_init);

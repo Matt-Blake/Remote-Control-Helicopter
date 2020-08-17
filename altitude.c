@@ -9,6 +9,9 @@
 
 #define ALTITUDE_PERIOD     200     // FreeRTOS task period
 
+TaskHandle_t ADCMean;
+QueueHandle_t xAltMeasQueue;
+QueueHandle_t xAltDesQueue;
 
 /*
  * Function:    calculateMean

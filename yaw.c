@@ -21,6 +21,9 @@
 
 TimerHandle_t xYawRefTimer;
 
+QueueHandle_t xYawSlotQueue;
+QueueHandle_t xYawMeasQueue;
+QueueHandle_t xYawDesQueue;
 
 /*
  * WRITE DESCRIPTION

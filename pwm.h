@@ -72,6 +72,9 @@ extern QueueHandle_t xYawDesQueue;
 extern QueueHandle_t xMainPWMQueue;
 extern QueueHandle_t xTailPWMQueue;
 
+extern TaskHandle_t MainPWM;
+extern TaskHandle_t TailPWM;
+
 
 /*
  * Function:    initPWM

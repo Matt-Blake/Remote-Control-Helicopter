@@ -26,7 +26,9 @@
 typedef enum HELI_STATE {LANDED = 0, TAKEOFF = 1, FLYING = 2, LANDING = 3} HELI_STATE;
 
 TimerHandle_t xLandingTimer;
+TaskHandle_t FSMTask;
 
+QueueHandle_t xFSMQueue;
 
 
 /*
@@ -65,7 +67,7 @@ void
 findYawRef(void)
 {
     int32_t PWM_Main = 20; // place holder for now
-    //int32_t PWM_Tail = 10; // place holder for now
+    int32_t PWM_Tail = 00; // place holder for now
 
 
     vTaskSuspend(MainPWM); // suspend the control system until ref is found
@@ -75,7 +77,7 @@ findYawRef(void)
 
     UARTSend("Finding Ref\n");
     setRotorPWM(PWM_Main, 1); // Set the main rotor to on, the torque from the main rotor should work better than using the tail, have to test and actually see whats best
-        //setRotorPWM(PWM_Tail, 0);   // Set the tail rotor to on
+    setRotorPWM(PWM_Tail, 0);   // Set the tail rotor to on
 }
 
 
@@ -104,14 +106,15 @@ takeoff(void)
     int32_t found_yaw;
     int32_t state;
 
-    vTaskSuspend(MainPWM); // suspend the control system until ref is found
-    vTaskSuspend(TailPWM);
-    vTaskSuspend(BtnCheck);
-    vTaskSuspend(SwitchCheck);
-
     found_yaw = xEventGroupGetBits(xFoundYawReference);
 
+    UARTSend("Take-Off\r\n");
+
     if(!found_yaw) { // If the reference yaw has been found
+        vTaskSuspend(MainPWM); // suspend the control system until ref is found
+        vTaskSuspend(TailPWM);
+        vTaskSuspend(BtnCheck);
+        vTaskSuspend(SwitchCheck);
         findYawRef(); // Find the reference yaw
     } else {
         vTaskResume(MainPWM); // Re-enable the control system

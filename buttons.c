@@ -34,6 +34,12 @@ static bool btn_normal[NUM_BTNS];   // Corresponds to the electrical state
 TimerHandle_t xUpBtnTimer;
 TimerHandle_t xYawFlipTimer;
 
+TaskHandle_t BtnCheck;
+TaskHandle_t SwitchCheck;
+
+QueueHandle_t xAltBtnQueue;
+QueueHandle_t xYawBtnQueue;
+
 /*
  * WRITE DESCRIPTION
  */

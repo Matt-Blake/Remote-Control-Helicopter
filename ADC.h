@@ -45,6 +45,7 @@
  */
 extern EventGroupHandle_t xFoundAltReference;
 extern circBuf_t g_inBuffer;
+extern TaskHandle_t ADCTrig;
 
 /*
  * PROTOTYPES
