@@ -301,8 +301,8 @@ createTasks(void)
     xTaskCreate(OLEDDisplay,    "OLED Task",    OLED_STACK_DEPTH,       NULL,       OLED_TASK_PRIORITY,     &OLEDDisp);
     xTaskCreate(ButtonsCheck,   "Btn Poll",     BTN_STACK_DEPTH,        NULL,       BTN_TASK_PRIORITY,      &BtnCheck);
     xTaskCreate(SwitchesCheck,  "Switch Poll",  SWITCH_STACK_DEPTH,     NULL,       SWI_TASK_PRIORITY,      &SwitchCheck);
-    xTaskCreate(TriggerADC,     "ADC Handler",   ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      &ADCTrig);
-    xTaskCreate(MeanADC,        "ADC Mean",      MEAN_STACK_DEPTH,       NULL,       MEAN_TASK_PRIORITY,     &ADCMean);
+    xTaskCreate(TriggerADC,     "ADC Handler",  ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      &ADCTrig);
+    xTaskCreate(MeanADC,        "ADC Mean",     MEAN_STACK_DEPTH,       NULL,       MEAN_TASK_PRIORITY,     &ADCMean);
     xTaskCreate(SetMainDuty,    "Alt PWM",      ALT_STACK_DEPTH,        NULL,       ALT_TASK_PRIORITY,      &MainPWM);
     xTaskCreate(SetTailDuty,    "Yaw PWM",      YAW_STACK_DEPTH,        NULL,       YAW_TASK_PRIORITY,      &TailPWM);
     xTaskCreate(FSM,            "FSM",          FSM_STACK_DEPTH,        NULL,       FSM_TASK_PRIORITY,      &FSMTask);
@@ -379,7 +379,7 @@ createTimers(void)
     xYawFlipTimer   = xTimerCreate( "Yaw Flip Timer", YAW_FLIP_TMR_PERIOD
                                     / portTICK_RATE_MS, pdFALSE, ( void * ) 0, vBtnTimerCallback );
     xLandingTimer   = xTimerCreate( "Land Timer", LAND_TMR_PERIOD
-                                    / portTICK_RATE_MS, pdTRUE, ( void * ) 0, vLandTimerCallback );
+                                    / portTICK_RATE_MS, pdTRUE,  ( void * ) 0, vLandTimerCallback );
     xYawRefTimer   = xTimerCreate( "Yaw Ref Timer", YAW_REF_TMR_PERIOD
                                     / portTICK_RATE_MS, pdFALSE, ( void * ) 0, vYawRefCallback );
 }
