@@ -146,7 +146,7 @@ setRotorPWM (uint32_t ui32Duty, bool SET_MAIN)
 {
     char string[20];
     // Calculate the PWM period corresponding to the freq.
-    usnprintf(string, sizeof(string), "ACTUALPWM\n\r", ui32Duty);
+    usnprintf(string, sizeof(string), "ACTUALPWM %d\n\r", ui32Duty);
     UARTSend(string);
     uint32_t ui32Period = SysCtlClockGet() / PWM_DIVIDER / PWM_START_RATE_HZ;
 
