@@ -6,6 +6,17 @@
  *      - Limit integral error or something.
  *      - Reset errors when heli is landed
  *      - Justify task priorities
+ * KNOWN CONTROL ISSUES Heli 1:
+ *      - Altitude was unstable, the proportional was too high
+ *      - Yaw was too fast and would cause oscillations
+ *      - Find ref would spin too fast and then spin another 5 times before settling
+ *      - I assume the find ref is temperamental due to the control system getting abruptly turned on as soon as ref is found
+ * KNOWN CONTROL ISSUES Heli 2:
+ *      -
+ * KNOWN CONTROL ISSUES Heli 3:
+ *      -
+ * KNOWN CONTROL ISSUES Heli 4:
+ *      -
  */
 
 //******************************************************
