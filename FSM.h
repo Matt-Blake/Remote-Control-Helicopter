@@ -58,6 +58,9 @@ extern QueueHandle_t xMainPWMQueue; // Delete this once debugging done
 
 extern TimerHandle_t xLandingTimer;
 
+extern controller_t g_alt_controller;
+extern controller_t g_yaw_controller;
+
 
 /*
  * Function:    FSM

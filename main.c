@@ -4,7 +4,6 @@
  *      - Refine control
  *      - Code abstraction. (Separate altitude/ADC into two files, yaw/quadDecode, etc.)
  *      - Limit integral error or something.
- *      - Reset errors when heli is landed
  *      - Justify task priorities
  * KNOWN CONTROL ISSUES Heli 1:
  *      - Altitude was unstable, the proportional was too high
@@ -320,6 +319,8 @@ initControllers(void)
 void
 init(void)
 {
+    IntMasterDisable();
+
     initClk();
     //initReset();
     initPWM();
@@ -331,6 +332,8 @@ init(void)
     initQuadrature();
     initReferenceYaw();
     initControllers();
+
+    IntMasterEnable();
 
 }
 
