@@ -349,6 +349,8 @@ initControllers(void)
 void
 init(void)
 {
+    IntMasterDisable();
+
     initClk();
     //initReset();
     initPWM();
@@ -360,6 +362,8 @@ init(void)
     initQuadrature();
     initReferenceYaw();
     initControllers();
+
+    IntMasterEnable();
 
 }
 

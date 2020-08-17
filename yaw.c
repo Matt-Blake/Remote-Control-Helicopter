@@ -68,16 +68,18 @@ checkYawThresholds(void)
     xQueuePeek(xYawMeasQueue, &yaw, 10);// Read the current yaw value
 
     if (yaw > MAX_YAW_LIMIT) { //Set yaw to -180 degrees if the current reading is >180 degrees
-        yaw = MIN_YAW_LIMIT;
-        yaw_slot = MIN_YAW_LIMIT * DEGREES_HALF_CIRCLE/MOUNT_SLOT_COUNT;
+        //yaw = MIN_YAW_LIMIT;
+        yaw -= DEGREES_CIRCLE;
+        //yaw_slot = MIN_YAW_LIMIT * DEGREES_HALF_CIRCLE/MOUNT_SLOT_COUNT;
         xQueueOverwrite(xYawMeasQueue, &yaw);// Store the resulting yaw measurement in the RTOS queue
-        xQueueOverwrite(xYawSlotQueue, &yaw_slot);
+        //xQueueOverwrite(xYawSlotQueue, &yaw_slot);
     }
     else if (yaw <= MIN_YAW_LIMIT) { //Set yaw to 180 degrees if the current reading is -180 degrees
-        yaw = MAX_YAW_LIMIT;
-        yaw_slot = MAX_YAW_LIMIT * DEGREES_HALF_CIRCLE/MOUNT_SLOT_COUNT;
+        //yaw = MAX_YAW_LIMIT;
+        yaw += DEGREES_CIRCLE;
+        //yaw_slot = MAX_YAW_LIMIT * DEGREES_HALF_CIRCLE/MOUNT_SLOT_COUNT;
         xQueueOverwrite(xYawMeasQueue, &yaw);// Store the resulting yaw measurement in the RTOS queue
-        xQueueOverwrite(xYawSlotQueue, &yaw_slot);
+        //xQueueOverwrite(xYawSlotQueue, &yaw_slot);
     }
 }
 
@@ -108,7 +110,7 @@ quadratureFSMInterrupt(void)
     // Bit shift the old reading and combine with new reading. Creates a 4-bit code unique to each state.
     uint8_t state_code = currentChannelReading << 2 | newChannelReading;
 
-    xQueuePeekFromISR(xYawSlotQueue, &yaw_slot);; // Get the current number of slots traveled
+    xQueuePeekFromISR(xYawSlotQueue, &yaw_slot); // Get the current number of slots traveled
 
     switch (state_code){
         case (0b0010):
