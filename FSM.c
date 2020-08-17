@@ -200,7 +200,7 @@ land(void)
         descent = meas;
     }else if ((timerID != prev_timerID) && (meas <= descent)){
         descent -= 10;
-        if (descent <= 0){
+        if (descent <= 0){ // when landing the heli gives up sometimes and jsut cuts power before reaching the ground
             descent = 0;
         }
     }

@@ -1,15 +1,12 @@
 /*
  * TODO:
  *      - Change the gains for 180 degree yaw rotation and alt to 50%
- *      - I changed the 180 to 90 and it works once then fucks out, think its to do with the way yaw is calculated around the mid points etc
  *      - Refine control
  *      - Code abstraction. (Separate altitude/ADC into two files, yaw/quadDecode, etc.)
  *      - Limit integral error or something.
  *      - Justify task priorities
  * KNOWN CONTROL ISSUES Heli 1:
- *      - Works well
-*       - only issue is 100-50 on the alt
-*       - When the power is cut on landing, the heli rotates a few degrees after landed
+        -
  * KNOWN CONTROL ISSUES Heli 2:
  *      -
  * KNOWN CONTROL ISSUES Heli 3:
