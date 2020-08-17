@@ -402,9 +402,9 @@ ButtonsCheck(void *pvParameters)
                 xSemaphoreTake(xYawFlipSemaphore, 10);
                 //desired_yaw += 180;
                 if (desired_yaw >= 0) {
-                    desired_yaw = desired_yaw - 180;
+                    desired_yaw = desired_yaw - 90;
                 } else {
-                    desired_yaw = DEGREES_CIRCLE - 180 + desired_yaw;
+                    desired_yaw = DEGREES_CIRCLE - 90 + desired_yaw;
                 }
                 desired_alt += 10;
                 xQueueOverwrite(xYawDesQueue, &desired_yaw);

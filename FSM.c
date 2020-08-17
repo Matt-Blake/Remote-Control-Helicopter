@@ -66,7 +66,7 @@ void vLandTimerCallback( TimerHandle_t xTimer )
 void
 findYawRef(void)
 {
-    int32_t PWM_Main = 20; // place holder for now
+    int32_t PWM_Main = 15; // place holder for now
     int32_t PWM_Tail = 00; // place holder for now
 
 
@@ -102,7 +102,7 @@ takeoff(void)
     int32_t yaw;
     int32_t alt;
     int32_t desired_yaw = 0;
-    int32_t desired_alt = 20;
+    int32_t desired_alt = 10;
     int32_t found_yaw;
     int32_t state;
 
@@ -199,7 +199,7 @@ land(void)
         vTimerSetTimerID( xLandingTimer, (void *) 1 );
         descent = meas;
     }else if ((timerID != prev_timerID) && (meas <= descent)){
-        descent -= 15;
+        descent -= 10;
         if (descent <= 0){
             descent = 0;
         }
@@ -239,8 +239,8 @@ void landed(void)
     vTaskSuspend(BtnCheck); // Disable changes to yaw and altitude while landed
 
     // Set motor duty cycles to minimum
-    //setRotorPWM(MIN_DUTY, 1);
-    //setRotorPWM(MIN_DUTY, 0);
+    setRotorPWM(MIN_DUTY, 1);
+    setRotorPWM(MIN_DUTY, 0);
 
     // Reset error on controllers
     g_alt_controller.previousError   = 0;
