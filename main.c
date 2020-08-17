@@ -233,8 +233,10 @@ OLEDDisplay (void *pvParameters)
         xQueuePeek(xYawDesQueue, &des_yaw, 10);
         xQueuePeek(xYawMeasQueue, &act_yaw, 10);
 
-        xQueuePeek(xMainPWMQueue, &main_PWM, 10);
-        xQueuePeek(xTailPWMQueue, &tail_PWM, 10);
+        //xQueuePeek(xMainPWMQueue, &main_PWM, 10);
+        //xQueuePeek(xTailPWMQueue, &tail_PWM, 10);
+        main_PWM = PWMPulseWidthGet(PWM0_BASE, PWM_OUT_7);
+        tail_PWM = PWMPulseWidthGet(PWM1_BASE, PWM_OUT_5);
 
         xQueuePeek(xFSMQueue, &state, 10);
 
@@ -288,21 +290,23 @@ initControllers(void)
 void
 init(void)
 {
-    IntMasterDisable();
+    //IntMasterDisable();
 
     initClk();
+    initialiseUSB_UART();
     //initReset();
-    initPWM();
+
     initLED();
     OLEDInitialise();
     initBtns();
-    initialiseUSB_UART();
+
     initADC();
     initQuadrature();
     initReferenceYaw();
     initControllers();
+    initPWM();
 
-    IntMasterEnable();
+    //IntMasterEnable();
 
 }
 
@@ -316,8 +320,8 @@ createTasks(void)
     xTaskCreate(OLEDDisplay,    "OLED Task",    OLED_STACK_DEPTH,       NULL,       OLED_TASK_PRIORITY,     &OLEDDisp);
     xTaskCreate(ButtonsCheck,   "Btn Poll",     BTN_STACK_DEPTH,        NULL,       BTN_TASK_PRIORITY,      &BtnCheck);
     xTaskCreate(SwitchesCheck,  "Switch Poll",  SWITCH_STACK_DEPTH,     NULL,       SWI_TASK_PRIORITY,      &SwitchCheck);
-    xTaskCreate(TriggerADC,    "ADC Handler",   ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      &ADCTrig);
-    xTaskCreate(MeanADC,       "ADC Mean",      MEAN_STACK_DEPTH,       NULL,       MEAN_TASK_PRIORITY,     &ADCMean);
+    xTaskCreate(TriggerADC,     "ADC Handler",   ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      &ADCTrig);
+    xTaskCreate(MeanADC,        "ADC Mean",      MEAN_STACK_DEPTH,       NULL,       MEAN_TASK_PRIORITY,     &ADCMean);
     xTaskCreate(SetMainDuty,    "Alt PWM",      ALT_STACK_DEPTH,        NULL,       ALT_TASK_PRIORITY,      &MainPWM);
     xTaskCreate(SetTailDuty,    "Yaw PWM",      YAW_STACK_DEPTH,        NULL,       YAW_TASK_PRIORITY,      &TailPWM);
     xTaskCreate(FSM,            "FSM",          FSM_STACK_DEPTH,        NULL,       FSM_TASK_PRIORITY,      &FSMTask);
