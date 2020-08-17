@@ -53,6 +53,7 @@
 #define BTN_STACK_DEPTH         128
 #define SWITCH_STACK_DEPTH      128
 #define ADC_STACK_DEPTH         128
+#define MEAN_STACK_DEPTH        128
 #define ALT_STACK_DEPTH         128
 #define YAW_STACK_DEPTH         128
 #define FSM_STACK_DEPTH         128
@@ -64,6 +65,7 @@
 #define BTN_TASK_PRIORITY       6       // Button polling task priority
 #define SWI_TASK_PRIORITY       6       // Switch polling task priority
 #define ADC_TASK_PRIORITY       7       // ADC sampling priority
+#define MEAN_TASK_PRIORITY      7       // Mean calculation priority
 #define ALT_TASK_PRIORITY       8       // Altitude PWM priority
 #define YAW_TASK_PRIORITY       8       // Yaw PWM priority
 #define FSM_TASK_PRIORITY       8       // FSM priority
@@ -361,8 +363,8 @@ createTasks(void)
     xTaskCreate(OLEDDisplay,    "OLED Task",    OLED_STACK_DEPTH,       NULL,       OLED_TASK_PRIORITY,     &OLEDDisp);
     xTaskCreate(ButtonsCheck,   "Btn Poll",     BTN_STACK_DEPTH,        NULL,       BTN_TASK_PRIORITY,      &BtnCheck);
     xTaskCreate(SwitchesCheck,  "Switch Poll",  SWITCH_STACK_DEPTH,     NULL,       SWI_TASK_PRIORITY,      &SwitchCheck);
-    xTaskCreate(TriggerADC,    "ADC Handler",  ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      &ADCTrig);
-    xTaskCreate(MeanADC,       "ADC Mean",     ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      &ADCMean);
+    xTaskCreate(TriggerADC,    "ADC Handler",   ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      &ADCTrig);
+    xTaskCreate(MeanADC,       "ADC Mean",      MEAN_STACK_DEPTH,       NULL,       MEAN_TASK_PRIORITY,     &ADCMean);
     xTaskCreate(SetMainDuty,    "Alt PWM",      ALT_STACK_DEPTH,        NULL,       ALT_TASK_PRIORITY,      &MainPWM);
     xTaskCreate(SetTailDuty,    "Yaw PWM",      YAW_STACK_DEPTH,        NULL,       YAW_TASK_PRIORITY,      &TailPWM);
     xTaskCreate(FSM,            "FSM",          FSM_STACK_DEPTH,        NULL,       FSM_TASK_PRIORITY,      &FSMTask);

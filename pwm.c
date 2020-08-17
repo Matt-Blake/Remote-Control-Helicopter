@@ -268,7 +268,7 @@ SetTailDuty(void *pvParameters)
 
         // Set PWM duty cycle of tail rotor in order to spin to target yaw
         yaw_PWM = getControlSignal(&g_yaw_controller, yaw_desired, yaw_meas, true); // Use the error to calculate a PWM duty cycle for the tail rotor
-        yaw_PWM = yaw_PWM + alt_PWM * MAIN_ROTOR_FACTOR; // Compensate tail PWM due to effect of main rotor duty cycle
+        yaw_PWM = yaw_PWM + (alt_PWM * MAIN_ROTOR_FACTOR); // Compensate tail PWM due to effect of main rotor duty cycle
         if (yaw_PWM > MAX_DUTY){
             yaw_PWM = MAX_DUTY;
         }

@@ -47,7 +47,7 @@ typedef enum HELI_STATE {LANDED = 0, TAKEOFF = 1, FLYING = 2, LANDING = 3} HELI_
 void
 findYawRef(void)
 {
-    int32_t PWM_Main = 50; // place holder for now
+    int32_t PWM_Main = 40; // place holder for now
     //int32_t PWM_Tail = 20; // place holder for now
     int32_t found_yaw;
     int32_t ref_yaw = 0;
@@ -110,10 +110,10 @@ takeoff(void)
     if(!found_yaw) { // If the reference yaw has been found
         findYawRef(); // Find the reference yaw
     } else {
-        xQueueOverwrite(xAltDesQueue, &desired_alt); // Ascend to 20 % altitude
-        xQueueOverwrite(xYawDesQueue, &desired_yaw); // Rotate to reference yaw
         vTaskResume(MainPWM); // Re-enable the control system
         vTaskResume(TailPWM);
+        xQueueOverwrite(xAltDesQueue, &desired_alt); // Ascend to 20 % altitude
+        xQueueOverwrite(xYawDesQueue, &desired_yaw); // Rotate to reference yaw
         xQueuePeek(xAltMeasQueue, &alt, 10); // Retrieve the current altitude value
         xQueuePeek(xYawMeasQueue, &yaw, 10); // Retrieve the current yaw value
 

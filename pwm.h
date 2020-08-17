@@ -52,10 +52,10 @@
 
 
 // Includes
-#ifndef PWMMAINGEN_H_
-#define PWMMAINGEN_H_
+#ifndef PWM_H_
+#define PWM_H_
 
-#define MAIN_ROTOR_FACTOR 1/4 // Factor used to compensate for the effect of main rotor
+#define MAIN_ROTOR_FACTOR 3/5 // Factor used to compensate for the effect of main rotor
 
 
 // Globals

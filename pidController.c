@@ -21,12 +21,12 @@
 
 #include "pidController.h"
 
-#define ALT_KP              50         // Altitude proportional gain
-#define ALT_KI              20          // Altitude integral gain
-#define ALT_KD              20         // Altitude derivative gain
-#define YAW_KP              100         // Yaw proportional gain
-#define YAW_KI              30//20          // Yaw integral gain
-#define YAW_KD              30//20          // Yaw derivative gain
+#define ALT_KP              30          // Altitude proportional gain
+#define ALT_KI              40          // Altitude integral gain
+#define ALT_KD              20          // Altitude derivative gain
+#define YAW_KP              70          // Yaw proportional gain
+#define YAW_KI              30          // Yaw integral gain
+#define YAW_KD              40          // Yaw derivative gain
 #define CONTROL_DIVISOR     100         // Divisor used to achieve certain gains without the use of floating point numbers
 
 #define DEGREES_CIRCLE      360         // The number of degrees in a circle
@@ -96,7 +96,7 @@ getControlSignal(controller_t* piController, int32_t reference, int32_t measurem
     int32_t dutyCycle;
     int32_t controlSignal;
 
-    int32_t errorSignal;
+    float errorSignal;
     float derivativeError;
 
 
