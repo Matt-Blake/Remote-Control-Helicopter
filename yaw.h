@@ -27,7 +27,7 @@
 
 #define MOUNT_SLOT_COUNT    112                         // The number of slots in the helirig mount
 #define DEGREES_HALF_CIRCLE 180                         // The number of degrees in a half circle
-#define MAX_YAW_LIMIT       179                         // The maximum yaw (degrees)
+#define MAX_YAW_LIMIT       180                         // The maximum yaw (degrees)
 #define MIN_YAW_LIMIT       -180                        // The minimum yaw (degrees)
 
 #define YAW_GPIO_BASE       GPIO_PORTB_BASE //Sets the base for pins J1-03 (PB0, channel A) and J1-04 (PB1, channel B)
