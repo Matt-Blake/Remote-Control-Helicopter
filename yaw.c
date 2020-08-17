@@ -67,13 +67,13 @@ checkYawThresholds(void)
 
     xQueuePeek(xYawMeasQueue, &yaw, 10);// Read the current yaw value
 
-    if (yaw >= MAX_YAW_LIMIT) { //Set yaw to -180 degrees if the current reading is 179 degrees
+    if (yaw > MAX_YAW_LIMIT) { //Set yaw to -180 degrees if the current reading is >180 degrees
         yaw = MIN_YAW_LIMIT;
         yaw_slot = MIN_YAW_LIMIT * DEGREES_HALF_CIRCLE/MOUNT_SLOT_COUNT;
         xQueueOverwrite(xYawMeasQueue, &yaw);// Store the resulting yaw measurement in the RTOS queue
         xQueueOverwrite(xYawSlotQueue, &yaw_slot);
     }
-    else if (yaw <= MIN_YAW_LIMIT) { //Set yaw to 179 degrees if the current reading is -180 degrees
+    else if (yaw <= MIN_YAW_LIMIT) { //Set yaw to 180 degrees if the current reading is -180 degrees
         yaw = MAX_YAW_LIMIT;
         yaw_slot = MAX_YAW_LIMIT * DEGREES_HALF_CIRCLE/MOUNT_SLOT_COUNT;
         xQueueOverwrite(xYawMeasQueue, &yaw);// Store the resulting yaw measurement in the RTOS queue
