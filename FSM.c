@@ -116,7 +116,7 @@ takeoff(void)
     } else {
         vTaskResume(MainPWM); // Re-enable the control system
         vTaskResume(TailPWM);
-        vTaskResume(ButtonsCheck);
+        vTaskResume(BtnCheck);
         vTaskResume(SwitchCheck);
         xQueueOverwrite(xYawDesQueue, &desired_yaw); // Rotate to reference yaw
         xQueueOverwrite(xAltDesQueue, &desired_alt); // Ascend to 20 % altitude
