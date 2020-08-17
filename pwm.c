@@ -266,9 +266,9 @@ SetTailDuty(void *pvParameters)
         xQueuePeek(xMainPWMQueue, &alt_PWM, 10); // Retrieve the main rotor's duty cycle
 
         if(abs(yaw_meas - yaw_desired) > 120){
-            g_yaw_controller.Kp = 80;
-            g_yaw_controller.Ki = 0;
-            g_yaw_controller.Kd = 80;
+            //g_yaw_controller.Kp = 20;
+            g_yaw_controller.Ki = 5;
+            //g_yaw_controller.Kd = 80;
         }else{
             initController(&g_yaw_controller, true);
         }

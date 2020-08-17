@@ -68,7 +68,7 @@
 #define MEAN_TASK_PRIORITY      7       // Mean calculation priority
 #define ALT_TASK_PRIORITY       8       // Altitude PWM priority
 #define YAW_TASK_PRIORITY       8       // Yaw PWM priority
-#define FSM_TASK_PRIORITY       8       // FSM priority
+#define FSM_TASK_PRIORITY       5       // FSM priority
 #define TIMER_TASK_PRIORITY     5       // Time module priority
 #define STACK_TASK_PRIORITY     5
 
