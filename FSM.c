@@ -224,11 +224,21 @@ land(void)
  */
 void landed(void)
 {
+    // Suspend unwanted tasks
     vTaskSuspend(MainPWM); // Suspend the control system while landed
     vTaskSuspend(TailPWM);
     vTaskSuspend(BtnCheck); // Disable changes to yaw and altitude while landed
+
+    // Set motor duty cycles to minimum
     setRotorPWM(MIN_DUTY, 1);
     setRotorPWM(MIN_DUTY, 0);
+
+    // Reset error on controllers
+    g_alt_controller.previousError   = 0;
+    g_yaw_controller.previousError   = 0;
+    g_alt_controller.integratedError = 0;
+    g_yaw_controller.integratedError = 0;
+
     //vTaskResume(SwitchCheck);
 }
 
