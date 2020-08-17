@@ -38,7 +38,6 @@
 #include "reset.h"
 #include "yaw.h"
 #include "uart.h"
-//#include "ADC.h"
 #include "altitude.h"
 #include "buttons.h"
 #include "pidController.h"

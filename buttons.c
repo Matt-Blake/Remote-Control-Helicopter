@@ -216,12 +216,12 @@ downButtonPush(void)
  * Decrement the desired yaw by 15 degrees if the left button has been pushed
  */
 void
-leftButtonPush(void)
+rightButtonPush(void)
 {
     uint8_t state;
     static int32_t yaw_desired = 0;
 
-    UARTSend ("Left\n");
+    UARTSend ("Right\n");
 
     if(xSemaphoreTake(xYawMutex, 0/portTICK_RATE_MS) == pdPASS){ // If the yaw mutex is free, decrement the yaw
         xQueuePeek(xYawDesQueue, &yaw_desired, 10); // Retrieve desired yaw data from the RTOS queue
@@ -248,12 +248,12 @@ leftButtonPush(void)
  * Increment the desired yaw by 15 degrees if the left button has been pushed
  */
 void
-rightButtonPush(void)
+leftButtonPush(void)
 {
     uint8_t state;
     static int32_t yaw_desired = 0;
 
-    UARTSend ("Right\n");
+    UARTSend ("Left\n");
 
     if(xSemaphoreTake(xYawMutex, 0/portTICK_RATE_MS) == pdPASS){ // If the yaw mutex is free, increment the yaw
         xQueuePeek(xYawDesQueue, &yaw_desired, 10); // Retrieve desired yaw data from the RTOS queue

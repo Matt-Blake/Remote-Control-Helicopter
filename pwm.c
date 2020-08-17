@@ -147,15 +147,19 @@ setRotorPWM (uint32_t ui32Duty, bool SET_MAIN)
     // Calculate the PWM period corresponding to the freq.
     uint32_t ui32Period = SysCtlClockGet() / PWM_DIVIDER / PWM_START_RATE_HZ;
 
-    if (SET_MAIN == true) // Set PWM freq/duty of the main rotor
-    {
-        PWMGenPeriodSet(PWM_MAIN_BASE, PWM_MAIN_GEN, ui32Period);
-        PWMPulseWidthSet(PWM_MAIN_BASE, PWM_MAIN_OUTNUM, ui32Period * ui32Duty / 100);
-    }
-    else // Set PWM freq/duty of the tail rotor
-    {
-        PWMGenPeriodSet(PWM_TAIL_BASE, PWM_TAIL_GEN, ui32Period);
-        PWMPulseWidthSet(PWM_TAIL_BASE, PWM_TAIL_OUTNUM, ui32Period * ui32Duty / 100);
+    if (ui32Duty > 98){
+        UARTSend("MAX PWM DUTY EXCEEDED\r\n");
+    }else{
+        if (SET_MAIN == true) // Set PWM freq/duty of the main rotor
+        {
+            PWMGenPeriodSet(PWM_MAIN_BASE, PWM_MAIN_GEN, ui32Period);
+            PWMPulseWidthSet(PWM_MAIN_BASE, PWM_MAIN_OUTNUM, ui32Period * ui32Duty / 100);
+        }
+        else // Set PWM freq/duty of the tail rotor
+        {
+            PWMGenPeriodSet(PWM_TAIL_BASE, PWM_TAIL_GEN, ui32Period);
+            PWMPulseWidthSet(PWM_TAIL_BASE, PWM_TAIL_OUTNUM, ui32Period * ui32Duty / 100);
+        }
     }
 }
 
@@ -264,7 +268,10 @@ SetTailDuty(void *pvParameters)
 
         // Set PWM duty cycle of tail rotor in order to spin to target yaw
         yaw_PWM = getControlSignal(&g_yaw_controller, yaw_desired, yaw_meas, true); // Use the error to calculate a PWM duty cycle for the tail rotor
-        yaw_PWM = yaw_PWM - alt_PWM * MAIN_ROTOR_FACTOR; // Compensate tail PWM due to effect of main rotor duty cycle
+        yaw_PWM = yaw_PWM + alt_PWM * MAIN_ROTOR_FACTOR; // Compensate tail PWM due to effect of main rotor duty cycle
+        if (yaw_PWM > MAX_DUTY){
+            yaw_PWM = MAX_DUTY;
+        }
         setRotorPWM(yaw_PWM, 0); // Set tail rotor to calculated PWM
         xQueueOverwrite(xTailPWMQueue, &yaw_PWM); // Store the tail PWM duty cycle in a queue
 
