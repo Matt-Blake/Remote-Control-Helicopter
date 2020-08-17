@@ -342,7 +342,6 @@ ButtonsCheck(void *pvParameters)
                 xTimerStart(xYawFlipTimer, 10); // Restarts timer
             } else {
                 xSemaphoreGive(xYawFlipSemaphore);
-                g_yaw_controller.Ki = 0;
             }
 
             if (uxSemaphoreGetCount(xYawFlipSemaphore) == 1) {
