@@ -31,6 +31,40 @@ static uint8_t btn_count[NUM_BTNS];
 static bool btn_flag[NUM_BTNS];
 static bool btn_normal[NUM_BTNS];   // Corresponds to the electrical state
 
+TimerHandle_t xUpBtnTimer;
+TimerHandle_t xYawFlipTimer;
+
+/*
+ * WRITE DESCRIPTION
+ */
+void vBtnTimerCallback( TimerHandle_t xTimer )
+{
+    uint32_t    ulCount;
+    uint8_t     reset = 0;
+
+    /* Optionally do something if the pxTimer parameter is NULL. */
+    configASSERT( xTimer );
+
+    /* The number of times this timer has expired is saved as the
+    timer's ID.  Obtain the count. */
+    ulCount = ( uint32_t ) pvTimerGetTimerID( xTimer );
+
+    /* Increment the count, then test to see if the timer has expired
+    ulMaxExpiryCountBeforeStopping yet. */
+    //ulCount++;
+
+    /* If the timer has expired stop it from running. */
+    if( ulCount == 1 )
+    {
+        /* Do not use a block time if calling a timer API function
+        from a timer callback function, as doing so could cause a
+        deadlock! */
+        vTimerSetTimerID( xTimer, ( void * ) reset ); //( void * ) ulCount
+        xTimerStop( xTimer, reset );
+    }
+    UARTSend("Button Timer Callback\n");
+}
+
 // *****************************************************
 // initButtons: Initialise the variables associated with the set of buttons
 // defined by the constants in the buttons2.h header file.

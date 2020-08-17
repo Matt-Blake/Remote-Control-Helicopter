@@ -39,12 +39,18 @@
 #define YAW_REFERENCE_PIN   GPIO_INT_PIN_4
 #define YAW_REFERENCE_FLAG  (1 << 0)
 
+#define YAW_REF_TMR_PERIOD  1000
+
 extern QueueHandle_t xYawMeasQueue;
 extern QueueHandle_t xYawDesQueue;
 extern QueueHandle_t xYawSlotQueue;
 
+extern TimerHandle_t xYawRefTimer;
+
 extern EventGroupHandle_t xFoundYawReference;
 
+
+void vYawRefCallback( TimerHandle_t xTimer );
 
 /*
  * Function:    initQuadrature

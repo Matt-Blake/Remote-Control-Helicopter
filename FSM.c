@@ -48,29 +48,32 @@ void
 findYawRef(void)
 {
     int32_t PWM_Main = 40; // place holder for now
-    //int32_t PWM_Tail = 20; // place holder for now
+    int32_t PWM_Tail = 10; // place holder for now
     int32_t found_yaw;
     int32_t ref_yaw = 0;
 
-    vTaskSuspend(MainPWM); // suspend the control system until ref is found
-    vTaskSuspend(TailPWM);
-    vTaskSuspend(BtnCheck);
-    vTaskSuspend(SwitchCheck);
+    static temp = 0;
+    if (temp == 0){
+        vTaskSuspend(MainPWM); // suspend the control system until ref is found
+        vTaskSuspend(TailPWM);
+        vTaskSuspend(BtnCheck);
+        vTaskSuspend(SwitchCheck);
+    }
 
     found_yaw = xEventGroupGetBits(xFoundYawReference);
     UARTSend("Finding Ref\n");
 
     if(found_yaw) {
-        vTaskResume(MainPWM); // Re-enable the control system
-        vTaskResume(TailPWM);
-        vTaskResume(BtnCheck);
-        vTaskResume(SwitchCheck);
+        vTaskResume(MainPWM);               // Re-enable the main rotor control system
+        vTaskResume(TailPWM);               // Re-enable the tail rotor control system
+        vTaskResume(BtnCheck);              // Re-enable the button-polling task
+        vTaskResume(SwitchCheck);           // Re-enable the switch-polling task
         xEventGroupClearBitsFromISR(xFoundYawReference, YAW_REFERENCE_FLAG);
         xQueueOverwrite(xYawDesQueue, &ref_yaw);
 
     } else { // finding ref mode
-        setRotorPWM(PWM_Main, 1); // set the main rotor to on, the torque from the main rotor should work better than using the tail, have to test and actually see whats best
-        //setRotorPWM(PWM_Tail, 0); // set the main rotor to on, the torque from the main rotor should work better than using the tail, have to test and actually see whats best
+        //setRotorPWM(PWM_Main, 1); // Set the main rotor to on, the torque from the main rotor should work better than using the tail, have to test and actually see whats best
+        setRotorPWM(PWM_Tail, 0);   // Set the tail rotor to on
     }
 }
 
@@ -113,11 +116,11 @@ takeoff(void)
         vTaskResume(MainPWM); // Re-enable the control system
         vTaskResume(TailPWM);
         xQueueOverwrite(xYawDesQueue, &desired_yaw); // Rotate to reference yaw
+        xQueueOverwrite(xAltDesQueue, &desired_alt); // Ascend to 20 % altitude
         xQueuePeek(xAltMeasQueue, &alt, 10); // Retrieve the current altitude value
         xQueuePeek(xYawMeasQueue, &yaw, 10); // Retrieve the current yaw value
 
         if ((yaw > (-YAW_TOLERANCE)) && (yaw < YAW_TOLERANCE)) { // If reached desired yaw
-            xQueueOverwrite(xAltDesQueue, &desired_alt); // Ascend to 20 % altitude
             if (alt > (desired_alt - ALT_TOLERANCE) && (alt < (desired_alt + ALT_TOLERANCE))) { // If reached desired altitude
 
                 state = FLYING;

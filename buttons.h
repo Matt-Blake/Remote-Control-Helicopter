@@ -109,6 +109,9 @@ extern controller_t g_yaw_controller;
 // read the pin in the opposite condition, before the state changes and
 // a flag is set.  Set NUM_BUT_POLLS according to the polling rate.
 
+
+void vBtnTimerCallback( TimerHandle_t xTimer );
+
 /* ******************************************************
  * initButtons: Initialise the variables associated with the set of buttons
  * defined by the constants above.

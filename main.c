@@ -112,8 +112,6 @@ QueueHandle_t xTailPWMQueue;
 QueueHandle_t xFSMQueue;
 QueueHandle_t xYawSlotQueue;
 
-TimerHandle_t xUpBtnTimer;
-TimerHandle_t xYawFlipTimer;
 TimerHandle_t xLandingTimer;
 
 TaskHandle_t Blinky;
@@ -213,35 +211,7 @@ GetStackUsage(void *pvParameters)
     }
 }
 
-/*
- * WRITE DESCRIPTION
- */
-void vBtnTimerCallback( TimerHandle_t xTimer )
-{
-    uint32_t ulCount;
 
-    /* Optionally do something if the pxTimer parameter is NULL. */
-    configASSERT( xTimer );
-
-    /* The number of times this timer has expired is saved as the
-    timer's ID.  Obtain the count. */
-    ulCount = ( uint32_t ) pvTimerGetTimerID( xTimer );
-
-    /* Increment the count, then test to see if the timer has expired
-    ulMaxExpiryCountBeforeStopping yet. */
-    //ulCount++;
-
-    /* If the timer has expired stop it from running. */
-    if( ulCount == 1 )
-    {
-        /* Do not use a block time if calling a timer API function
-        from a timer callback function, as doing so could cause a
-        deadlock! */
-        vTimerSetTimerID( xTimer, 0 ); //( void * ) ulCount
-        xTimerStop( xTimer, 0 );
-    }
-    UARTSend("Button Timer Callback\n");
-}
 
 /*
  * WRITE DESCRIPTION
@@ -455,6 +425,8 @@ createTimers(void)
                                     / portTICK_RATE_MS, pdFALSE, ( void * ) 0, vBtnTimerCallback );
     xLandingTimer   = xTimerCreate( "Land Timer", LAND_TMR_PERIOD
                                     / portTICK_RATE_MS, pdTRUE, ( void * ) 0, vLandTimerCallback );
+    xYawRefTimer   = xTimerCreate( "Yaw Ref Timer", YAW_REF_TMR_PERIOD
+                                    / portTICK_RATE_MS, pdFALSE, ( void * ) 0, vYawRefCallback );
 }
 
 /*

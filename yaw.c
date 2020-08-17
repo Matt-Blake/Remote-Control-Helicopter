@@ -19,6 +19,21 @@
 
 #include "yaw.h"
 
+TimerHandle_t xYawRefTimer;
+
+
+/*
+ * WRITE DESCRIPTION
+ */
+void vYawRefCallback( TimerHandle_t xTimer )
+{
+    int8_t  reset = 0;
+    UARTSend("Yaw Ref Callback\n");
+    GPIOIntEnable(YAW_REFERENCE_BASE, YAW_REFERENCE_PIN);
+    vTimerSetTimerID( xTimer, (void *) reset );
+}
+
+
 /*
  * Function:    referenceInterrupt
  * --------------------------------
@@ -38,11 +53,14 @@ referenceInterrupt(void)
 {
     int32_t reset = 0;
 
-    xQueueOverwriteFromISR(xYawMeasQueue, &reset, pdFALSE);// Adjust the current yaw value to 0 (reference position)
-    xQueueOverwriteFromISR(xYawSlotQueue, &reset, pdFALSE);
     UARTSend("REF_INTERRUPT\n\r");
+
+    xQueueOverwriteFromISR(xYawMeasQueue, &reset, pdFALSE);         // Reset the current yaw to 0 (reference position)
+    xQueueOverwriteFromISR(xYawSlotQueue, &reset, pdFALSE);         // Reset the curreny yaw_slow position to 0
     xEventGroupSetBitsFromISR(xFoundYawReference, YAW_REFERENCE_FLAG, pdFALSE); // Set reference flag
-    GPIOIntClear(YAW_REFERENCE_BASE, YAW_REFERENCE_PIN);
+    GPIOIntDisable(YAW_REFERENCE_BASE, YAW_REFERENCE_PIN);          // Disable the reference interrupt. Will be re-enabled by a timer.
+    xTimerStart(xYawRefTimer, 10);                                  // Start timer
+    GPIOIntClear(YAW_REFERENCE_BASE, YAW_REFERENCE_PIN);            // Clear the interrupt
 }
 
 
@@ -63,7 +81,7 @@ void
 checkYawThresholds(void)
 {
     int32_t yaw;
-    int32_t yaw_slot;
+    //int32_t yaw_slot;
 
     xQueuePeek(xYawMeasQueue, &yaw, 10);// Read the current yaw value
 
@@ -103,7 +121,6 @@ quadratureFSMInterrupt(void)
 {
     int32_t yaw;
     int32_t yaw_slot;
-    static int32_t dir = 0; // Direction
     int32_t newChannelReading = GPIOPinRead(GPIO_PORTB_BASE, YAW_PIN0_GPIO_PIN | YAW_PIN1_GPIO_PIN);
     static int32_t currentChannelReading = 0;
 
@@ -114,62 +131,41 @@ quadratureFSMInterrupt(void)
 
     switch (state_code){
         case (0b0010):
-//                yaw_slot--;
-                dir = 1;
+                yaw_slot--;
                 break;
         case (0b0001):
-//                yaw_slot++;
-                dir = 0;
+                yaw_slot++;
                 break;
         case (0b0100):
-//                yaw_slot--;
-                dir = 1;
+                yaw_slot--;
                 break;
         case (0b0111):
-//                yaw_slot++;
-                dir = 0;
+                yaw_slot++;
                 break;
         case (0b1101):
-//                yaw_slot--;
-                dir = 1;
+                yaw_slot--;
                 break;
         case (0b1110):
-//                yaw_slot++;
-                dir = 0;
+                yaw_slot++;
                 break;
         case (0b1011):
-//                yaw_slot--;
-                dir = 1;
+                yaw_slot--;
                 break;
         case (0b1000):
-//                yaw_slot++;
-                dir = 0;
-                break;
-        // Goes into default when a state is skipped. Happens when you turn too fast.
-        default:
-                //UARTSend("QD Error\n");
-            if(dir == 0){
                 yaw_slot++;
-            }else if(dir == 1){
-                yaw_slot--;
-            }
+                break;
+        //default:                  // Goes into default when a state is skipped. Occurs when you turn too fast.
+                //UARTSend("QD Error\n");
     }
 
     currentChannelReading = newChannelReading;
 
-    // TEMPORARY
-    if(dir == 0){
-        yaw_slot++;
-    }else{
-        yaw_slot--;
-    }
-
     // Calculate yaw in degrees and store the results
-    yaw = yaw_slot * MOUNT_SLOT_COUNT/DEGREES_HALF_CIRCLE; // Convert to degrees
-    xQueueOverwriteFromISR(xYawSlotQueue, &yaw_slot, pdFALSE); // Store the current number of slots traveled in the RTOS queue
-    xQueueOverwriteFromISR(xYawMeasQueue, &yaw, pdFALSE); // Store the resulting yaw measurement in the RTOS queue
-    GPIOIntClear(YAW_GPIO_BASE, YAW_PIN0_GPIO_PIN | YAW_PIN1_GPIO_PIN);
-    checkYawThresholds(); //Check if yaw has reached its threshold values
+    yaw = yaw_slot * MOUNT_SLOT_COUNT/DEGREES_HALF_CIRCLE;      // Convert to degrees
+    xQueueOverwriteFromISR(xYawSlotQueue, &yaw_slot, pdFALSE);  // Store the current number of slots traveled in the RTOS queue
+    xQueueOverwriteFromISR(xYawMeasQueue, &yaw, pdFALSE);       // Store the resulting yaw measurement in the RTOS queue
+    GPIOIntClear(YAW_GPIO_BASE, YAW_PIN0_GPIO_PIN | YAW_PIN1_GPIO_PIN);     // Clears the interrupt
+    checkYawThresholds();                                       //Check if yaw has reached its threshold values
 
 }
 
