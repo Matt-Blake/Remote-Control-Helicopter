@@ -37,8 +37,9 @@
 //******************************************************
 // Constants
 //******************************************************
-#define ALT_TOLERANCE       2       // The tolerance in altitude value to trigger state change
-#define YAW_TOLERANCE       2       // The tolerance in yaw value to trigger state change
+#define ALT_TOLERANCE           2       // The tolerance in altitude value to trigger state change
+#define YAW_TOLERANCE           2       // The tolerance in yaw value to trigger state change
+#define LAND_TMR_PERIOD         200
 
 //******************************************************
 // Globals
@@ -60,6 +61,7 @@ extern TimerHandle_t xLandingTimer;
 
 extern controller_t g_alt_controller;
 extern controller_t g_yaw_controller;
+
 
 
 void vLandTimerCallback( TimerHandle_t xTimer );

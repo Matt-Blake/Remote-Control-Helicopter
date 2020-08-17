@@ -64,8 +64,8 @@ void vLandTimerCallback( TimerHandle_t xTimer )
 void
 findYawRef(void)
 {
-    //int32_t PWM_Main = 40; // place holder for now
-    int32_t PWM_Tail = 10; // place holder for now
+    int32_t PWM_Main = 40; // place holder for now
+    //int32_t PWM_Tail = 10; // place holder for now
     int32_t found_yaw;
     int32_t ref_yaw = 0;
 
@@ -88,8 +88,8 @@ findYawRef(void)
         xQueueOverwrite(xYawDesQueue, &ref_yaw);
 
     } else { // finding ref mode
-        //setRotorPWM(PWM_Main, 1); // Set the main rotor to on, the torque from the main rotor should work better than using the tail, have to test and actually see whats best
-        setRotorPWM(PWM_Tail, 0);   // Set the tail rotor to on
+        setRotorPWM(PWM_Main, 1); // Set the main rotor to on, the torque from the main rotor should work better than using the tail, have to test and actually see whats best
+        //setRotorPWM(PWM_Tail, 0);   // Set the tail rotor to on
     }
 }
 

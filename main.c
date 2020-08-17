@@ -92,7 +92,6 @@
 #define DISPLAY_PERIOD          200
 #define DBL_BTN_TMR_PERIOD      1000//250
 #define YAW_FLIP_TMR_PERIOD     1000//250
-#define LAND_TMR_PERIOD         200
 
 
 //******************************************************
@@ -279,8 +278,8 @@ initClk(void)
 void
 initControllers(void)
 {
-    initController(&g_alt_controller, false); // Create altitude controller based of preset gains
-    initController(&g_yaw_controller, true); // Create yaw controller based of preset gains
+    initController(&g_alt_controller, false);   // Create altitude controller based of preset gains
+    initController(&g_yaw_controller, true);    // Create yaw controller based of preset gains
 }
 
 /*

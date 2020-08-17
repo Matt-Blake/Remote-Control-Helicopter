@@ -99,8 +99,6 @@ MeanADC(void *pvParameters)
             xEventGroupClearBits(xFoundAltReference, GROUND_BUFFER_FULL); // Clear previous flag
             xEventGroupSetBits(xFoundAltReference, GROUND_FOUND); // Set flag indicating that the ground reference has been set
             UARTSend("GroundFound\n");
-            usnprintf(cMessage, sizeof(cMessage), "GROUND %d\n", ground);
-            UARTSend(cMessage);
         } else if (ground_flag == GROUND_FOUND) {
             mean = calculateMean();
             altitude = percentageHeight(ground, mean);
