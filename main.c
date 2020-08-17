@@ -236,7 +236,7 @@ OLEDDisplay (void *pvParameters)
 
         //usnprintf(string, sizeof(string), "PWM(%%) %3d|%3d ", main_PWM, tail_PWM);
         //OLEDStringDraw(string, COLUMN_ZERO, ROW_TWO);
-        usnprintf(string, sizeof(string), "PWM %3d|%3d\n\r", main_PWM, tail_PWM);
+        usnprintf(string, sizeof(string), "PWM %3d|%3d\n\r", main_PWM/250, tail_PWM/250);
         UARTSend(string);
 
         //usnprintf(string, sizeof(string), "%s     ", states[state]);
