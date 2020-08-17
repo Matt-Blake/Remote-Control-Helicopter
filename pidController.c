@@ -21,12 +21,12 @@
 
 #include "pidController.h"
 
-#define ALT_KP              30          // Altitude proportional gain
+#define ALT_KP              10//30          // Altitude proportional gain
 #define ALT_KI              40          // Altitude integral gain
-#define ALT_KD              20          // Altitude derivative gain
-#define YAW_KP              60          // Yaw proportional gain
+#define ALT_KD              10//20          // Altitude derivative gain
+#define YAW_KP              20//60          // Yaw proportional gain
 #define YAW_KI              30          // Yaw integral gain
-#define YAW_KD              20          // Yaw derivative gain
+#define YAW_KD              10//20          // Yaw derivative gain
 #define CONTROL_DIVISOR     100         // Divisor used to achieve certain gains without the use of floating point numbers
 
 #define DEGREES_CIRCLE      360         // The number of degrees in a circle
