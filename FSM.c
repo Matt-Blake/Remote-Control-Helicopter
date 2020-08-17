@@ -25,6 +25,23 @@
 
 typedef enum HELI_STATE {LANDED = 0, TAKEOFF = 1, FLYING = 2, LANDING = 3} HELI_STATE;
 
+TimerHandle_t xLandingTimer;
+
+
+
+/*
+ * WRITE DESCRIPTION
+ */
+void vLandTimerCallback( TimerHandle_t xTimer )
+{
+    uint32_t ulCount;
+    UARTSend("Landing Timer Callback\n");
+
+    ulCount = ( uint32_t ) pvTimerGetTimerID( xTimer );
+    ulCount++;
+    vTimerSetTimerID( xTimer, (void *) ulCount );
+}
+
 //****************************************************************************
 //Check if found the reference yaw, if it has then set found reference to 1 and
 //reset the integrator error and update yaw reference
@@ -47,18 +64,17 @@ typedef enum HELI_STATE {LANDED = 0, TAKEOFF = 1, FLYING = 2, LANDING = 3} HELI_
 void
 findYawRef(void)
 {
-    int32_t PWM_Main = 40; // place holder for now
+    //int32_t PWM_Main = 40; // place holder for now
     int32_t PWM_Tail = 10; // place holder for now
     int32_t found_yaw;
     int32_t ref_yaw = 0;
 
-    static temp = 0;
-    if (temp == 0){
-        vTaskSuspend(MainPWM); // suspend the control system until ref is found
-        vTaskSuspend(TailPWM);
-        vTaskSuspend(BtnCheck);
-        vTaskSuspend(SwitchCheck);
-    }
+
+    vTaskSuspend(MainPWM); // suspend the control system until ref is found
+    vTaskSuspend(TailPWM);
+    vTaskSuspend(BtnCheck);
+    vTaskSuspend(SwitchCheck);
+
 
     found_yaw = xEventGroupGetBits(xFoundYawReference);
     UARTSend("Finding Ref\n");

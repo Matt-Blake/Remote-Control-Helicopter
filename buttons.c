@@ -65,6 +65,20 @@ void vBtnTimerCallback( TimerHandle_t xTimer )
     UARTSend("Button Timer Callback\n");
 }
 
+
+/*
+ * WRITE DESCRIPTION
+ */
+void vYawFlipTimerCallback( TimerHandle_t xTimer )
+{
+    uint32_t ulCount;
+    UARTSend("Yaw Flip Timer Callback\n");
+
+    ulCount = ( uint32_t ) pvTimerGetTimerID( xTimer );
+    ulCount++;
+    vTimerSetTimerID( xTimer, (void *) ulCount );
+}
+
 // *****************************************************
 // initButtons: Initialise the variables associated with the set of buttons
 // defined by the constants in the buttons2.h header file.

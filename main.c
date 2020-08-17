@@ -111,8 +111,6 @@ QueueHandle_t xTailPWMQueue;
 QueueHandle_t xFSMQueue;
 QueueHandle_t xYawSlotQueue;
 
-TimerHandle_t xLandingTimer;
-
 TaskHandle_t Blinky;
 TaskHandle_t OLEDDisp;
 TaskHandle_t BtnCheck;
@@ -208,34 +206,6 @@ GetStackUsage(void *pvParameters)
         usnprintf(cMessage, sizeof(cMessage), "TailPWM Unused: %d words\n",     TailPWM_stack);
         usnprintf(cMessage, sizeof(cMessage), "FSMTask Unused: %d words\n",     FSMTask_stack);
     }
-}
-
-
-
-/*
- * WRITE DESCRIPTION
- */
-void vLandTimerCallback( TimerHandle_t xTimer )
-{
-    uint32_t ulCount;
-    UARTSend("Landing Timer Callback\n");
-
-    ulCount = ( uint32_t ) pvTimerGetTimerID( xTimer );
-    ulCount++;
-    vTimerSetTimerID( xTimer, (void *) ulCount );
-}
-
-/*
- * WRITE DESCRIPTION
- */
-void vYawFlipTimerCallback( TimerHandle_t xTimer )
-{
-    uint32_t ulCount;
-    UARTSend("Yaw Flip Timer Callback\n");
-
-    ulCount = ( uint32_t ) pvTimerGetTimerID( xTimer );
-    ulCount++;
-    vTimerSetTimerID( xTimer, (void *) ulCount );
 }
 
 /*

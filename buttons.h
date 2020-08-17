@@ -111,6 +111,7 @@ extern controller_t g_yaw_controller;
 
 
 void vBtnTimerCallback( TimerHandle_t xTimer );
+void vYawFlipTimerCallback( TimerHandle_t xTimer );
 
 /* ******************************************************
  * initButtons: Initialise the variables associated with the set of buttons

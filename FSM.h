@@ -62,6 +62,9 @@ extern controller_t g_alt_controller;
 extern controller_t g_yaw_controller;
 
 
+void vLandTimerCallback( TimerHandle_t xTimer );
+
+
 /*
  * Function:    FSM
  * ------------------------
