@@ -25,7 +25,7 @@
 #define ALT_KI              15//20          // Altitude integral gain
 #define ALT_KD              10//20          // Altitude derivative gain
 
-#define YAW_KP              20         // Yaw proportional gain
+#define YAW_KP              25         // Yaw proportional gain
 #define YAW_KI              15          // Yaw integral gain
 #define YAW_KD              0          // Yaw derivative gain
 
