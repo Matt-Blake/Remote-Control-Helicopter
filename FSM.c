@@ -103,7 +103,7 @@ void vLandTimerCallback( TimerHandle_t xTimer )
 void
 findYawRef(void)
 {
-    int32_t PWM_Main = 30; // place holder for now
+    int32_t PWM_Main = FIND_REF_PWM; // place holder for now
     int32_t PWM_Tail = 0; // place holder for now
 
 

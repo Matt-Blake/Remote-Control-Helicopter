@@ -39,6 +39,7 @@
 //******************************************************
 #define ALT_TOLERANCE           2       // The tolerance in altitude value to trigger state change
 #define YAW_TOLERANCE           2       // The tolerance in yaw value to trigger state change
+#define FIND_REF_PWM            40      // The main rotor PWM used to find the reference yaw
 #define LAND_TMR_PERIOD         200
 
 #define FSM_TASK_PRIORITY       5       // FSM priority
