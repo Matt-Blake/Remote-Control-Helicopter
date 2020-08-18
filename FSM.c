@@ -72,7 +72,7 @@ GetStackUsage(void)
     FSMTask_stack     = uxTaskGetStackHighWaterMark(FSMTask);
 
     // Send stack information via UART
-    usnprintf(cMessage, sizeof(cMessage), "Blinky unused: %d words\n",      StatusLED_stack);
+    usnprintf(cMessage, sizeof(cMessage), "StatusLED unused: %d words\n",   StatusLED_stack);
     usnprintf(cMessage, sizeof(cMessage), "OLEDDisp unused: %d words\n",    OLEDDisp_stack);
     usnprintf(cMessage, sizeof(cMessage), "BtnCheck Unused: %d words\n",    BtnCheck_stack);
     usnprintf(cMessage, sizeof(cMessage), "SwitchCheck Unused: %d words\n", SwitchCheck_stack);
