@@ -131,7 +131,7 @@ takeoff(void)
     int32_t yaw;
     int32_t alt;
     int32_t desired_yaw = 0;
-    int32_t desired_alt = 10;
+    int32_t desired_alt = 20;
     int32_t found_yaw;
     int32_t state;
 
