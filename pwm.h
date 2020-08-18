@@ -56,7 +56,7 @@
 #define PWM_H_
 
 //#define MAIN_ROTOR_FACTOR 82/100 // the true coupling factor between main and tail
-#define MAIN_ROTOR_FACTOR 64/100 // Factor used to compensate for the effect of main rotor
+#define MAIN_ROTOR_FACTOR 70/100 //64/100 // Factor used to compensate for the effect of main rotor
 
 #define MAIN_PWM_TASK_PRIORITY  6       // Main rotor PWM task priority
 #define TAIL_PWM_TASK_PRIORITY  6       // Tail rotor PWM task priority
@@ -79,6 +79,9 @@ QueueHandle_t xYawControllerQueue;
 
 extern TaskHandle_t MainPWM;
 extern TaskHandle_t TailPWM;
+
+extern controller_t g_alt_controller;
+extern controller_t g_yaw_controller;
 
 
 /*

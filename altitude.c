@@ -63,6 +63,7 @@ int32_t calculateMean(void)
 int32_t
 percentageHeight(int32_t groundLevel, int32_t currentValue)
 {
+    //char cMessage[17];
     int32_t maxHeight = 0;
     int32_t percent = 0;
 

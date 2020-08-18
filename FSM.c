@@ -115,9 +115,7 @@ void vLandTimerCallback( TimerHandle_t xTimer )
 void
 findYawRef(void)
 {
-    int32_t PWM_Main = 0;//FIND_REF_PWM; // place holder for now
     int32_t PWM_Tail = 0; // place holder for now
-
 
     vTaskSuspend(MainPWM); // suspend the control system until ref is found
     vTaskSuspend(TailPWM);
@@ -125,11 +123,11 @@ findYawRef(void)
     vTaskSuspend(SwitchCheck);
 
     UARTSend("Finding Ref\n");
-    setRotorPWM(PWM_Main, 1); // Set the main rotor to on, the torque from the main rotor should work better than using the tail, have to test and actually see whats best
+    setRotorPWM(FIND_REF_PWM, 1); // Set the main rotor to on, the torque from the main rotor should work better than using the tail, have to test and actually see whats best
     setRotorPWM(PWM_Tail, 0);   // Set the tail rotor to on
-    while(!xEventGroupGetBits(xFoundYawReference)){
+    //while(!xEventGroupGetBits(xFoundYawReference)){
 
-    }
+    //}
 }
 
 
@@ -151,6 +149,7 @@ findYawRef(void)
 void
 takeoff(void)
 {
+    char string[17];
     int32_t yaw;
     int32_t alt;
     int32_t desired_yaw = 0;
@@ -158,17 +157,21 @@ takeoff(void)
     int32_t found_yaw;
     int32_t state;
 
+    //UARTSend("TO ");
     found_yaw = xEventGroupGetBits(xFoundYawReference);
+    usnprintf(string, sizeof(string), "FOUND: %d\r\n", found_yaw);
+        UARTSend(string);
 
-    UARTSend("Take-Off\r\n");
 
     if(!found_yaw) { // If the reference yaw has been found
         vTaskSuspend(MainPWM); // suspend the control system until ref is found
         vTaskSuspend(TailPWM);
         vTaskSuspend(BtnCheck);
         vTaskSuspend(SwitchCheck);
+        UARTSend("POINT A\n\r");
         findYawRef(); // Find the reference yaw
     } else {
+        UARTSend("POINT B\n\r");
         xQueueOverwrite(xYawDesQueue, &desired_yaw); // Rotate to reference yaw
         xQueueOverwrite(xAltDesQueue, &desired_alt); // Ascend to 20 % altitude
         vTaskResume(MainPWM); // Re-enable the control system

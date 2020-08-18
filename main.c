@@ -192,8 +192,8 @@ OLEDDisplay (void *pvParameters)
 
         //usnprintf(string, sizeof(string), "Yaw   %4d|%3d ", des_yaw, act_yaw);
         //OLEDStringDraw(string, COLUMN_ZERO, ROW_ONE);
-//        usnprintf(string, sizeof(string), "Yaw   %4d|%3d\n\r", des_yaw, act_yaw);
-//        UARTSend(string);
+        //        usnprintf(string, sizeof(string), "Yaw   %4d|%3d\n\r", des_yaw, act_yaw);
+        //        UARTSend(string);
 
         //usnprintf(string, sizeof(string), "PWM(%%) %3d|%3d ", main_PWM, tail_PWM);
         //OLEDStringDraw(string, COLUMN_ZERO, ROW_TWO);
