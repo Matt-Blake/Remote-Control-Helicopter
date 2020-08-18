@@ -40,16 +40,28 @@ TaskHandle_t SwitchCheck;
 QueueHandle_t xAltBtnQueue;
 QueueHandle_t xYawBtnQueue;
 
+
+SemaphoreHandle_t xUpBtnSemaphore;
+SemaphoreHandle_t xYawFlipSemaphore;
+
+
 /*
- * WRITE DESCRIPTION
+ * Function:    vBtnTimerCallback
+ * -------------------------------
+ * Handler for the button timer.
+ * When the button timer expires, this function
+ * resets the timer ID.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
  */
-void vBtnTimerCallback( TimerHandle_t xTimer )
+void vDblBtnTimerCallback( TimerHandle_t xTimer )
 {
     uint32_t    ulCount;
     uint8_t     reset = 0;
-
-    /* Optionally do something if the pxTimer parameter is NULL. */
-    configASSERT( xTimer );
 
     /* The number of times this timer has expired is saved as the
     timer's ID.  Obtain the count. */
@@ -60,7 +72,7 @@ void vBtnTimerCallback( TimerHandle_t xTimer )
     //ulCount++;
 
     /* If the timer has expired stop it from running. */
-    if( ulCount == 1 )
+    if( ulCount >= 1 )
     {
         /* Do not use a block time if calling a timer API function
         from a timer callback function, as doing so could cause a
@@ -72,18 +84,6 @@ void vBtnTimerCallback( TimerHandle_t xTimer )
 }
 
 
-/*
- * WRITE DESCRIPTION
- */
-void vYawFlipTimerCallback( TimerHandle_t xTimer )
-{
-    uint32_t ulCount;
-    UARTSend("Yaw Flip Timer Callback\n");
-
-    ulCount = ( uint32_t ) pvTimerGetTimerID( xTimer );
-    ulCount++;
-    vTimerSetTimerID( xTimer, (void *) ulCount );
-}
 
 // *****************************************************
 // initButtons: Initialise the variables associated with the set of buttons

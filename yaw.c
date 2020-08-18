@@ -19,8 +19,6 @@
 
 #include "yaw.h"
 
-TimerHandle_t xYawRefTimer;
-
 QueueHandle_t xYawSlotQueue;
 QueueHandle_t xYawMeasQueue;
 QueueHandle_t xYawDesQueue;
@@ -61,8 +59,6 @@ referenceInterrupt(void)
     xQueueOverwriteFromISR(xYawMeasQueue, &reset, pdFALSE);         // Reset the current yaw to 0 (reference position)
     xQueueOverwriteFromISR(xYawSlotQueue, &reset, pdFALSE);         // Reset the curreny yaw_slow position to 0
     xEventGroupSetBitsFromISR(xFoundYawReference, YAW_REFERENCE_FLAG, pdFALSE); // Set reference flag
-    //GPIOIntDisable(YAW_REFERENCE_BASE, YAW_REFERENCE_PIN);          // Disable the reference interrupt. Will be re-enabled by a timer.
-    //xTimerStart(xYawRefTimer, 10);                                  // Start timer
     GPIOIntClear(YAW_REFERENCE_BASE, YAW_REFERENCE_PIN);            // Clear the interrupt
 }
 

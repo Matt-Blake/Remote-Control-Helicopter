@@ -120,8 +120,7 @@ extern TaskHandle_t SwitchCheck;
 // a flag is set.  Set NUM_BUT_POLLS according to the polling rate.
 
 
-void vBtnTimerCallback( TimerHandle_t xTimer );
-void vYawFlipTimerCallback( TimerHandle_t xTimer );
+void vDblBtnTimerCallback( TimerHandle_t xTimer );
 
 /* ******************************************************
  * initButtons: Initialise the variables associated with the set of buttons

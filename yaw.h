@@ -45,8 +45,6 @@ extern QueueHandle_t xYawMeasQueue;
 extern QueueHandle_t xYawDesQueue;
 extern QueueHandle_t xYawSlotQueue;
 
-extern TimerHandle_t xYawRefTimer;
-
 extern EventGroupHandle_t xFoundYawReference;
 
 

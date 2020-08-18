@@ -82,8 +82,6 @@ QueueHandle_t xOLEDQueue;
 SemaphoreHandle_t xAltMutex;
 SemaphoreHandle_t xYawMutex;
 SemaphoreHandle_t xUARTMutex;
-SemaphoreHandle_t xUpBtnSemaphore;
-SemaphoreHandle_t xYawFlipSemaphore;
 
 EventGroupHandle_t xFoundAltReference;
 EventGroupHandle_t xFoundYawReference;
@@ -192,8 +190,8 @@ OLEDDisplay (void *pvParameters)
 
         //usnprintf(string, sizeof(string), "Yaw   %4d|%3d ", des_yaw, act_yaw);
         //OLEDStringDraw(string, COLUMN_ZERO, ROW_ONE);
-        //        usnprintf(string, sizeof(string), "Yaw   %4d|%3d\n\r", des_yaw, act_yaw);
-        //        UARTSend(string);
+        usnprintf(string, sizeof(string), "Yaw   %4d|%3d\n\r", des_yaw, act_yaw);
+        UARTSend(string);
 
         //usnprintf(string, sizeof(string), "PWM(%%) %3d|%3d ", main_PWM, tail_PWM);
         //OLEDStringDraw(string, COLUMN_ZERO, ROW_TWO);
@@ -383,13 +381,11 @@ static void
 createTimers(void)
 {
     xUpBtnTimer     = xTimerCreate( "Button Timer", DBL_BTN_TMR_PERIOD
-                                    / portTICK_RATE_MS, pdFALSE, ( void * ) 0, vBtnTimerCallback );
+                                    / portTICK_RATE_MS, pdFALSE, ( void * ) 0, vDblBtnTimerCallback );
     xYawFlipTimer   = xTimerCreate( "Yaw Flip Timer", YAW_FLIP_TMR_PERIOD
-                                    / portTICK_RATE_MS, pdFALSE, ( void * ) 0, vBtnTimerCallback );
+                                    / portTICK_RATE_MS, pdFALSE, ( void * ) 0, vDblBtnTimerCallback );
     xLandingTimer   = xTimerCreate( "Land Timer", LAND_TMR_PERIOD
                                     / portTICK_RATE_MS, pdTRUE,  ( void * ) 0, vLandTimerCallback );
-    xYawRefTimer   = xTimerCreate( "Yaw Ref Timer", YAW_REF_TMR_PERIOD
-                                    / portTICK_RATE_MS, pdFALSE, ( void * ) 0, vYawRefCallback );
 }
 
 
@@ -409,7 +405,7 @@ createTimers(void)
 void
 vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 {
-    UARTSend("OVERFLOW\n");
+    UARTSend("STACK OVERFLOW\n");
     UARTSend(pcTaskName);
     while (1){}
 }
@@ -433,7 +429,7 @@ vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 void
 vApplicationIdleHook( void )
 {
-    static char runtime_stats_buffer[512];
+    //static char runtime_stats_buffer[512];
 
     //vTaskGetRunTimeStats(runtime_stats_buffer); // Calculate CPU load stats
     //UARTSend(runtime_stats_buffer); // Print CPU load stats to UART

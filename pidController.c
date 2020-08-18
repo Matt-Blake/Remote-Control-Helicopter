@@ -24,9 +24,9 @@
 #define ALT_KP              30          // Altitude proportional gain
 #define ALT_KI              30          // Altitude integral gain
 #define ALT_KD              20          // Altitude derivative gain
-#define YAW_KP              30//60          // Yaw proportional gain
-#define YAW_KI              30          // Yaw integral gain
-#define YAW_KD              0//20          // Yaw derivative gain
+#define YAW_KP              100         // Yaw proportional gain
+#define YAW_KI              50          // Yaw integral gain
+#define YAW_KD              20          // Yaw derivative gain
 #define CONTROL_DIVISOR     100         // Divisor used to achieve certain gains without the use of floating point numbers
 
 #define DEGREES_CIRCLE      360         // The number of degrees in a circle
@@ -39,7 +39,7 @@
  *
  * @params:
  *      - controller_t* controllerPointer: Pointer to the relevant
- *      conroller struct.
+ *      controller struct.
  *      - bool isYaw: True if the controller is for yaw. False if
  *      controller is for altitude.
  *      - uint32_t timeStep: Control period in ms.
