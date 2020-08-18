@@ -89,7 +89,7 @@ percentageHeight(int32_t groundLevel, int32_t currentValue)
 void
 MeanADC(void *pvParameters)
 {
-    //char cMessage[17];
+    char cMessage[17];
     int32_t mean;
     int32_t altitude = 0;
     static int32_t ground;
@@ -102,11 +102,13 @@ MeanADC(void *pvParameters)
             xEventGroupClearBits(xFoundAltReference, GROUND_BUFFER_FULL); // Clear previous flag
             xEventGroupSetBits(xFoundAltReference, GROUND_FOUND); // Set flag indicating that the ground reference has been set
             UARTSend("GroundFound\n");
+            usnprintf(cMessage, sizeof(cMessage), "GND: %d\n", ground);
+            UARTSend(cMessage);
         } else if (ground_flag == GROUND_FOUND) {
             mean = calculateMean();
             altitude = percentageHeight(ground, mean);
-//            usnprintf(cMessage, sizeof(cMessage), "Alt: %d\n", altitude);
-//            UARTSend(cMessage);
+            usnprintf(cMessage, sizeof(cMessage), "Alt: %d\n", altitude);
+            UARTSend(cMessage);
         }
         xQueueOverwrite(xAltMeasQueue, &altitude);
 
