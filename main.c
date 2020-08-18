@@ -2,9 +2,8 @@
  * TODO:
  *      - Change the gains for 180 degree yaw rotation and alt to 50%
  *      - Refine control
- *      - Code abstraction. (Separate altitude/ADC into two files, yaw/quadDecode, etc.)
+ *      - Code abstraction. (Separate yaw/quadDecode into two files, etc.)
  *      - Limit integral error or something.
- *      - Justify task priorities
  * KNOWN CONTROL ISSUES Heli 1:
         -
  * KNOWN CONTROL ISSUES Heli 2:
