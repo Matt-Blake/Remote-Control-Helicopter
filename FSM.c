@@ -305,20 +305,15 @@ FSM(void *pvParameters) {
         xQueuePeek(xFSMQueue, &state, 10);
         switch(state) {
             case LANDED:
-//                UARTSend("Landed\n");
                 landed();
                 break;
             case TAKEOFF:
-//                UARTSend("Taking off\n");
                 takeoff();
                 break;
             case FLYING:
-//                UARTSend("Flying\n");
                 hover();
                 break;
-
             case LANDING:
-//                UARTSend("Landing\n");
                 land();
                 break;
 
