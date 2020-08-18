@@ -23,7 +23,7 @@
 
 #define configUSE_PREEMPTION 1
 
-#define configUSE_IDLE_HOOK 0
+#define configUSE_IDLE_HOOK 1
 
 #define configUSE_TICK_HOOK 0
 
@@ -70,5 +70,15 @@
 #define INCLUDE_uxTaskGetStackHighWaterMark 1
 
 #define configUSE_TIMERS 1
+
+#define configGENERATE_RUN_TIME_STATS 1
+
+#define configUSE_STATS_FORMATTING_FUNCTIONS 1
+
+#define configUSE_TRACE_FACILITY 1
+
+#define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS() do {} while (0)
+
+#define portGET_RUN_TIME_COUNTER_VALUE() xTaskGetTickCount()
 
 #endif /* FREERTOSCONFIG_H_ */

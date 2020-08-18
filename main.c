@@ -343,6 +343,19 @@ vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 }
 
 /*
+ * idle hook
+ * Calculates CPU load for each task
+ * This function is run when no other task is running.
+ */
+void
+vApplicationIdleHook( void )
+{
+    static char runtime_stats_buffer[512];
+
+    vTaskGetRunTimeStats(runtime_stats_buffer); // Calculate CPU load stats
+    UARTSend(runtime_stats_buffer); // Print CPU load stats to UART
+}
+/*
  * Main function.
  * Used to call initializing functions to create the RTOS environment.
  */
