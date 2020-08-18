@@ -30,6 +30,16 @@ TaskHandle_t FSMTask;
 
 QueueHandle_t xFSMQueue;
 
+TaskHandle_t StatLED;
+TaskHandle_t OLEDDisp;
+TaskHandle_t BtnCheck;
+TaskHandle_t SwitchCheck;
+TaskHandle_t ADCTrig;
+TaskHandle_t ADCMean;
+TaskHandle_t MainPWM;
+TaskHandle_t TailPWM;
+TaskHandle_t FSMTask;
+
 
 // Functions
 /*
@@ -38,7 +48,7 @@ QueueHandle_t xFSMQueue;
 void
 GetStackUsage(void)
 {
-    uint32_t Blinky_stack;
+    uint32_t StatusLED_stack;
     uint32_t OLEDDisp_stack;
     uint32_t BtnCheck_stack;
     uint32_t SwitchCheck_stack;
@@ -57,7 +67,7 @@ GetStackUsage(void)
     MainPWM_stack     = uxTaskGetStackHighWaterMark(MainPWM);
     TailPWM_stack     = uxTaskGetStackHighWaterMark(TailPWM);
     FSMTask_stack     = uxTaskGetStackHighWaterMark(FSMTask);
-    Blinky_stack      = uxTaskGetStackHighWaterMark(Blinky);
+    StatusLED_stack      = uxTaskGetStackHighWaterMark(StatLED);
 }
 
 /*
