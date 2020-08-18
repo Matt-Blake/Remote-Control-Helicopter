@@ -35,15 +35,13 @@
 #include "timers.h"
 #include "uart.h"
 
-
-#define ALT_TOLERANCE           2       // The tolerance in altitude value to trigger state change
-#define YAW_TOLERANCE           2       // The tolerance in yaw value to trigger state change
-#define FIND_REF_PWM            30      // The main rotor PWM used to find the reference yaw
 #define LAND_TMR_PERIOD         200
 #define FSM_TASK_PRIORITY       5       // FSM priority
 #define FSM_STACK_DEPTH         128
 
 
+extern controller_t g_alt_controller;
+extern controller_t g_yaw_controller;
 extern QueueHandle_t xFSMQueue;
 extern QueueHandle_t xAltMesQueue;
 extern QueueHandle_t xAltDesQueue;

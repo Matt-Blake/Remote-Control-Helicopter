@@ -21,6 +21,9 @@
 
 #include "FSM.h"
 
+#define ALT_TOLERANCE           2       // The tolerance in altitude value to trigger state change
+#define YAW_TOLERANCE           2       // The tolerance in yaw value to trigger state change
+#define FIND_REF_PWM            30      // The main rotor PWM used to find the reference yaw
 #define FSM_PERIOD              200
 
 typedef enum HELI_STATE {LANDED = 0, TAKEOFF = 1, FLYING = 2, LANDING = 3} HELI_STATE;
@@ -289,8 +292,8 @@ land(void)
  */
 void landed(void)
 {
-    controller_t alt_controller;
-    controller_t yaw_controller;
+    //controller_t alt_controller;
+    //controller_t yaw_controller;
 
     // Suspend unwanted tasks
     vTaskSuspend(MainPWM); // Suspend the control system while landed
@@ -302,15 +305,15 @@ void landed(void)
     setRotorPWM(MIN_DUTY, 0);
 
     //Retrieve controller information
-    xQueuePeek(xAltControllerQueue, &alt_controller, 10);
-    xQueuePeek(xYawControllerQueue, &yaw_controller, 10);
+    //xQueuePeek(xAltControllerQueue, &alt_controller, 10);
+    //xQueuePeek(xYawControllerQueue, &yaw_controller, 10);
 
 
     // Reset error on controllers
-    alt_controller.previousError   = 0;
-    yaw_controller.previousError   = 0;
-    alt_controller.integratedError = 0;
-    yaw_controller.integratedError = 0;
+    g_alt_controller.previousError   = 0;
+    g_yaw_controller.previousError   = 0;
+    g_alt_controller.integratedError = 0;
+    g_yaw_controller.integratedError = 0;
 
     // Get max stack usage
     //GetStackUsage();
