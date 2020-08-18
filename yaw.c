@@ -130,28 +130,28 @@ quadratureFSMInterrupt(void)
 
     switch (state_code){
         case (0b0010):
-                yaw_slot--;
+                yaw_slot++;
                 break;
         case (0b0001):
-                yaw_slot++;
+                yaw_slot--;
                 break;
         case (0b0100):
-                yaw_slot--;
+                yaw_slot++;
                 break;
         case (0b0111):
-                yaw_slot++;
+                yaw_slot--;
                 break;
         case (0b1101):
-                yaw_slot--;
+                yaw_slot++;
                 break;
         case (0b1110):
-                yaw_slot++;
-                break;
-        case (0b1011):
                 yaw_slot--;
                 break;
-        case (0b1000):
+        case (0b1011):
                 yaw_slot++;
+                break;
+        case (0b1000):
+                yaw_slot--;
                 break;
         default:                            // Goes into default when a state is skipped. Occurs when you turn too fast.
                 UARTSend("QD Err\n");

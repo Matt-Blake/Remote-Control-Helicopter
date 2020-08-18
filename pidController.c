@@ -21,13 +21,13 @@
 
 #include "pidController.h"
 
-#define ALT_KP              30          // Altitude proportional gain
-#define ALT_KI              30          // Altitude integral gain
-#define ALT_KD              20          // Altitude derivative gain
+#define ALT_KP              45//30          // Altitude proportional gain
+#define ALT_KI              15//20          // Altitude integral gain
+#define ALT_KD              10//20          // Altitude derivative gain
 
-#define YAW_KP              100         // Yaw proportional gain
-#define YAW_KI              80          // Yaw integral gain
-#define YAW_KD              20          // Yaw derivative gain
+#define YAW_KP              20         // Yaw proportional gain
+#define YAW_KI              15          // Yaw integral gain
+#define YAW_KD              0          // Yaw derivative gain
 
 #define CONTROL_DIVISOR     100         // Divisor used to achieve certain gains without the use of floating point numbers
 
@@ -108,8 +108,7 @@ getControlSignal(controller_t* piController, int32_t reference, int32_t measurem
     //Clockwise rotation corresponds to low power in motors
     if(isYaw)
     {
-        errorSignal = -errorSignal;
-
+        //errorSignal = -errorSignal;
         // If the error would cause a rotation in the wrong direction
         if(errorSignal > (DEGREES_CIRCLE/2))
         {
@@ -122,13 +121,10 @@ getControlSignal(controller_t* piController, int32_t reference, int32_t measurem
 
     //Calculate the control signal using PID methods and duty cycle
     derivativeError = (errorSignal - piController->previousError)/(piController->timeStep);
-
     piController->integratedError += piController->timeStep * errorSignal;
 
     controlSignal = (piController->Kp * errorSignal)  + (piController->Ki * piController->integratedError)/MS_TO_SECONDS + (piController->Kd) * derivativeError * MS_TO_SECONDS;
-
     dutyCycle = (controlSignal/(piController->divisor));
-
 
     piController->previousError = errorSignal;
 

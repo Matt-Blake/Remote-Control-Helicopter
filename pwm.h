@@ -52,7 +52,7 @@
 #include "uart.h"
 
 
-#define MAIN_ROTOR_FACTOR       70/100 //64/100 // Factor used to compensate for the effect of main rotor
+#define MAIN_ROTOR_FACTOR       64/100 // Factor used to compensate for the effect of main rotor
 #define MAIN_PWM_TASK_PRIORITY  6       // Main rotor PWM task priority
 #define TAIL_PWM_TASK_PRIORITY  6       // Tail rotor PWM task priority
 #define MAIN_PWM_STACK_DEPTH    128

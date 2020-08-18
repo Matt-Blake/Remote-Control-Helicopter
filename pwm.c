@@ -188,19 +188,15 @@ setRotorPWM (uint32_t ui32Duty, bool SET_MAIN)
     // Calculate the PWM period corresponding to the freq.
     uint32_t ui32Period = SysCtlClockGet() / PWM_DIVIDER / PWM_START_RATE_HZ;
 
-    if (ui32Duty > 98){
-        UARTSend("MAX PWM DUTY EXCEEDED\r\n");
-    }else{
-        if (SET_MAIN == true) // Set PWM freq/duty of the main rotor
-        {
-            PWMGenPeriodSet(PWM_MAIN_BASE, PWM_MAIN_GEN, ui32Period);
-            PWMPulseWidthSet(PWM_MAIN_BASE, PWM_MAIN_OUTNUM, ui32Period * ui32Duty / 100);
-        }
-        else // Set PWM freq/duty of the tail rotor
-        {
-            PWMGenPeriodSet(PWM_TAIL_BASE, PWM_TAIL_GEN, ui32Period);
-            PWMPulseWidthSet(PWM_TAIL_BASE, PWM_TAIL_OUTNUM, ui32Period * ui32Duty / 100);
-        }
+    if (SET_MAIN == true) // Set PWM freq/duty of the main rotor
+    {
+        PWMGenPeriodSet(PWM_MAIN_BASE, PWM_MAIN_GEN, ui32Period);
+        PWMPulseWidthSet(PWM_MAIN_BASE, PWM_MAIN_OUTNUM, ui32Period * ui32Duty / 100);
+    }
+    else // Set PWM freq/duty of the tail rotor
+    {
+        PWMGenPeriodSet(PWM_TAIL_BASE, PWM_TAIL_GEN, ui32Period);
+        PWMPulseWidthSet(PWM_TAIL_BASE, PWM_TAIL_OUTNUM, ui32Period * ui32Duty / 100);
     }
 }
 
@@ -271,6 +267,11 @@ SetMainDuty(void *pvParameters)
         // Set PWM duty cycle of main rotor in order to hover to the desired altitude
         //xQueuePeek(xAltControllerQueue, &alt_controller, 10); // Get altitude controller information
         alt_PWM = getControlSignal(&g_alt_controller, alt_desired, alt_meas, false); // Use the error to calculate a PWM duty cycle for the main rotor
+        if(alt_PWM > MAX_DUTY){
+            alt_PWM = MAX_DUTY;
+        }else if(alt_PWM < MIN_DUTY){
+            alt_PWM = MIN_DUTY;
+        }
         setRotorPWM(alt_PWM, 1); // Set main rotor to calculated PWM
         xQueueOverwrite(xMainPWMQueue, &alt_PWM); // Store the main PWM duty cycle in a queue
 
@@ -318,6 +319,8 @@ SetTailDuty(void *pvParameters)
 
         if (yaw_PWM > MAX_DUTY){
             yaw_PWM = MAX_DUTY;
+        }else if(yaw_PWM < MIN_DUTY){
+            yaw_PWM = MIN_DUTY;
         }
         setRotorPWM(yaw_PWM, 0); // Set tail rotor to calculated PWM
         xQueueOverwrite(xTailPWMQueue, &yaw_PWM); // Store the tail PWM duty cycle in a queue

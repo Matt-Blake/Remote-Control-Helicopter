@@ -23,7 +23,8 @@
 
 #define ALT_TOLERANCE           2       // The tolerance in altitude value to trigger state change
 #define YAW_TOLERANCE           2       // The tolerance in yaw value to trigger state change
-#define FIND_REF_PWM            30      // The main rotor PWM used to find the reference yaw
+#define FIND_REF_PWM_MAIN       25      // The main rotor PWM used to find the reference yaw
+#define FIND_REF_PWM_TAIL       0       // The tail rotor PWM used to find the reference yaw
 #define FSM_PERIOD              200
 
 typedef enum HELI_STATE {LANDED = 0, TAKEOFF = 1, FLYING = 2, LANDING = 3} HELI_STATE;
@@ -119,19 +120,9 @@ void vLandTimerCallback( TimerHandle_t xTimer )
 void
 findYawRef(void)
 {
-    int32_t PWM_Tail = 0; // place holder for now
-
-    vTaskSuspend(MainPWM); // suspend the control system until ref is found
-    vTaskSuspend(TailPWM);
-    vTaskSuspend(BtnCheck);
-    vTaskSuspend(SwitchCheck);
-
     UARTSend("Finding Ref\n\r");
-    setRotorPWM(FIND_REF_PWM, 1); // Set the main rotor to on, the torque from the main rotor should work better than using the tail, have to test and actually see whats best
-    setRotorPWM(PWM_Tail, 0);   // Set the tail rotor to on
-    //while(!xEventGroupGetBits(xFoundYawReference)){
-
-    //}
+    setRotorPWM(FIND_REF_PWM_MAIN, 1);      // Set the main rotor to on, the torque from the main rotor should work better than using the tail, have to test and actually see whats best
+    setRotorPWM(FIND_REF_PWM_TAIL, 0);
 }
 
 
@@ -162,23 +153,24 @@ takeoff(void)
 
     found_yaw = xEventGroupGetBits(xFoundYawReference);
 
-    if(!found_yaw) { // If the reference yaw has been found
-        vTaskSuspend(MainPWM); // suspend the control system until ref is found
+    if(!found_yaw) {                // If the reference yaw has not been found
+        vTaskSuspend(MainPWM);      // Suspend the PWM control systems until ref is found
         vTaskSuspend(TailPWM);
-        vTaskSuspend(BtnCheck);
+        vTaskSuspend(BtnCheck);     // Disable user input while the ref is being found
         vTaskSuspend(SwitchCheck);
-        findYawRef(); // Find the reference yaw
+        findYawRef();               // Find the reference yaw
     } else {
         xQueueOverwrite(xYawDesQueue, &desired_yaw); // Rotate to reference yaw
-        xQueueOverwrite(xAltDesQueue, &desired_alt); // Ascend to 20 % altitude
-        vTaskResume(MainPWM); // Re-enable the control system
+        xQueueOverwrite(xAltDesQueue, &desired_alt); // Ascend to 20% altitude
+        vTaskResume(MainPWM);       // Re-enable the control system
         vTaskResume(TailPWM);
-        vTaskResume(BtnCheck);
+        vTaskResume(BtnCheck);      // Re-enable user input
         vTaskResume(SwitchCheck);
         xQueuePeek(xAltMeasQueue, &alt, 10); // Retrieve the current altitude value
         xQueuePeek(xYawMeasQueue, &yaw, 10); // Retrieve the current yaw value
 
         if ((yaw > (-YAW_TOLERANCE)) && (yaw < YAW_TOLERANCE)) { // If reached desired yaw
+
             if (alt > (desired_alt - ALT_TOLERANCE) && (alt < (desired_alt + ALT_TOLERANCE))) { // If reached desired altitude
 
                 state = FLYING;
@@ -252,7 +244,7 @@ land(void)
         descent = meas;
     }else if ((timerID != prev_timerID) && (meas <= descent)){
         descent -= 10;
-        if (descent <= 0){ // when landing the heli gives up sometimes and jsut cuts power before reaching the ground                   Alt goes from 8-0
+        if (descent <= 0){ // when landing the heli gives up sometimes and jsut cuts power before reaching the ground
             descent = 0;
         }
     }
