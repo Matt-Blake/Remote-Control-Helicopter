@@ -17,7 +17,7 @@
  * within FreeRTOSConfig.h.
  */
 
-#define configMINIMAL_STACK_SIZE 128 // Idle task stack (in 32-bit words)
+#define configMINIMAL_STACK_SIZE 256 // Idle task stack (in 32-bit words)
 
 #define configMAX_PRIORITIES 8 // Adjustable but I kept it at 8 for kicks.
 
