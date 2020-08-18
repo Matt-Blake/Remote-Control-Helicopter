@@ -147,10 +147,16 @@ initControllers(void)
     // Create empty controllers
     controller_t alt_controller;
     controller_t yaw_controller;
+    controller_t* alt_controller_address;
+    controller_t* yaw_controller_address;
+
+    // Assign addresses to controllers
+    alt_controller_address = &alt_controller;
+    yaw_controller_address = &yaw_controller;
 
     // Inialise controllers with predefined gains
-    initController(&alt_controller, false);
-    initController(&yaw_controller, true);
+    initController(alt_controller_address, false);
+    initController(yaw_controller_address, true);
 
     // Store pointers to controllers in queues so they can be accessed by other functions
     xQueueOverwrite(xAltControllerQueue, &alt_controller);

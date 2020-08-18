@@ -104,13 +104,16 @@ getControlSignal(controller_t* piController, int32_t reference, int32_t measurem
     errorSignal = reference - measurement;
 
     //Clockwise rotation corresponds to low power in motors
-    if(isYaw) {
+    if(isYaw)
+    {
         errorSignal = -errorSignal;
 
-        //If the error would cause a rotation in the wrong direction
-        if(errorSignal > (DEGREES_CIRCLE/2)) {
+        // If the error would cause a rotation in the wrong direction
+        if(errorSignal > (DEGREES_CIRCLE/2))
+        {
             errorSignal = errorSignal - DEGREES_CIRCLE;
-        } else if(errorSignal < (-(DEGREES_CIRCLE/2))) {
+        } else if(errorSignal < (-(DEGREES_CIRCLE/2)))
+        {
             errorSignal = DEGREES_CIRCLE - errorSignal;
         }
     }
@@ -128,11 +131,18 @@ getControlSignal(controller_t* piController, int32_t reference, int32_t measurem
     piController->previousError = errorSignal;
 
     //Enforce duty cycle output limits
-    if(dutyCycle > MAX_DUTY) {
+    if(dutyCycle > MAX_DUTY)
+    {
         dutyCycle = MAX_DUTY;
         piController->integratedError -= piController->timeStep * errorSignal/MS_TO_SECONDS;
-    } else if(dutyCycle < MIN_DUTY) {
+    } else if(dutyCycle < MIN_DUTY)
+    {
         dutyCycle = MIN_DUTY;
+    }
+
+    // Update controller queue
+    if(isYaw) {
+
     }
     return dutyCycle;
 }
