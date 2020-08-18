@@ -253,7 +253,6 @@ initSystem(void)
     initADC();                  // Initialize the Analog-Digital converter
     initQuadrature();           // Initialize the quadrature decoding interrupts
     initReferenceYaw();         // Initialize the reference yaw interrupt
-    initControllers();          // Initalaize the PWM duty controllers
     initPWM();                  // Initialize the PWM modules
     IntMasterEnable();          // Re-enable system interrupts
 
@@ -436,8 +435,8 @@ vApplicationIdleHook( void )
 {
     static char runtime_stats_buffer[512];
 
-    vTaskGetRunTimeStats(runtime_stats_buffer); // Calculate CPU load stats
-    UARTSend(runtime_stats_buffer); // Print CPU load stats to UART
+    //vTaskGetRunTimeStats(runtime_stats_buffer); // Calculate CPU load stats
+    //UARTSend(runtime_stats_buffer); // Print CPU load stats to UART
 }
 
 /*
@@ -459,6 +458,7 @@ main(void)
     initSystem();
     createTasks();
     createQueues();
+    initControllers();          // Initalaize the PWM duty controllers
     createSemaphores();
     createTimers();
     UARTSend("Starting...\n");
