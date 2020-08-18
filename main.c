@@ -319,7 +319,7 @@ createTasks(void)
  *      - NULL
  * ---------------------
  */
-static void
+void
 createQueues(void)
 {
     int32_t queue_init = 0; // Value used to initalise queues
@@ -434,6 +434,30 @@ vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 
 
 /*
+ * Function:    vApplicationIdleHook
+ * ------------------
+ * Idle hook
+ * Calculates CPU load for each task
+ * This function is run when no other task is running.
+ *
+ *
+ * @params:
+ *      - xTask: Task that triggered the stack
+ *      overflow.
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
+void
+vApplicationIdleHook( void )
+{
+    static char runtime_stats_buffer[512];
+
+    vTaskGetRunTimeStats(runtime_stats_buffer); // Calculate CPU load stats
+    UARTSend(runtime_stats_buffer); // Print CPU load stats to UART
+}
+
+/*
  * Function:    main
  * ------------------
  * Main program. Calls initializing functions,
@@ -441,8 +465,7 @@ vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
  * starts FreeRTOS scheduler.
  *
  * @params:
- *      - xTask: Task that triggered the stack
- *      overflow.
+ *      - NULL
  * @return:
  *      - NULL
  * ---------------------
