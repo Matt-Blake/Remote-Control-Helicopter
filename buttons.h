@@ -85,6 +85,15 @@ enum btnStates  {RELEASED = 0, PUSHED, NO_CHANGE};
 #define MIN_YAW             -165                        // The minimum yaw (degrees) before increment
 #define DEGREES_CIRCLE      360                         // The number of degrees in a circle
 
+
+/*
+ * FreeRTOS Config
+ */
+#define BTN_TASK_PRIORITY       6       // Button polling task priority
+#define SWI_TASK_PRIORITY       6       // Switch polling task priority
+#define BTN_STACK_DEPTH         64
+#define SWITCH_STACK_DEPTH      64
+
 /* ******************************************************
  * Globals
  * *****************************************************/

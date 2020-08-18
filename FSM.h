@@ -41,6 +41,10 @@
 #define YAW_TOLERANCE           2       // The tolerance in yaw value to trigger state change
 #define LAND_TMR_PERIOD         200
 
+#define FSM_TASK_PRIORITY       6       // FSM priority
+#define FSM_STACK_DEPTH         128
+
+
 //******************************************************
 // Globals
 //******************************************************

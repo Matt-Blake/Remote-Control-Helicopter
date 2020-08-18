@@ -58,6 +58,11 @@
 //#define MAIN_ROTOR_FACTOR 82/100 // the true coupling factor between main and tail
 #define MAIN_ROTOR_FACTOR 64/100 // Factor used to compensate for the effect of main rotor
 
+#define MAIN_PWM_TASK_PRIORITY  8       // Main rotor PWM task priority
+#define TAIL_PWM_TASK_PRIORITY  8       // Tail rotor PWM task priority
+#define MAIN_PWM_STACK_DEPTH    128
+#define TAIL_PWM_STACK_DEPTH    128
+
 
 // Globals
 extern controller_t g_alt_controller;
