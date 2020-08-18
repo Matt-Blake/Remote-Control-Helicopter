@@ -25,7 +25,7 @@
 #include "queue.h"
 #include "event_groups.h"
 
-#define MOUNT_SLOT_COUNT    112                         // The number of slots in the helirig mount
+#define MOUNT_SLOT_COUNT    224//112                         // The number of slots in the helirig mount
 #define DEGREES_HALF_CIRCLE 180                         // The number of degrees in a half circle
 #define DEGREES_CIRCLE      360                         // The number of degrees in a circle
 #define MAX_YAW_LIMIT       180                         // The maximum yaw (degrees)

@@ -157,8 +157,8 @@ quadratureFSMInterrupt(void)
         case (0b1000):
                 yaw_slot++;
                 break;
-        //default:                  // Goes into default when a state is skipped. Occurs when you turn too fast.
-                //UARTSend("QD Error\n");
+        default:                  // Goes into default when a state is skipped. Occurs when you turn too fast.
+                UARTSend("QD Error\n");
     }
 
     currentChannelReading = newChannelReading;

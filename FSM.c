@@ -37,7 +37,7 @@ QueueHandle_t xFSMQueue;
 void vLandTimerCallback( TimerHandle_t xTimer )
 {
     uint32_t ulCount;
-    UARTSend("Landing Timer Callback\n");
+    //UARTSend("Landing Timer Callback\n");
 
     ulCount = ( uint32_t ) pvTimerGetTimerID( xTimer );
     ulCount++;
@@ -200,7 +200,7 @@ land(void)
         descent = meas;
     }else if ((timerID != prev_timerID) && (meas <= descent)){
         descent -= 10;
-        if (descent <= 0){ // when landing the heli gives up sometimes and jsut cuts power before reaching the ground
+        if (descent <= 0){ // when landing the heli gives up sometimes and jsut cuts power before reaching the ground                   Alt goes from 8-0
             descent = 0;
         }
     }
