@@ -31,6 +31,36 @@ TaskHandle_t FSMTask;
 QueueHandle_t xFSMQueue;
 
 
+// Functions
+/*
+ * Calculate the maximum stack usage all of the RTOS tasks.
+ */
+void
+GetStackUsage(void)
+{
+    char cMessage[17];
+    uint32_t Blinky_stack;
+    uint32_t OLEDDisp_stack;
+    uint32_t BtnCheck_stack;
+    uint32_t SwitchCheck_stack;
+    uint32_t ADCTrig_stack;
+    uint32_t ADCMean_stack;
+    uint32_t MainPWM_stack;
+    uint32_t TailPWM_stack;
+    uint32_t FSMTask_stack;
+
+    // Retrieve stack usage information from each task
+    OLEDDisp_stack    = uxTaskGetStackHighWaterMark(OLEDDisp);
+    BtnCheck_stack    = uxTaskGetStackHighWaterMark(BtnCheck);
+    SwitchCheck_stack = uxTaskGetStackHighWaterMark(SwitchCheck);
+    ADCTrig_stack     = uxTaskGetStackHighWaterMark(ADCTrig);
+    ADCMean_stack     = uxTaskGetStackHighWaterMark(ADCMean);
+    MainPWM_stack     = uxTaskGetStackHighWaterMark(MainPWM);
+    TailPWM_stack     = uxTaskGetStackHighWaterMark(TailPWM);
+    FSMTask_stack     = uxTaskGetStackHighWaterMark(FSMTask);
+    Blinky_stack      = uxTaskGetStackHighWaterMark(Blinky);
+}
+
 /*
  * WRITE DESCRIPTION
  */
@@ -247,6 +277,9 @@ void landed(void)
     g_yaw_controller.previousError   = 0;
     g_alt_controller.integratedError = 0;
     g_yaw_controller.integratedError = 0;
+
+    // Get max stack usage
+    GetStackUsage();
 
     //vTaskResume(SwitchCheck);
 }

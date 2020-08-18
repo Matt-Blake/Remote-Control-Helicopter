@@ -57,13 +57,13 @@
 // Constants
 //******************************************************
 
-// Stack sizes in words, calculated experimentally using uxTaskGetStackHighWaterMark()
+// Stack sizes in words, calculated experimentally based on uxTaskGetStackHighWaterMark()
 #define LED_STACK_DEPTH         32
 #define OLED_STACK_DEPTH        128
-#define BTN_STACK_DEPTH         128
-#define SWITCH_STACK_DEPTH      128
-#define ADC_STACK_DEPTH         128
-#define MEAN_STACK_DEPTH        128
+#define BTN_STACK_DEPTH         64
+#define SWITCH_STACK_DEPTH      64
+#define ADC_STACK_DEPTH         32
+#define MEAN_STACK_DEPTH        64
 #define ALT_STACK_DEPTH         128
 #define YAW_STACK_DEPTH         128
 #define FSM_STACK_DEPTH         128
@@ -98,11 +98,6 @@
 // Globals
 //******************************************************
 QueueHandle_t xOLEDQueue;
-
-TaskHandle_t Blinky;
-TaskHandle_t OLEDDisp;
-
-
 
 SemaphoreHandle_t xAltMutex;
 SemaphoreHandle_t xYawMutex;
@@ -151,7 +146,7 @@ initLED(void)
 /*
  * Calculate the maximum stack usage all of the RTOS tasks.
  */
-void
+/*void
 GetStackUsage(void *pvParameters)
 {
     char cMessage[17];
@@ -189,7 +184,7 @@ GetStackUsage(void *pvParameters)
         usnprintf(cMessage, sizeof(cMessage), "TailPWM Unused: %d words\n",     TailPWM_stack);
         usnprintf(cMessage, sizeof(cMessage), "FSMTask Unused: %d words\n",     FSMTask_stack);
     }
-}
+}*/
 
 /*
  * RTOS task that displays number of LED flashes on the OLED display. - Remove in final version.
@@ -224,25 +219,25 @@ OLEDDisplay (void *pvParameters)
 
         xQueuePeek(xFSMQueue, &state, 10);
 
-        //usnprintf(string, sizeof(string), "Alt(%%) %3d|%3d ", des_alt, act_alt);
-        //OLEDStringDraw(string, COLUMN_ZERO, ROW_ZERO);
-        usnprintf(string, sizeof(string), "Alt(%%) %3d|%3d\n\r", des_alt, act_alt);
-        UARTSend(string);
+        usnprintf(string, sizeof(string), "Alt(%%) %3d|%3d ", des_alt, act_alt);
+        OLEDStringDraw(string, COLUMN_ZERO, ROW_ZERO);
+        //usnprintf(string, sizeof(string), "Alt(%%) %3d|%3d\n\r", des_alt, act_alt);
+        //UARTSend(string);
 
-        //usnprintf(string, sizeof(string), "Yaw   %4d|%3d ", des_yaw, act_yaw);
-        //OLEDStringDraw(string, COLUMN_ZERO, ROW_ONE);
-        usnprintf(string, sizeof(string), "Yaw   %4d|%3d\n\r", des_yaw, act_yaw);
-        UARTSend(string);
+        usnprintf(string, sizeof(string), "Yaw   %4d|%3d ", des_yaw, act_yaw);
+        OLEDStringDraw(string, COLUMN_ZERO, ROW_ONE);
+        //usnprintf(string, sizeof(string), "Yaw   %4d|%3d\n\r", des_yaw, act_yaw);
+        //UARTSend(string);
 
-        //usnprintf(string, sizeof(string), "PWM(%%) %3d|%3d ", main_PWM, tail_PWM);
-        //OLEDStringDraw(string, COLUMN_ZERO, ROW_TWO);
-        usnprintf(string, sizeof(string), "PWM(%%) %3d|%3d\r\n", main_PWM, tail_PWM);
-        UARTSend(string);
+        usnprintf(string, sizeof(string), "PWM(%%) %3d|%3d ", main_PWM, tail_PWM);
+        OLEDStringDraw(string, COLUMN_ZERO, ROW_TWO);
+        //usnprintf(string, sizeof(string), "PWM(%%) %3d|%3d\r\n", main_PWM, tail_PWM);
+        //UARTSend(string);
 
-        //usnprintf(string, sizeof(string), "%s     ", states[state]);
-        //OLEDStringDraw(string, COLUMN_ZERO, ROW_THREE);
-        usnprintf(string, sizeof(string), "%s\r\n", states[state]);
-        UARTSend(string);
+        usnprintf(string, sizeof(string), "%s     ", states[state]);
+        OLEDStringDraw(string, COLUMN_ZERO, ROW_THREE);
+        //usnprintf(string, sizeof(string), "%s\r\n", states[state]);
+        //UARTSend(string);
 
         vTaskDelay(DISPLAY_PERIOD / portTICK_RATE_MS);
     }
