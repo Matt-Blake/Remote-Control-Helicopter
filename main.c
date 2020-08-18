@@ -6,10 +6,7 @@
  *      - Limit integral error or something.
  *      - Justify task priorities
  * KNOWN CONTROL ISSUES Heli 1:
- *      - Altitude was unstable, the proportional was too high
- *      - Yaw was too fast and would cause oscillations
- *      - Find ref would spin too fast and then spin another 5 times before settling
- *      - I assume the find ref is temperamental due to the control system getting abruptly turned on as soon as ref is found
+        -
  * KNOWN CONTROL ISSUES Heli 2:
  *      -
  * KNOWN CONTROL ISSUES Heli 3:
@@ -142,50 +139,6 @@ initLED(void)
     GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_PIN_2);               // Off by default
 }
 
-
-/*
- * Calculate the maximum stack usage all of the RTOS tasks.
- */
-/*void
-GetStackUsage(void *pvParameters)
-{
-    char cMessage[17];
-    uint32_t Blinky_stack;
-    uint32_t OLEDDisp_stack;
-    uint32_t BtnCheck_stack;
-    uint32_t SwitchCheck_stack;
-    uint32_t ADCTrig_stack;
-    uint32_t ADCMean_stack;
-    uint32_t MainPWM_stack;
-    uint32_t TailPWM_stack;
-    uint32_t FSMTask_stack;
-
-    while(1){
-
-        // Retrieve stack usage information from each task
-        Blinky_stack      = uxTaskGetStackHighWaterMark(Blinky);
-        OLEDDisp_stack    = uxTaskGetStackHighWaterMark(OLEDDisp);
-        BtnCheck_stack    = uxTaskGetStackHighWaterMark(BtnCheck);
-        SwitchCheck_stack = uxTaskGetStackHighWaterMark(SwitchCheck);
-        ADCTrig_stack     = uxTaskGetStackHighWaterMark(ADCTrig);
-        ADCMean_stack     = uxTaskGetStackHighWaterMark(ADCMean);
-        MainPWM_stack     = uxTaskGetStackHighWaterMark(MainPWM);
-        TailPWM_stack     = uxTaskGetStackHighWaterMark(TailPWM);
-        FSMTask_stack     = uxTaskGetStackHighWaterMark(FSMTask);
-
-        // Send stack information via UART
-        usnprintf(cMessage, sizeof(cMessage), "Blinky unused: %d words\n",      Blinky_stack);
-        usnprintf(cMessage, sizeof(cMessage), "OLEDDisp unused: %d words\n",    OLEDDisp_stack);
-        usnprintf(cMessage, sizeof(cMessage), "BtnCheck Unused: %d words\n",    BtnCheck_stack);
-        usnprintf(cMessage, sizeof(cMessage), "SwitchCheck Unused: %d words\n", SwitchCheck_stack);
-        usnprintf(cMessage, sizeof(cMessage), "ADCTrig Unused: %d words\n",     ADCTrig_stack);
-        usnprintf(cMessage, sizeof(cMessage), "ADCMean Unused: %d words\n",     ADCMean_stack);
-        usnprintf(cMessage, sizeof(cMessage), "MainPWM Unused: %d words\n",     MainPWM_stack);
-        usnprintf(cMessage, sizeof(cMessage), "TailPWM Unused: %d words\n",     TailPWM_stack);
-        usnprintf(cMessage, sizeof(cMessage), "FSMTask Unused: %d words\n",     FSMTask_stack);
-    }
-}*/
-
 /*
  * RTOS task that displays number of LED flashes on the OLED display. - Remove in final version.
  */
@@ -219,25 +172,25 @@ OLEDDisplay (void *pvParameters)
 
         xQueuePeek(xFSMQueue, &state, 10);
 
-        usnprintf(string, sizeof(string), "Alt(%%) %3d|%3d ", des_alt, act_alt);
-        OLEDStringDraw(string, COLUMN_ZERO, ROW_ZERO);
-        //usnprintf(string, sizeof(string), "Alt(%%) %3d|%3d\n\r", des_alt, act_alt);
-        //UARTSend(string);
+        //usnprintf(string, sizeof(string), "Alt(%%) %3d|%3d ", des_alt, act_alt);
+        //OLEDStringDraw(string, COLUMN_ZERO, ROW_ZERO);
+        usnprintf(string, sizeof(string), "Alt(%%) %3d|%3d\n\r", des_alt, act_alt);
+        UARTSend(string);
 
-        usnprintf(string, sizeof(string), "Yaw   %4d|%3d ", des_yaw, act_yaw);
-        OLEDStringDraw(string, COLUMN_ZERO, ROW_ONE);
-        //usnprintf(string, sizeof(string), "Yaw   %4d|%3d\n\r", des_yaw, act_yaw);
-        //UARTSend(string);
+        //usnprintf(string, sizeof(string), "Yaw   %4d|%3d ", des_yaw, act_yaw);
+        //OLEDStringDraw(string, COLUMN_ZERO, ROW_ONE);
+        usnprintf(string, sizeof(string), "Yaw   %4d|%3d\n\r", des_yaw, act_yaw);
+        UARTSend(string);
 
-        usnprintf(string, sizeof(string), "PWM(%%) %3d|%3d ", main_PWM, tail_PWM);
-        OLEDStringDraw(string, COLUMN_ZERO, ROW_TWO);
-        //usnprintf(string, sizeof(string), "PWM(%%) %3d|%3d\r\n", main_PWM, tail_PWM);
-        //UARTSend(string);
+        //usnprintf(string, sizeof(string), "PWM(%%) %3d|%3d ", main_PWM, tail_PWM);
+        //OLEDStringDraw(string, COLUMN_ZERO, ROW_TWO);
+        usnprintf(string, sizeof(string), "PWM %3d|%3d\n\r", main_PWM/250, tail_PWM/250);
+        UARTSend(string);
 
-        usnprintf(string, sizeof(string), "%s     ", states[state]);
-        OLEDStringDraw(string, COLUMN_ZERO, ROW_THREE);
-        //usnprintf(string, sizeof(string), "%s\r\n", states[state]);
-        //UARTSend(string);
+        //usnprintf(string, sizeof(string), "%s     ", states[state]);
+        //OLEDStringDraw(string, COLUMN_ZERO, ROW_THREE);
+        usnprintf(string, sizeof(string), "%s\r\n", states[state]);
+        UARTSend(string);
 
         vTaskDelay(DISPLAY_PERIOD / portTICK_RATE_MS);
     }
@@ -269,23 +222,19 @@ initControllers(void)
 void
 init(void)
 {
-    //IntMasterDisable();
-
-    initClk();
-    initialiseUSB_UART();
-    //initReset();
-
-    initLED();
-    OLEDInitialise();
-    initBtns();
-
-    initADC();
-    initQuadrature();
-    initReferenceYaw();
-    initControllers();
-    initPWM();
-
-    //IntMasterEnable();
+    IntMasterDisable();         // Disable system interrupts while the program is initializing.
+    initClk();                  // Initialize the system clock
+    initialiseUSB_UART();       // Initialize UART communication over USB
+    //initReset();              // Initialize the soft reset of the system
+    initLED();                  // Initialize the status LED
+    OLEDInitialise();           // Initialize the OLED display
+    initBtns();                 // Initialize the GPIO buttons and switches
+    initADC();                  // Initialize the Analog-Digital converter
+    initQuadrature();           // Initialize the quadrature decoding interrupts
+    initReferenceYaw();         // Initialize the reference yaw interrupt
+    initControllers();          // Initalaize the PWM duty controllers
+    initPWM();                  // Initialize the PWM modules
+    IntMasterEnable();          // Re-enable system interrupts
 
 }
 
@@ -299,12 +248,11 @@ createTasks(void)
     xTaskCreate(OLEDDisplay,    "OLED Task",    OLED_STACK_DEPTH,       NULL,       OLED_TASK_PRIORITY,     &OLEDDisp);
     xTaskCreate(ButtonsCheck,   "Btn Poll",     BTN_STACK_DEPTH,        NULL,       BTN_TASK_PRIORITY,      &BtnCheck);
     xTaskCreate(SwitchesCheck,  "Switch Poll",  SWITCH_STACK_DEPTH,     NULL,       SWI_TASK_PRIORITY,      &SwitchCheck);
-    xTaskCreate(TriggerADC,     "ADC Handler",   ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      &ADCTrig);
-    xTaskCreate(MeanADC,        "ADC Mean",      MEAN_STACK_DEPTH,       NULL,       MEAN_TASK_PRIORITY,     &ADCMean);
+    xTaskCreate(TriggerADC,     "ADC Handler",  ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      &ADCTrig);
+    xTaskCreate(MeanADC,        "ADC Mean",     MEAN_STACK_DEPTH,       NULL,       MEAN_TASK_PRIORITY,     &ADCMean);
     xTaskCreate(SetMainDuty,    "Alt PWM",      ALT_STACK_DEPTH,        NULL,       ALT_TASK_PRIORITY,      &MainPWM);
     xTaskCreate(SetTailDuty,    "Yaw PWM",      YAW_STACK_DEPTH,        NULL,       YAW_TASK_PRIORITY,      &TailPWM);
     xTaskCreate(FSM,            "FSM",          FSM_STACK_DEPTH,        NULL,       FSM_TASK_PRIORITY,      &FSMTask);
-    //xTaskCreate(GetStackUsage,  "Stack usage",  TASK_STACK_DEPTH,       NULL,       STACK_TASK_PRIORITY,    NULL);
 }
 
 /*
@@ -377,7 +325,7 @@ createTimers(void)
     xYawFlipTimer   = xTimerCreate( "Yaw Flip Timer", YAW_FLIP_TMR_PERIOD
                                     / portTICK_RATE_MS, pdFALSE, ( void * ) 0, vBtnTimerCallback );
     xLandingTimer   = xTimerCreate( "Land Timer", LAND_TMR_PERIOD
-                                    / portTICK_RATE_MS, pdTRUE, ( void * ) 0, vLandTimerCallback );
+                                    / portTICK_RATE_MS, pdTRUE,  ( void * ) 0, vLandTimerCallback );
     xYawRefTimer   = xTimerCreate( "Yaw Ref Timer", YAW_REF_TMR_PERIOD
                                     / portTICK_RATE_MS, pdFALSE, ( void * ) 0, vYawRefCallback );
 }

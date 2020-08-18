@@ -22,7 +22,7 @@
 #include "pidController.h"
 
 #define ALT_KP              30          // Altitude proportional gain
-#define ALT_KI              40          // Altitude integral gain
+#define ALT_KI              50          // Altitude integral gain
 #define ALT_KD              20          // Altitude derivative gain
 #define YAW_KP              60          // Yaw proportional gain
 #define YAW_KI              30          // Yaw integral gain
