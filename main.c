@@ -2,39 +2,23 @@
  * TODO:
  *      - Change the gains for 180 degree yaw rotation and alt to 50%
  *      - Refine control
- *      - Code abstraction. (Separate altitude/ADC into two files, yaw/quadDecode, etc.)
  *      - Limit integral error or something.
  *      - Justify task priorities
- * KNOWN CONTROL ISSUES Heli 1:
-        -
- * KNOWN CONTROL ISSUES Heli 2:
- *      -
- * KNOWN CONTROL ISSUES Heli 3:
- *      -
- * KNOWN CONTROL ISSUES Heli 4:
- *      -
+ *      - Finish all comments throughout project.
  */
 
-//******************************************************
-// Includes
-//******************************************************
 
-// Basic/Board includes
 #include <stdbool.h>
 #include <stdint.h>
 #include "driverlib/interrupt.h"
 #include "driverlib/systick.h"
 #include "OrbitOLED/OrbitOLEDInterface.h"
-
-// FreeRTOS includes
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
 #include "semphr.h"
 #include "event_groups.h"
 #include "timers.h"
-
-// Local includes
 #include "pwm.h"
 #include "reset.h"
 #include "yaw.h"
@@ -44,9 +28,6 @@
 #include "pidController.h"
 #include "FSM.h"
 
-//******************************************************
-// Constants
-//******************************************************
 
 // Stack sizes in words, calculated experimentally based on uxTaskGetStackHighWaterMark()
 #define LED_STACK_DEPTH         32
