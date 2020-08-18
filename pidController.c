@@ -140,9 +140,5 @@ getControlSignal(controller_t* piController, int32_t reference, int32_t measurem
         dutyCycle = MIN_DUTY;
     }
 
-    // Update controller queue
-    if(isYaw) {
-
-    }
     return dutyCycle;
 }
