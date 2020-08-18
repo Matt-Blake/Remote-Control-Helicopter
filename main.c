@@ -93,7 +93,17 @@ EventGroupHandle_t xFoundYawReference;
 // Tasks
 //******************************************************
 /*
- * RTOS task that toggles LED state based off button presses
+ * Function:    StatusLED
+ * -----------------------
+ * FreeRTOS task that periodically toggles the on/off state of
+ * a built in LED. Assists in determining if the system has
+ * stalled.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
  */
 static void
 StatusLED(void *pvParameters)
@@ -109,10 +119,20 @@ StatusLED(void *pvParameters)
         vTaskDelay(200 / portTICK_RATE_MS);
     }
 }
+
+
 /*
- * Initialise the LED pin and peripherals.
+ * Function:    initLED
+ * ---------------------
+ * Initializes the status LED pin as a GPIO output.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
  */
-void
+static void
 initLED(void)
 {
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);                // Activate internal bus clocking for GPIO port F
@@ -122,8 +142,18 @@ initLED(void)
     GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_PIN_2);               // Off by default
 }
 
+
 /*
- * RTOS task that displays number of LED flashes on the OLED display. - Remove in final version.
+ * Function:    OLEDDisplay
+ * -------------------------
+ * FreeRTOS task that periodically displays flight
+ * information on the Orbit BoosterPack OLED display.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
  */
 static void
 OLEDDisplay (void *pvParameters)
@@ -179,31 +209,60 @@ OLEDDisplay (void *pvParameters)
     }
 }
 
+
 /*
- * Initialise the main clock.
+ * Function:    initClk
+ * ---------------------
+ * Initializes the main system clock to 80MHz
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
  */
-void
+static void
 initClk(void)
 {
     // Initialise clock frequency to 80MHz
     SysCtlClockSet (SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
 }
 
+
 /*
- * Initialize the altitude and yaw PI controllers
+ * Function:    initControllers
+ * -----------------------------
+ * Initializes the structs used to hold the PWM PID controller
+ * gains and errors.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
  */
-void
+static void
 initControllers(void)
 {
     initController(&g_alt_controller, false);   // Create altitude controller based of preset gains
     initController(&g_yaw_controller, true);    // Create yaw controller based of preset gains
 }
 
+
 /*
- * Collection of all initialise functions.
+ * Function:    initSystem
+ * ------------------------
+ * Calls to all initializing fuctions required to
+ * fully initialize the system.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
  */
-void
-init(void)
+static void
+initSystem(void)
 {
     IntMasterDisable();         // Disable system interrupts while the program is initializing.
     initClk();                  // Initialize the system clock
@@ -221,10 +280,19 @@ init(void)
 
 }
 
+
 /*
- * Create all of the RTOS tasks.
+ * Function:    createTasks
+ * -------------------------
+ * Creates all FreeRTOS tasks used in the system.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
  */
-void
+static void
 createTasks(void)
 {
     xTaskCreate(StatusLED,      "LED Task",     LED_STACK_DEPTH,        NULL,       LED_TASK_PRIORITY,      &StatLED);
@@ -238,10 +306,20 @@ createTasks(void)
     xTaskCreate(FSM,            "FSM",          FSM_STACK_DEPTH,        NULL,       FSM_TASK_PRIORITY,      &FSMTask);
 }
 
+
 /*
- * Create all of the RTOS queues.
+ * Function:    createQueues
+ * -------------------------
+ * Creates all FreeRTOS queues used in the system and
+ * initializes the values to zero.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
  */
-void
+static void
 createQueues(void)
 {
     int32_t queue_init = 0; // Value used to initalise queues
@@ -272,10 +350,20 @@ createQueues(void)
     xQueueOverwrite(xYawSlotQueue, &queue_init);
 }
 
+
 /*
- * Create all of the RTOS semaphores, event groups and mutexes.
+ * Function:    createSemaphores
+ * -------------------------
+ * Creates all FreeRTOS semaphores, mutexes and event groups
+ * used in the system.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
  */
-void
+static void
 createSemaphores(void)
 {
     int event_init = 0; //  Value used to initalise event groups
@@ -297,10 +385,19 @@ createSemaphores(void)
     xEventGroupSetBits(xFoundYawReference, event_init);
 }
 
+
 /*
- * Create all of the RTOS timers.
+ * Function:    createTimers
+ * --------------------------
+ * Creates all FreeRTOS timers used in the system.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
  */
-void
+static void
 createTimers(void)
 {
     xUpBtnTimer     = xTimerCreate( "Button Timer", DBL_BTN_TMR_PERIOD
@@ -313,9 +410,19 @@ createTimers(void)
                                     / portTICK_RATE_MS, pdFALSE, ( void * ) 0, vYawRefCallback );
 }
 
+
 /*
- * Stack overflow hook
- * This function is triggered when a stack overflow occurs
+ * Function:    vApplicationStackOverflowHook
+ * -------------------------------------------
+ * Hook for when the stack overflows.
+ * Sends error message and enters infinte loop.
+ *
+ * @params:
+ *      - xTask: Task that triggered the stack
+ *      overflow.
+ * @return:
+ *      - NULL
+ * ---------------------
  */
 void
 vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
@@ -325,14 +432,25 @@ vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
     while (1){}
 }
 
+
 /*
- * Main function.
- * Used to call initializing functions to create the RTOS environment.
+ * Function:    main
+ * ------------------
+ * Main program. Calls initializing functions,
+ * sends starting message over UART, and then
+ * starts FreeRTOS scheduler.
+ *
+ * @params:
+ *      - xTask: Task that triggered the stack
+ *      overflow.
+ * @return:
+ *      - NULL
+ * ---------------------
  */
 int
 main(void)
  {
-    init();
+    initSystem();
     createTasks();
     createQueues();
     createSemaphores();
