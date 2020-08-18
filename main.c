@@ -125,7 +125,7 @@ static void
 OLEDDisplay (void *pvParameters)
 {
     //char string[DISPLAY_SIZE];  // String of the correct size to be displayed on the OLED screen
-    char string[20];  // String of the correct size to be displayed on the OLED screen
+    char string[20];            // String to be sent over UART
     int32_t    des_alt;         // Desired altitude
     int32_t    act_alt;         // Actual altitude
     int32_t    des_yaw;         // Desired yaw
