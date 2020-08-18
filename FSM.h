@@ -41,32 +41,28 @@
 #define YAW_TOLERANCE           2       // The tolerance in yaw value to trigger state change
 #define LAND_TMR_PERIOD         200
 
+#define FSM_TASK_PRIORITY       6       // FSM priority
+#define FSM_STACK_DEPTH         128
+
+
 //******************************************************
 // Globals
 //******************************************************
 
 
-/*extern TaskHandle_t MainPWM;
-extern TaskHandle_t TailPWM;
+extern TaskHandle_t StatLED;
+extern TaskHandle_t OLEDDisp;
 extern TaskHandle_t BtnCheck;
 extern TaskHandle_t SwitchCheck;
-extern TaskHandle_t FSMTask;*/
-
-TaskHandle_t Blinky;
-TaskHandle_t OLEDDisp;
-TaskHandle_t BtnCheck;
-TaskHandle_t SwitchCheck;
-TaskHandle_t ADCTrig;
-TaskHandle_t ADCMean;
-TaskHandle_t MainPWM;
-TaskHandle_t TailPWM;
-TaskHandle_t FSMTask;
-TaskHandle_t Blinky;
+extern TaskHandle_t ADCTrig;
+extern TaskHandle_t ADCMean;
+extern TaskHandle_t MainPWM;
+extern TaskHandle_t TailPWM;
+extern TaskHandle_t FSMTask;
 
 extern QueueHandle_t xFSMQueue;
 extern QueueHandle_t xAltMesQueue;
 extern QueueHandle_t xAltDesQueue;
-
 extern QueueHandle_t xMainPWMQueue; // Delete this once debugging done
 
 extern TimerHandle_t xLandingTimer;

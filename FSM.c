@@ -30,6 +30,16 @@ TaskHandle_t FSMTask;
 
 QueueHandle_t xFSMQueue;
 
+TaskHandle_t StatLED;
+TaskHandle_t OLEDDisp;
+TaskHandle_t BtnCheck;
+TaskHandle_t SwitchCheck;
+TaskHandle_t ADCTrig;
+TaskHandle_t ADCMean;
+TaskHandle_t MainPWM;
+TaskHandle_t TailPWM;
+TaskHandle_t FSMTask;
+
 
 // Functions
 /*
@@ -40,7 +50,7 @@ GetStackUsage(void)
 {
     char cMessage[17];
 
-    uint32_t Blinky_stack;
+    uint32_t StatusLED_stack;
     uint32_t OLEDDisp_stack;
     uint32_t BtnCheck_stack;
     uint32_t SwitchCheck_stack;
@@ -51,7 +61,7 @@ GetStackUsage(void)
     uint32_t FSMTask_stack;
 
     // Retrieve stack usage information from each task
-    Blinky_stack      = uxTaskGetStackHighWaterMark(Blinky);
+    StatusLED_stack   = uxTaskGetStackHighWaterMark(StatLED);
     OLEDDisp_stack    = uxTaskGetStackHighWaterMark(OLEDDisp);
     BtnCheck_stack    = uxTaskGetStackHighWaterMark(BtnCheck);
     SwitchCheck_stack = uxTaskGetStackHighWaterMark(SwitchCheck);
@@ -62,7 +72,7 @@ GetStackUsage(void)
     FSMTask_stack     = uxTaskGetStackHighWaterMark(FSMTask);
 
     // Send stack information via UART
-    usnprintf(cMessage, sizeof(cMessage), "Blinky unused: %d words\n",      Blinky_stack);
+    usnprintf(cMessage, sizeof(cMessage), "Blinky unused: %d words\n",      StatusLED_stack);
     usnprintf(cMessage, sizeof(cMessage), "OLEDDisp unused: %d words\n",    OLEDDisp_stack);
     usnprintf(cMessage, sizeof(cMessage), "BtnCheck Unused: %d words\n",    BtnCheck_stack);
     usnprintf(cMessage, sizeof(cMessage), "SwitchCheck Unused: %d words\n", SwitchCheck_stack);
@@ -144,7 +154,7 @@ takeoff(void)
     int32_t yaw;
     int32_t alt;
     int32_t desired_yaw = 0;
-    int32_t desired_alt = 10;
+    int32_t desired_alt = 20;
     int32_t found_yaw;
     int32_t state;
 
@@ -315,23 +325,18 @@ FSM(void *pvParameters) {
 
     while(1)
     {
-        xQueuePeek(xFSMQueue, &state, 10);
+        xQueuePeek(xFSMQueue, &state, 10);      // Read the current flight mode/state.
         switch(state) {
             case LANDED:
-//                UARTSend("Landed\n");
                 landed();
                 break;
             case TAKEOFF:
-//                UARTSend("Taking off\n");
                 takeoff();
                 break;
             case FLYING:
-//                UARTSend("Flying\n");
                 hover();
                 break;
-
             case LANDING:
-//                UARTSend("Landing\n");
                 land();
                 break;
 

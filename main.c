@@ -22,14 +22,9 @@
 // Basic/Board includes
 #include <stdbool.h>
 #include <stdint.h>
-#include "inc/hw_memmap.h"
-#include "inc/hw_types.h"
-#include "driverlib/gpio.h"
 #include "driverlib/interrupt.h"
-#include "driverlib/pin_map.h"
-#include "driverlib/sysctl.h"
 #include "driverlib/systick.h"
-#include "utils/ustdlib.h"
+//#include "utils/ustdlib.h"
 #include "OrbitOLED/OrbitOLEDInterface.h"
 
 // FreeRTOS includes
@@ -57,26 +52,14 @@
 // Stack sizes in words, calculated experimentally based on uxTaskGetStackHighWaterMark()
 #define LED_STACK_DEPTH         32
 #define OLED_STACK_DEPTH        128
-#define BTN_STACK_DEPTH         64
-#define SWITCH_STACK_DEPTH      64
-#define ADC_STACK_DEPTH         32
-#define MEAN_STACK_DEPTH        64
-#define ALT_STACK_DEPTH         128
-#define YAW_STACK_DEPTH         128
-#define FSM_STACK_DEPTH         128
+
 #define TASK_STACK_DEPTH        128
 
 // Max priority is 8
 #define LED_TASK_PRIORITY       5       // LED task priority
 #define OLED_TASK_PRIORITY      5       // OLED priority
-#define BTN_TASK_PRIORITY       6       // Button polling task priority
-#define SWI_TASK_PRIORITY       6       // Switch polling task priority
-#define ADC_TASK_PRIORITY       7       // ADC sampling priority
-#define MEAN_TASK_PRIORITY      7       // Mean calculation priority
-#define ALT_TASK_PRIORITY       8       // Altitude PWM priority
-#define YAW_TASK_PRIORITY       8       // Yaw PWM priority
-#define FSM_TASK_PRIORITY       6       // FSM priority
-#define TIMER_TASK_PRIORITY     5       // Time module priority
+
+//#define TIMER_TASK_PRIORITY     5       // Time module priority
 #define STACK_TASK_PRIORITY     5
 
 #define ROW_ZERO                0       // Row zero on the OLED display
@@ -113,7 +96,7 @@ EventGroupHandle_t xFoundYawReference;
  * RTOS task that toggles LED state based off button presses
  */
 static void
-BlinkLED(void *pvParameters)
+StatusLED(void *pvParameters)
 {
     uint8_t state = 0;
 
@@ -126,6 +109,7 @@ BlinkLED(void *pvParameters)
         vTaskDelay(200 / portTICK_RATE_MS);
     }
 }
+
 /*
  * Initialise the LED pin and peripherals.
  */
@@ -244,14 +228,14 @@ init(void)
 void
 createTasks(void)
 {
-    xTaskCreate(BlinkLED,       "LED Task",     LED_STACK_DEPTH,        NULL,       LED_TASK_PRIORITY,      &Blinky);
+    xTaskCreate(StatusLED,      "LED Task",     LED_STACK_DEPTH,        NULL,       LED_TASK_PRIORITY,      &StatLED);
     xTaskCreate(OLEDDisplay,    "OLED Task",    OLED_STACK_DEPTH,       NULL,       OLED_TASK_PRIORITY,     &OLEDDisp);
     xTaskCreate(ButtonsCheck,   "Btn Poll",     BTN_STACK_DEPTH,        NULL,       BTN_TASK_PRIORITY,      &BtnCheck);
     xTaskCreate(SwitchesCheck,  "Switch Poll",  SWITCH_STACK_DEPTH,     NULL,       SWI_TASK_PRIORITY,      &SwitchCheck);
     xTaskCreate(TriggerADC,     "ADC Handler",  ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      &ADCTrig);
     xTaskCreate(MeanADC,        "ADC Mean",     MEAN_STACK_DEPTH,       NULL,       MEAN_TASK_PRIORITY,     &ADCMean);
-    xTaskCreate(SetMainDuty,    "Alt PWM",      ALT_STACK_DEPTH,        NULL,       ALT_TASK_PRIORITY,      &MainPWM);
-    xTaskCreate(SetTailDuty,    "Yaw PWM",      YAW_STACK_DEPTH,        NULL,       YAW_TASK_PRIORITY,      &TailPWM);
+    xTaskCreate(SetMainDuty,    "Main PWM",     MAIN_PWM_STACK_DEPTH,   NULL,       MAIN_PWM_TASK_PRIORITY, &MainPWM);
+    xTaskCreate(SetTailDuty,    "Tail PWM",     TAIL_PWM_STACK_DEPTH,   NULL,       TAIL_PWM_TASK_PRIORITY, &TailPWM);
     xTaskCreate(FSM,            "FSM",          FSM_STACK_DEPTH,        NULL,       FSM_TASK_PRIORITY,      &FSMTask);
 }
 
@@ -355,6 +339,7 @@ vApplicationIdleHook( void )
     vTaskGetRunTimeStats(runtime_stats_buffer); // Calculate CPU load stats
     UARTSend(runtime_stats_buffer); // Print CPU load stats to UART
 }
+
 /*
  * Main function.
  * Used to call initializing functions to create the RTOS environment.
