@@ -2,9 +2,8 @@
  * TODO:
  *      - Change the gains for 180 degree yaw rotation and alt to 50%
  *      - Refine control
- *      - Code abstraction. (Separate altitude/ADC into two files, yaw/quadDecode, etc.)
+ *      - Code abstraction. (Separate yaw/quadDecode into two files, etc.)
  *      - Limit integral error or something.
- *      - Justify task priorities
  * KNOWN CONTROL ISSUES Heli 1:
         -
  * KNOWN CONTROL ISSUES Heli 2:
@@ -56,11 +55,10 @@
 #define TASK_STACK_DEPTH        128
 
 // Max priority is 8
-#define LED_TASK_PRIORITY       5       // LED task priority
-#define OLED_TASK_PRIORITY      5       // OLED priority
+#define LED_TASK_PRIORITY       4       // LED task priority
+#define OLED_TASK_PRIORITY      4       // OLED priority
 
 //#define TIMER_TASK_PRIORITY     5       // Time module priority
-#define STACK_TASK_PRIORITY     5
 
 #define ROW_ZERO                0       // Row zero on the OLED display
 #define ROW_ONE                 1       // Row one on the OLED display

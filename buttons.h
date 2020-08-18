@@ -89,8 +89,8 @@ enum btnStates  {RELEASED = 0, PUSHED, NO_CHANGE};
 /*
  * FreeRTOS Config
  */
-#define BTN_TASK_PRIORITY       6       // Button polling task priority
-#define SWI_TASK_PRIORITY       6       // Switch polling task priority
+#define BTN_TASK_PRIORITY       5       // Button polling task priority
+#define SWI_TASK_PRIORITY       5       // Switch polling task priority
 #define BTN_STACK_DEPTH         64
 #define SWITCH_STACK_DEPTH      64
 
