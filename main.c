@@ -2,8 +2,9 @@
  * TODO:
  *      - Change the gains for 180 degree yaw rotation and alt to 50%
  *      - Refine control
- *      - Code abstraction. (Separate yaw/quadDecode into two files, etc.)
+ *      - Code abstraction. (Separate altitude/ADC into two files, yaw/quadDecode, etc.)
  *      - Limit integral error or something.
+ *      - Justify task priorities
  * KNOWN CONTROL ISSUES Heli 1:
         -
  * KNOWN CONTROL ISSUES Heli 2:
@@ -243,16 +244,16 @@ static void
 initSystem(void)
 {
     IntMasterDisable();         // Disable system interrupts while the program is initializing.
-    initClk();                  // Initialise the system clock
-    initialiseUSB_UART();       // Initialise UART communication over USB
-    //initReset();              // Initialise the soft reset of the system
-    initLED();                  // Initialise the status LED
-    OLEDInitialise();           // Initialise the OLED display
-    initBtns();                 // Initialise the GPIO buttons and switches
-    initADC();                  // Initialise the Analog-Digital converter
-    initQuadrature();           // Initialise the quadrature decoding interrupts
-    initReferenceYaw();         // Initialise the reference yaw interrupt
-    initPWM();                  // Initialise the PWM modules
+    initClk();                  // Initialize the system clock
+    initialiseUSB_UART();       // Initialize UART communication over USB
+    //initReset();              // Initialize the soft reset of the system
+    initLED();                  // Initialize the status LED
+    OLEDInitialise();           // Initialize the OLED display
+    initBtns();                 // Initialize the GPIO buttons and switches
+    initADC();                  // Initialize the Analog-Digital converter
+    initQuadrature();           // Initialize the quadrature decoding interrupts
+    initReferenceYaw();         // Initialize the reference yaw interrupt
+    initPWM();                  // Initialize the PWM modules
     IntMasterEnable();          // Re-enable system interrupts
 
 }
@@ -434,8 +435,8 @@ vApplicationIdleHook( void )
 {
     static char runtime_stats_buffer[512];
 
-    vTaskGetRunTimeStats(runtime_stats_buffer); // Calculate CPU load stats
-    UARTSend(runtime_stats_buffer); // Print CPU load stats to UART
+    //vTaskGetRunTimeStats(runtime_stats_buffer); // Calculate CPU load stats
+    //UARTSend(runtime_stats_buffer); // Print CPU load stats to UART
 }
 
 /*
@@ -457,9 +458,9 @@ main(void)
     initSystem();
     createTasks();
     createQueues();
+    initControllers();          // Initalaize the PWM duty controllers
     createSemaphores();
     createTimers();
-    initControllers();          // Initialise the PWM duty controllers
     UARTSend("Starting...\n");
 
     vTaskStartScheduler();

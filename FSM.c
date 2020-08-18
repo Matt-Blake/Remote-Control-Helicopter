@@ -115,6 +115,9 @@ findYawRef(void)
     UARTSend("Finding Ref\n");
     setRotorPWM(PWM_Main, 1); // Set the main rotor to on, the torque from the main rotor should work better than using the tail, have to test and actually see whats best
     setRotorPWM(PWM_Tail, 0);   // Set the tail rotor to on
+    while(!xEventGroupGetBits(xFoundYawReference)){
+
+    }
 }
 
 
@@ -154,12 +157,12 @@ takeoff(void)
         vTaskSuspend(SwitchCheck);
         findYawRef(); // Find the reference yaw
     } else {
+        xQueueOverwrite(xYawDesQueue, &desired_yaw); // Rotate to reference yaw
+        xQueueOverwrite(xAltDesQueue, &desired_alt); // Ascend to 20 % altitude
         vTaskResume(MainPWM); // Re-enable the control system
         vTaskResume(TailPWM);
         vTaskResume(BtnCheck);
         vTaskResume(SwitchCheck);
-        xQueueOverwrite(xYawDesQueue, &desired_yaw); // Rotate to reference yaw
-        xQueueOverwrite(xAltDesQueue, &desired_alt); // Ascend to 20 % altitude
         xQueuePeek(xAltMeasQueue, &alt, 10); // Retrieve the current altitude value
         xQueuePeek(xYawMeasQueue, &yaw, 10); // Retrieve the current yaw value
 
@@ -294,7 +297,7 @@ void landed(void)
     yaw_controller.integratedError = 0;
 
     // Get max stack usage
-    GetStackUsage();
+    //GetStackUsage();
 
     //vTaskResume(SwitchCheck);
 }
