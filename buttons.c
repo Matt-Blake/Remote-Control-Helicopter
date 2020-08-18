@@ -110,7 +110,7 @@ void vDblBtnTimerCallback( TimerHandle_t xTimer )
         vTimerSetTimerID( xTimer, ( void * ) reset ); //( void * ) ulCount
         xTimerStop( xTimer, reset );
     }
-    UARTSend("Button Timer Callback\n");
+    UARTSend("Btn Timer Callback\n\r");
 }
 
 
@@ -248,10 +248,6 @@ upButtonPush(void)
         {
             alt_desired = MAX_ALT;
         }
-
-        char cMessage[5];
-        usnprintf(cMessage, sizeof(cMessage), "%d\n", alt_desired);
-        UARTSend(cMessage);
         xQueueOverwrite(xAltDesQueue, &alt_desired); // Update the RTOS altitude reference queue
         xSemaphoreGive(xAltMutex); // Give altitude mutex so other mutually exclusive altitude tasks can run
     }
@@ -281,10 +277,6 @@ downButtonPush(void)
         {
             alt_desired = MIN_ALT;
         }
-
-        char cMessage[5];
-        usnprintf(cMessage, sizeof(cMessage), "%d\n", alt_desired);
-        UARTSend(cMessage);
 
         xQueueOverwrite(xAltDesQueue, &alt_desired); // Update the RTOS altitude reference queue
         xSemaphoreGive(xAltMutex); // Give altitude mutex so other mutually exclusive altitude tasks can run
@@ -479,11 +471,11 @@ SwitchesCheck(void *pvParameters)
         {
             R_PREV = GPIOPinRead(SW_PORT_BASE, R_SW_PIN);
             if(R_PREV == R_SW_PIN){
-                UARTSend ("Switch High\n");
+                UARTSend ("R_SW High\n\r");
                 state = TAKEOFF;
 
             }else{
-                UARTSend ("Switch Low\n");
+                UARTSend ("R_SW Low\n\r");
                 if(state == FLYING){
                     state = LANDING;
                 }
@@ -495,15 +487,10 @@ SwitchesCheck(void *pvParameters)
         {
             L_PREV = GPIOPinRead(SW_PORT_BASE, L_SW_PIN);
             if(L_PREV == L_SW_PIN){
-                UARTSend ("LEFTSWITCH\n\r");
-                //state = TAKEOFF;
-
+                UARTSend ("L_SW High\n\r");
             }else{
-                UARTSend ("LEFTSWITCH\n\r");
-                //state = LANDING;
+                UARTSend ("L_SW Low\n\r");
             }
-
-            //xQueueOverwrite(xFSMQueue, &state);
         }
         vTaskDelayUntil(&ui16LastTaskTime, ui32SwitchDelay/portTICK_RATE_MS);
     }

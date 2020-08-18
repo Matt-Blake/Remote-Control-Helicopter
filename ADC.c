@@ -52,7 +52,7 @@ ADCIntHandler(void)
 
     if ((g_inBuffer.windex) == (ADC_BUF_SIZE-1) && (ground_flag == GROUND_NOT_FOUND)) {
         xEventGroupSetBitsFromISR(xFoundAltReference, GROUND_BUFFER_FULL, pdFALSE);     // Set flag indicating the buffer is full and can now be averaged
-        UARTSend("Buff_Full\n\r");
+        UARTSend("ADC Buffer Full\n\r");
     }
     ADCSequenceDataGet(ADC0_BASE, 3, &ulValue);                         // Runs the A-D Conversion and stores the value in ulValue
     writeCircBuf(&g_inBuffer, ulValue);                                 // Writes the ADC value to the Circular Buffer

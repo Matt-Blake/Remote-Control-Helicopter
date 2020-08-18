@@ -24,7 +24,6 @@
 #include <stdint.h>
 #include "driverlib/interrupt.h"
 #include "driverlib/systick.h"
-//#include "utils/ustdlib.h"
 #include "OrbitOLED/OrbitOLEDInterface.h"
 
 // FreeRTOS includes
@@ -170,26 +169,27 @@ OLEDDisplay (void *pvParameters)
         tail_PWM = PWMPulseWidthGet(PWM1_BASE, PWM_OUT_5);
 
         xQueuePeek(xFSMQueue, &state, 10);
-
+        UARTSend("------------\n");
         //usnprintf(string, sizeof(string), "Alt(%%) %3d|%3d ", des_alt, act_alt);
         //OLEDStringDraw(string, COLUMN_ZERO, ROW_ZERO);
-        usnprintf(string, sizeof(string), "Alt(%%) %3d|%3d\n\r", des_alt, act_alt);
+        usnprintf(string, sizeof(string), "Alt(%%) %3d|%3d\n", des_alt, act_alt);
         UARTSend(string);
 
         //usnprintf(string, sizeof(string), "Yaw   %4d|%3d ", des_yaw, act_yaw);
         //OLEDStringDraw(string, COLUMN_ZERO, ROW_ONE);
-        usnprintf(string, sizeof(string), "Yaw   %4d|%3d\n\r", des_yaw, act_yaw);
+        usnprintf(string, sizeof(string), "Yaw   %4d|%3d\n", des_yaw, act_yaw);
         UARTSend(string);
 
         //usnprintf(string, sizeof(string), "PWM(%%) %3d|%3d ", main_PWM, tail_PWM);
         //OLEDStringDraw(string, COLUMN_ZERO, ROW_TWO);
-        usnprintf(string, sizeof(string), "PWM %3d|%3d\n\r", main_PWM/250, tail_PWM/250);
+        usnprintf(string, sizeof(string), "PWM %3d|%3d\n", main_PWM/250, tail_PWM/250);
         UARTSend(string);
 
         //usnprintf(string, sizeof(string), "%s     ", states[state]);
         //OLEDStringDraw(string, COLUMN_ZERO, ROW_THREE);
-        usnprintf(string, sizeof(string), "%s\r\n", states[state]);
+        usnprintf(string, sizeof(string), "%s\n", states[state]);
         UARTSend(string);
+        UARTSend("------------\n");
 
         vTaskDelay(DISPLAY_PERIOD / portTICK_RATE_MS);
     }

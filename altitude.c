@@ -102,14 +102,11 @@ MeanADC(void *pvParameters)
             ground = calculateMean();
             xEventGroupClearBits(xFoundAltReference, GROUND_BUFFER_FULL); // Clear previous flag
             xEventGroupSetBits(xFoundAltReference, GROUND_FOUND); // Set flag indicating that the ground reference has been set
-            UARTSend("GroundFound\n");
-            usnprintf(cMessage, sizeof(cMessage), "GND: %d\n", ground);
+            usnprintf(cMessage, sizeof(cMessage), "Ground Found: %d\n\r", ground);
             UARTSend(cMessage);
         } else if (ground_flag == GROUND_FOUND) {
             mean = calculateMean();
             altitude = percentageHeight(ground, mean);
-            usnprintf(cMessage, sizeof(cMessage), "Alt: %d\n", altitude);
-            UARTSend(cMessage);
         }
         xQueueOverwrite(xAltMeasQueue, &altitude);
 

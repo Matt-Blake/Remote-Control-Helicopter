@@ -264,7 +264,6 @@ SetMainDuty(void *pvParameters)
 
     while (1)
     {
-        //UARTSend("MAIN\n\r");
         // Retrieve altitude information
         xQueuePeek(xAltMeasQueue, &alt_meas,    10); // Retrieve measured altitude data from the RTOS queue
         xQueuePeek(xAltDesQueue,  &alt_desired, 10); // Retrieve desired altitude data from the RTOS queue
@@ -305,7 +304,6 @@ SetTailDuty(void *pvParameters)
 
     while (1)
     {
-        //UARTSend("TAIL\n\r");
         // Retrieve yaw information
         xQueuePeek(xYawMeasQueue, &yaw_meas,   10); // Retrieve measured yaw data from the RTOS queue
         xQueuePeek(xYawDesQueue, &yaw_desired, 10); // Retrieve desired yaw data from the RTOS queue

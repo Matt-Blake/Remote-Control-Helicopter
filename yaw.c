@@ -36,17 +36,6 @@ QueueHandle_t xYawSlotQueue;
 QueueHandle_t xYawMeasQueue;
 QueueHandle_t xYawDesQueue;
 
-/*
- * WRITE DESCRIPTION
- */
-void vYawRefCallback( TimerHandle_t xTimer )
-{
-    int8_t  reset = 0;
-    UARTSend("Yaw Ref Callback\n");
-    GPIOIntEnable(YAW_REFERENCE_BASE, YAW_REFERENCE_PIN);
-    vTimerSetTimerID( xTimer, (void *) reset );
-}
-
 
 /*
  * Function:    referenceInterrupt
@@ -67,7 +56,7 @@ referenceInterrupt(void)
 {
     int32_t reset = 0;
 
-    UARTSend("REF_INTERRUPT\n\r");
+    UARTSend("REF_INT\n\r");
 
     xQueueOverwriteFromISR(xYawMeasQueue, &reset, pdFALSE);         // Reset the current yaw to 0 (reference position)
     xQueueOverwriteFromISR(xYawSlotQueue, &reset, pdFALSE);         // Reset the curreny yaw_slow position to 0
@@ -167,7 +156,7 @@ quadratureFSMInterrupt(void)
                 yaw_slot++;
                 break;
         default:                            // Goes into default when a state is skipped. Occurs when you turn too fast.
-                UARTSend("QD Error\n");
+                UARTSend("QD Error\n\r");
     }
 
     currentChannelReading = newChannelReading;
