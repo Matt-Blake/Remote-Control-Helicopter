@@ -228,27 +228,6 @@ initClk(void)
     SysCtlClockSet (SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
 }
 
-
-/*
- * Function:    initControllers
- * -----------------------------
- * Initializes the structs used to hold the PWM PID controller
- * gains and errors.
- *
- * @params:
- *      - NULL
- * @return:
- *      - NULL
- * ---------------------
- */
-static void
-initControllers(void)
-{
-    initController(&g_alt_controller, false);   // Create altitude controller based of preset gains
-    initController(&g_yaw_controller, true);    // Create yaw controller based of preset gains
-}
-
-
 /*
  * Function:    initSystem
  * ------------------------
@@ -336,18 +315,22 @@ createQueues(void)
     xTailPWMQueue   = xQueueCreate(1, sizeof( int32_t ) );
     xFSMQueue       = xQueueCreate(1, sizeof( int32_t ) );
     xYawSlotQueue   = xQueueCreate(1, sizeof( int32_t ) );
+    xAltControllerQueue   = xQueueCreate(1, sizeof( controller_t ) );
+    xYawControllerQueue   = xQueueCreate(1, sizeof( controller_t ) );
 
     // Initalise queues
-    xQueueOverwrite(xAltBtnQueue, &queue_init);
-    xQueueOverwrite(xYawBtnQueue, &queue_init);
-    xQueueOverwrite(xAltMeasQueue, &queue_init);
-    xQueueOverwrite(xAltDesQueue, &queue_init);
-    xQueueOverwrite(xYawMeasQueue, &queue_init);
-    xQueueOverwrite(xYawDesQueue, &queue_init);
-    xQueueOverwrite(xMainPWMQueue, &queue_init);
-    xQueueOverwrite(xTailPWMQueue, &queue_init);
-    xQueueOverwrite(xFSMQueue, &queue_init);
-    xQueueOverwrite(xYawSlotQueue, &queue_init);
+    xQueueOverwrite(xAltBtnQueue,        &queue_init);
+    xQueueOverwrite(xYawBtnQueue,        &queue_init);
+    xQueueOverwrite(xAltMeasQueue,       &queue_init);
+    xQueueOverwrite(xAltDesQueue,        &queue_init);
+    xQueueOverwrite(xYawMeasQueue,       &queue_init);
+    xQueueOverwrite(xYawDesQueue,        &queue_init);
+    xQueueOverwrite(xMainPWMQueue,       &queue_init);
+    xQueueOverwrite(xTailPWMQueue,       &queue_init);
+    xQueueOverwrite(xFSMQueue,           &queue_init);
+    xQueueOverwrite(xYawSlotQueue,       &queue_init);
+    xQueueOverwrite(xAltControllerQueue, &queue_init);
+    xQueueOverwrite(xYawControllerQueue, &queue_init);
 }
 
 

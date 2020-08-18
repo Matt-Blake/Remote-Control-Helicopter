@@ -25,21 +25,6 @@
 
 typedef enum HELI_STATE {LANDED = 0, TAKEOFF = 1, FLYING = 2, LANDING = 3} HELI_STATE;
 
-TimerHandle_t xLandingTimer;
-TaskHandle_t FSMTask;
-
-QueueHandle_t xFSMQueue;
-
-TaskHandle_t StatLED;
-TaskHandle_t OLEDDisp;
-TaskHandle_t BtnCheck;
-TaskHandle_t SwitchCheck;
-TaskHandle_t ADCTrig;
-TaskHandle_t ADCMean;
-TaskHandle_t MainPWM;
-TaskHandle_t TailPWM;
-TaskHandle_t FSMTask;
-
 
 // Functions
 /*
@@ -285,6 +270,9 @@ land(void)
  */
 void landed(void)
 {
+    controller_t alt_controller;
+    controller_t yaw_controller;
+
     // Suspend unwanted tasks
     vTaskSuspend(MainPWM); // Suspend the control system while landed
     vTaskSuspend(TailPWM);
@@ -294,11 +282,16 @@ void landed(void)
     setRotorPWM(MIN_DUTY, 1);
     setRotorPWM(MIN_DUTY, 0);
 
+    //Retrieve controller information
+    xQueuePeek(xAltControllerQueue, &alt_controller, 10);
+    xQueuePeek(xYawControllerQueue, &yaw_controller, 10);
+
+
     // Reset error on controllers
-    g_alt_controller.previousError   = 0;
-    g_yaw_controller.previousError   = 0;
-    g_alt_controller.integratedError = 0;
-    g_yaw_controller.integratedError = 0;
+    alt_controller.previousError   = 0;
+    yaw_controller.previousError   = 0;
+    alt_controller.integratedError = 0;
+    yaw_controller.integratedError = 0;
 
     // Get max stack usage
     GetStackUsage();
