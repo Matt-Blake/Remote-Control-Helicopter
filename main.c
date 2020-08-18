@@ -59,7 +59,6 @@
 #define LED_TASK_PRIORITY       5       // LED task priority
 #define OLED_TASK_PRIORITY      5       // OLED priority
 
-//#define TIMER_TASK_PRIORITY     5       // Time module priority
 #define STACK_TASK_PRIORITY     5
 
 #define ROW_ZERO                0       // Row zero on the OLED display
@@ -70,26 +69,16 @@
 #define DISPLAY_SIZE            17      // Size of strings for the OLED display
 
 #define DISPLAY_PERIOD          200
-#define DBL_BTN_TMR_PERIOD      1000//250
-#define YAW_FLIP_TMR_PERIOD     1000//250
 
 
-//******************************************************
-// Globals
-//******************************************************
+EventGroupHandle_t xFoundAltReference;
+EventGroupHandle_t xFoundYawReference;
 QueueHandle_t xOLEDQueue;
-
 SemaphoreHandle_t xAltMutex;
 SemaphoreHandle_t xYawMutex;
 SemaphoreHandle_t xUARTMutex;
 
-EventGroupHandle_t xFoundAltReference;
-EventGroupHandle_t xFoundYawReference;
 
-
-//******************************************************
-// Tasks
-//******************************************************
 /*
  * Function:    StatusLED
  * -----------------------
@@ -111,7 +100,6 @@ StatusLED(void *pvParameters)
     while(1)
     {
         state ^= GPIO_PIN_2;
-
         GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, state);
 
         vTaskDelay(200 / portTICK_RATE_MS);
@@ -312,8 +300,8 @@ createQueues(void)
     xTailPWMQueue   = xQueueCreate(1, sizeof( int32_t ) );
     xFSMQueue       = xQueueCreate(1, sizeof( int32_t ) );
     xYawSlotQueue   = xQueueCreate(1, sizeof( int32_t ) );
-    xAltControllerQueue   = xQueueCreate(1, sizeof( controller_t ) );
-    xYawControllerQueue   = xQueueCreate(1, sizeof( controller_t ) );
+    //xAltControllerQueue   = xQueueCreate(1, sizeof( controller_t ) );
+    //xYawControllerQueue   = xQueueCreate(1, sizeof( controller_t ) );
 
     // Initalise queues
     xQueueOverwrite(xAltBtnQueue,        &queue_init);
@@ -326,8 +314,8 @@ createQueues(void)
     xQueueOverwrite(xTailPWMQueue,       &queue_init);
     xQueueOverwrite(xFSMQueue,           &queue_init);
     xQueueOverwrite(xYawSlotQueue,       &queue_init);
-    xQueueOverwrite(xAltControllerQueue, &queue_init);
-    xQueueOverwrite(xYawControllerQueue, &queue_init);
+    //xQueueOverwrite(xAltControllerQueue, &queue_init);
+    //xQueueOverwrite(xYawControllerQueue, &queue_init);
 }
 
 
