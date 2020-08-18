@@ -55,8 +55,8 @@
 #ifndef PWM_H_
 #define PWM_H_
 
-//#define MAIN_ROTOR_FACTOR 0.82 // the true coupling factor between main and tail
-#define MAIN_ROTOR_FACTOR 0.64 // Factor used to compensate for the effect of main rotor
+//#define MAIN_ROTOR_FACTOR 82/100 // the true coupling factor between main and tail
+#define MAIN_ROTOR_FACTOR 64/100 // Factor used to compensate for the effect of main rotor
 
 
 // Globals

@@ -49,13 +49,13 @@
 // Constants
 //******************************************************
 
-// Stack sizes in words, calculated experimentally using uxTaskGetStackHighWaterMark()
+// Stack sizes in words, calculated experimentally based on uxTaskGetStackHighWaterMark()
 #define LED_STACK_DEPTH         32
 #define OLED_STACK_DEPTH        128
-#define BTN_STACK_DEPTH         128
-#define SWITCH_STACK_DEPTH      128
-#define ADC_STACK_DEPTH         128
-#define MEAN_STACK_DEPTH        128
+#define BTN_STACK_DEPTH         64
+#define SWITCH_STACK_DEPTH      64
+#define ADC_STACK_DEPTH         32
+#define MEAN_STACK_DEPTH        64
 #define ALT_STACK_DEPTH         128
 #define YAW_STACK_DEPTH         128
 #define FSM_STACK_DEPTH         128
@@ -90,11 +90,6 @@
 // Globals
 //******************************************************
 QueueHandle_t xOLEDQueue;
-
-TaskHandle_t Blinky;
-TaskHandle_t OLEDDisp;
-
-
 
 SemaphoreHandle_t xAltMutex;
 SemaphoreHandle_t xYawMutex;
@@ -137,50 +132,6 @@ initLED(void)
     GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_2);         // PF_2 as output
     GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD);    // Doesn't need too much drive strength as the RGB LEDs on the TM4C123 launchpad are switched via N-type transistors
     GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_PIN_2);               // Off by default
-}
-
-
-/*
- * Calculate the maximum stack usage all of the RTOS tasks.
- */
-void
-GetStackUsage(void *pvParameters)
-{
-    char cMessage[17];
-    uint32_t Blinky_stack;
-    uint32_t OLEDDisp_stack;
-    uint32_t BtnCheck_stack;
-    uint32_t SwitchCheck_stack;
-    uint32_t ADCTrig_stack;
-    uint32_t ADCMean_stack;
-    uint32_t MainPWM_stack;
-    uint32_t TailPWM_stack;
-    uint32_t FSMTask_stack;
-
-    while(1){
-
-        // Retrieve stack usage information from each task
-        Blinky_stack      = uxTaskGetStackHighWaterMark(Blinky);
-        OLEDDisp_stack    = uxTaskGetStackHighWaterMark(OLEDDisp);
-        BtnCheck_stack    = uxTaskGetStackHighWaterMark(BtnCheck);
-        SwitchCheck_stack = uxTaskGetStackHighWaterMark(SwitchCheck);
-        ADCTrig_stack     = uxTaskGetStackHighWaterMark(ADCTrig);
-        ADCMean_stack     = uxTaskGetStackHighWaterMark(ADCMean);
-        MainPWM_stack     = uxTaskGetStackHighWaterMark(MainPWM);
-        TailPWM_stack     = uxTaskGetStackHighWaterMark(TailPWM);
-        FSMTask_stack     = uxTaskGetStackHighWaterMark(FSMTask);
-
-        // Send stack information via UART
-        usnprintf(cMessage, sizeof(cMessage), "Blinky unused: %d words\n",      Blinky_stack);
-        usnprintf(cMessage, sizeof(cMessage), "OLEDDisp unused: %d words\n",    OLEDDisp_stack);
-        usnprintf(cMessage, sizeof(cMessage), "BtnCheck Unused: %d words\n",    BtnCheck_stack);
-        usnprintf(cMessage, sizeof(cMessage), "SwitchCheck Unused: %d words\n", SwitchCheck_stack);
-        usnprintf(cMessage, sizeof(cMessage), "ADCTrig Unused: %d words\n",     ADCTrig_stack);
-        usnprintf(cMessage, sizeof(cMessage), "ADCMean Unused: %d words\n",     ADCMean_stack);
-        usnprintf(cMessage, sizeof(cMessage), "MainPWM Unused: %d words\n",     MainPWM_stack);
-        usnprintf(cMessage, sizeof(cMessage), "TailPWM Unused: %d words\n",     TailPWM_stack);
-        usnprintf(cMessage, sizeof(cMessage), "FSMTask Unused: %d words\n",     FSMTask_stack);
-    }
 }
 
 /*
@@ -297,7 +248,6 @@ createTasks(void)
     xTaskCreate(SetMainDuty,    "Alt PWM",      ALT_STACK_DEPTH,        NULL,       ALT_TASK_PRIORITY,      &MainPWM);
     xTaskCreate(SetTailDuty,    "Yaw PWM",      YAW_STACK_DEPTH,        NULL,       YAW_TASK_PRIORITY,      &TailPWM);
     xTaskCreate(FSM,            "FSM",          FSM_STACK_DEPTH,        NULL,       FSM_TASK_PRIORITY,      &FSMTask);
-    //xTaskCreate(GetStackUsage,  "Stack usage",  TASK_STACK_DEPTH,       NULL,       STACK_TASK_PRIORITY,    NULL);
 }
 
 /*

@@ -46,11 +46,22 @@
 //******************************************************
 
 
-extern TaskHandle_t MainPWM;
+/*extern TaskHandle_t MainPWM;
 extern TaskHandle_t TailPWM;
 extern TaskHandle_t BtnCheck;
 extern TaskHandle_t SwitchCheck;
-extern TaskHandle_t FSMTask;
+extern TaskHandle_t FSMTask;*/
+
+TaskHandle_t Blinky;
+TaskHandle_t OLEDDisp;
+TaskHandle_t BtnCheck;
+TaskHandle_t SwitchCheck;
+TaskHandle_t ADCTrig;
+TaskHandle_t ADCMean;
+TaskHandle_t MainPWM;
+TaskHandle_t TailPWM;
+TaskHandle_t FSMTask;
+TaskHandle_t Blinky;
 
 extern QueueHandle_t xFSMQueue;
 extern QueueHandle_t xAltMesQueue;
@@ -64,7 +75,10 @@ extern controller_t g_alt_controller;
 extern controller_t g_yaw_controller;
 
 
+// CREATE DESCRIPTION
+void GetStackUsage(void);
 
+// CREATE DESCRIPTION
 void vLandTimerCallback( TimerHandle_t xTimer );
 
 
