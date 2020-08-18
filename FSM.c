@@ -302,7 +302,7 @@ FSM(void *pvParameters) {
 
     while(1)
     {
-        xQueuePeek(xFSMQueue, &state, 10);
+        xQueuePeek(xFSMQueue, &state, 10);      // Read the current flight mode/state.
         switch(state) {
             case LANDED:
                 landed();
