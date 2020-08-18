@@ -14,42 +14,30 @@
 #ifndef ADC_H
 #define ADC_H
 
-/*
- * Include files.
- */
+
 #include <stdint.h>
 #include <stdbool.h>
 #include "driverlib/adc.h"
 #include "OrbitOLED/circBufT.h"
-#include "uart.h"
 #include "FreeRTOS.h"
 #include "event_groups.h"
+#include "uart.h"
 
-/*
- * DEFINES
- */
-#define BUF_SIZE            8                   // Size of the circular buffer used for moving averages
 
+#define ADC_BUF_SIZE            8               // Size of the circular buffer used for moving averages
 //#define VOLTAGE_DROP_ADC    4096                // FOR ORBIT BOARD POTENTIOMETER
-#define VOLTAGE_DROP_ADC    1200                // FOR RIG
+#define VOLTAGE_DROP_ADC        1200            // FOR RIG
+#define GROUND_NOT_FOUND        (0 << 0)        // Flag value to indicate that ground reference hasn't been found
+#define GROUND_BUFFER_FULL      (1 << 0)        // Flag value to indicate that the ADC buffer is full
+#define GROUND_FOUND            (1 << 1)        // Flag value to indicate that ground reference has been found
+#define ADC_TASK_PRIORITY       8               // ADC sampling priority
+#define ADC_STACK_DEPTH         32              // ADC trigger task stack depth
 
-#define GROUND_NOT_FOUND    (0 << 0)            // Flag value to indicate that ground reference hasn't been found
-#define GROUND_BUFFER_FULL  (1 << 0)            // Flag value to indicate that the ADC buffer is full
-#define GROUND_FOUND        (1 << 1)            // Flag value to indicate that ground reference has been found
 
-#define ADC_TASK_PRIORITY       8                // ADC sampling priority
-#define ADC_STACK_DEPTH         32
-
-/*
- * GLOAL VARIABLES
- */
-extern EventGroupHandle_t xFoundAltReference;
 extern circBuf_t g_inBuffer;
+extern EventGroupHandle_t xFoundAltReference;                                                                                               // Should init xFoundAltRef in altitude.c or ADC.c, not main
 extern TaskHandle_t ADCTrig;
 
-/*
- * PROTOTYPES
- */
 
 /*
  * Function:    initADC

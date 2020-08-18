@@ -50,7 +50,7 @@ ADCIntHandler(void)
 
     ground_flag = xEventGroupGetBits(xFoundAltReference);               // Calculate the current state of the ground flag
 
-    if ((g_inBuffer.windex) == (BUF_SIZE-1) && (ground_flag == GROUND_NOT_FOUND)) {
+    if ((g_inBuffer.windex) == (ADC_BUF_SIZE-1) && (ground_flag == GROUND_NOT_FOUND)) {
         xEventGroupSetBitsFromISR(xFoundAltReference, GROUND_BUFFER_FULL, pdFALSE);     // Set flag indicating the buffer is full and can now be averaged
         UARTSend("Buff_Full\n\r");
     }
@@ -89,7 +89,7 @@ initADC(void)
     ADCIntRegister(ADC_BASE, SEQ_NUM, ADCIntHandler);                   // Registers the interrupt and sets ADCIntHandler to handle the interrupt
     ADCIntEnable(ADC_BASE, SEQ_NUM);                                    // Enables interrupts on ADC module
 
-    initCircBuf (&g_inBuffer, BUF_SIZE);
+    initCircBuf (&g_inBuffer, ADC_BUF_SIZE);
 }
 
 

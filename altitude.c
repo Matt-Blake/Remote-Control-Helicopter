@@ -34,12 +34,12 @@ int32_t calculateMean(void)
     int32_t reading;
     int32_t mean = 0;       // Initialize mean
 
-    for (i = 0; i < BUF_SIZE; i++){
+    for (i = 0; i < ADC_BUF_SIZE; i++){
         reading = readCircBuf(&g_inBuffer);
         sum = sum + reading;
     }// Sum all values in circBuf
 
-    mean = (sum/BUF_SIZE);
+    mean = (sum/ADC_BUF_SIZE);
     return mean;                       // Returns mean value
 }
 

@@ -19,36 +19,35 @@
  * Last modified: 10/08/2020
  * ***************************************************************/
 
-//******************************************************
-// Includes
-//******************************************************
+#ifndef FSM_H
+#define FSM_H
+
+
 #include <stdint.h>
 #include <stdbool.h>
 #include "driverlib/gpio.h"
 #include "driverlib/sysctl.h"
 #include "inc/hw_memmap.h"
-#include "uart.h"
+#include "pwm.h"
 #include "FreeRTOS.h"
 #include "queue.h"
 #include "event_groups.h"
 #include "timers.h"
-#include "pwm.h"
+#include "uart.h"
 
-//******************************************************
-// Constants
-//******************************************************
+
 #define ALT_TOLERANCE           2       // The tolerance in altitude value to trigger state change
 #define YAW_TOLERANCE           2       // The tolerance in yaw value to trigger state change
 #define FIND_REF_PWM            30      // The main rotor PWM used to find the reference yaw
 #define LAND_TMR_PERIOD         200
-
 #define FSM_TASK_PRIORITY       5       // FSM priority
 #define FSM_STACK_DEPTH         128
 
 
-//******************************************************
-// Globals
-//******************************************************
+extern QueueHandle_t xFSMQueue;
+extern QueueHandle_t xAltMesQueue;
+extern QueueHandle_t xAltDesQueue;
+extern QueueHandle_t xMainPWMQueue; // Delete this once debugging done
 extern TaskHandle_t StatLED;
 extern TaskHandle_t OLEDDisp;
 extern TaskHandle_t BtnCheck;
@@ -58,13 +57,7 @@ extern TaskHandle_t ADCMean;
 extern TaskHandle_t MainPWM;
 extern TaskHandle_t TailPWM;
 extern TaskHandle_t FSMTask;
-
-extern QueueHandle_t xFSMQueue;
-extern QueueHandle_t xAltMesQueue;
-extern QueueHandle_t xAltDesQueue;
-extern QueueHandle_t xMainPWMQueue; // Delete this once debugging done
-
-TimerHandle_t xLandingTimer;
+extern TimerHandle_t xLandingTimer;
 
 
 
@@ -89,3 +82,4 @@ void vLandTimerCallback( TimerHandle_t xTimer );
  */
 void FSM(void *pvParameters);
 
+#endif /*FSM_H*/

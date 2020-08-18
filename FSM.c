@@ -26,15 +26,16 @@
 typedef enum HELI_STATE {LANDED = 0, TAKEOFF = 1, FLYING = 2, LANDING = 3} HELI_STATE;
 
 QueueHandle_t xFSMQueue;
+TimerHandle_t xLandingTimer;
 
 TaskHandle_t StatLED;
 TaskHandle_t OLEDDisp;
-TaskHandle_t BtnCheck;
-TaskHandle_t SwitchCheck;
-TaskHandle_t ADCTrig;
-TaskHandle_t ADCMean;
-TaskHandle_t MainPWM;
-TaskHandle_t TailPWM;
+//TaskHandle_t BtnCheck;
+//TaskHandle_t SwitchCheck;
+//TaskHandle_t ADCTrig;
+//TaskHandle_t ADCMean;
+//TaskHandle_t MainPWM;
+//TaskHandle_t TailPWM;
 TaskHandle_t FSMTask;
 
 

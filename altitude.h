@@ -23,12 +23,12 @@
 #include "queue.h"
 #include "event_groups.h"
 
+
 #define MEAN_STACK_DEPTH        64
 #define MEAN_TASK_PRIORITY      7       // Mean calculation priority
 
 extern QueueHandle_t    xAltMeasQueue;
 extern QueueHandle_t    xFSMQueue;
-extern circBuf_t        g_inBuffer;
 extern TaskHandle_t     ADCMean;
 
 /*

@@ -25,7 +25,7 @@
 #define ALT_KI              30          // Altitude integral gain
 #define ALT_KD              20          // Altitude derivative gain
 #define YAW_KP              100         // Yaw proportional gain
-#define YAW_KI              50          // Yaw integral gain
+#define YAW_KI              80          // Yaw integral gain
 #define YAW_KD              20          // Yaw derivative gain
 #define CONTROL_DIVISOR     100         // Divisor used to achieve certain gains without the use of floating point numbers
 

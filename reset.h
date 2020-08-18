@@ -12,11 +12,13 @@
 #ifndef RESET_H_
 #define RESET_H_
 
+
 #include <stdint.h>
 #include <stdbool.h>
 #include "driverlib/gpio.h"
 #include "driverlib/sysctl.h"
 #include "inc/hw_memmap.h"
+
 
 /*
  * Function:    initReset

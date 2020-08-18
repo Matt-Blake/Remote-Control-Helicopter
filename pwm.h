@@ -33,8 +33,10 @@
  * Last modified: 31/07/2020
  * ***************************************************************/
 
+#ifndef PWM_H_
+#define PWM_H_
 
-// Includes
+
 #include <stdint.h>
 #include <stdbool.h>
 #include "inc/hw_memmap.h"
@@ -42,46 +44,36 @@
 #include "driverlib/gpio.h"
 #include "driverlib/pwm.h"
 #include "driverlib/sysctl.h"
-
-#include "uart.h"
 #include "yaw.h"
 #include "pidController.h"
 #include "FreeRTOS.h"
 #include "queue.h"
 #include "semphr.h"
+#include "uart.h"
 
-
-// Includes
-#ifndef PWM_H_
-#define PWM_H_
 
 //#define MAIN_ROTOR_FACTOR 82/100 // the true coupling factor between main and tail
 #define MAIN_ROTOR_FACTOR 70/100 //64/100 // Factor used to compensate for the effect of main rotor
-
 #define MAIN_PWM_TASK_PRIORITY  6       // Main rotor PWM task priority
 #define TAIL_PWM_TASK_PRIORITY  6       // Tail rotor PWM task priority
 #define MAIN_PWM_STACK_DEPTH    128
 #define TAIL_PWM_STACK_DEPTH    128
 
 
-// Globals
-extern SemaphoreHandle_t xAltMutex;
-extern SemaphoreHandle_t xYawMutex;
-
+extern controller_t g_alt_controller;
+extern controller_t g_yaw_controller;
 extern QueueHandle_t xAltMeasQueue;
 extern QueueHandle_t xAltDesQueue;
 extern QueueHandle_t xYawMeasQueue;
 extern QueueHandle_t xYawDesQueue;
 extern QueueHandle_t xMainPWMQueue;
 extern QueueHandle_t xTailPWMQueue;
-QueueHandle_t xAltControllerQueue;
-QueueHandle_t xYawControllerQueue;
-
+//QueueHandle_t xAltControllerQueue;
+//QueueHandle_t xYawControllerQueue;
+extern SemaphoreHandle_t xAltMutex;
+extern SemaphoreHandle_t xYawMutex;
 extern TaskHandle_t MainPWM;
 extern TaskHandle_t TailPWM;
-
-extern controller_t g_alt_controller;
-extern controller_t g_yaw_controller;
 
 
 /*
