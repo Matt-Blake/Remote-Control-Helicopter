@@ -68,7 +68,7 @@ TimerHandle_t xLandingTimer;
 
 
 // CREATE DESCRIPTION
-void GetStackUsage(void);
+//void GetStackUsage(void);
 
 // CREATE DESCRIPTION
 void vLandTimerCallback( TimerHandle_t xTimer );
