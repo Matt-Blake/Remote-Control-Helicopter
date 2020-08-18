@@ -38,7 +38,6 @@ QueueHandle_t xFSMQueue;
 void
 GetStackUsage(void)
 {
-    char cMessage[17];
     uint32_t Blinky_stack;
     uint32_t OLEDDisp_stack;
     uint32_t BtnCheck_stack;
