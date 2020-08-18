@@ -36,7 +36,6 @@
 #define MIN_DUTY            2           // The minimum duty cycle for the rotors
 #define CONTROL_PERIOD      20      // Period used in the control loops (ms)
 
-
 /* ******************************************************
  * Sets up PID controller struct values that will be used
  * for both the altitude control and the yaw control.

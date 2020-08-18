@@ -271,23 +271,19 @@ initControllers(void)
 void
 init(void)
 {
-    //IntMasterDisable();
-
-    initClk();
-    initialiseUSB_UART();
-    //initReset();
-
-    initLED();
-    OLEDInitialise();
-    initBtns();
-
-    initADC();
-    initQuadrature();
-    initReferenceYaw();
-    initControllers();
-    initPWM();
-
-    //IntMasterEnable();
+    IntMasterDisable();         // Disable system interrupts while the program is initializing.
+    initClk();                  // Initialize the system clock
+    initialiseUSB_UART();       // Initialize UART communication over USB
+    //initReset();              // Initialize the soft reset of the system
+    initLED();                  // Initialize the status LED
+    OLEDInitialise();           // Initialize the OLED display
+    initBtns();                 // Initialize the GPIO buttons and switches
+    initADC();                  // Initialize the Analog-Digital converter
+    initQuadrature();           // Initialize the quadrature decoding interrupts
+    initReferenceYaw();         // Initialize the reference yaw interrupt
+    initControllers();          // Initalaize the PWM duty controllers
+    initPWM();                  // Initialize the PWM modules
+    IntMasterEnable();          // Re-enable system interrupts
 
 }
 
