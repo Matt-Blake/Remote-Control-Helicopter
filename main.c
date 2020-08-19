@@ -1,9 +1,7 @@
 /*
  * TODO:
- *      - Change the gains for 180 degree yaw rotation and alt to 50%
  *      - Refine control
- *      - Limit integral error or something.
- *      - Justify task priorities
+ *      - Work out why the 180 turn fucks out when pressed twice
  *      - Finish all comments throughout project.
  */
 
