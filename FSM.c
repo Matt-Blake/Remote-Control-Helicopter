@@ -19,13 +19,21 @@
  * Last modified: 19/08/2020
  *
  * ***************************************************************/
+
 #include "FSM.h"
 
 
-// Functions
 /*
- * Calculate the maximum stack remaining of all of the RTOS tasks.
- * These values are checked through the debugger.
+ * Function:    GetStackUsage
+ * ---------------------------
+ * Function that calculates and transmits over UART
+ * statistics about the stack usage.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
  */
 void
 GetStackUsage(void)
@@ -64,7 +72,7 @@ GetStackUsage(void)
     UARTSend(cMessage);
     usnprintf(cMessage, sizeof(cMessage), "BtnCheck Unused: %d words\n",    BtnCheck_stack);
     UARTSend(cMessage);
-    usnprintf(cMessage, sizeof(cMessage), "SwiCheck Unused: %d words\n", SwitchCheck_stack);
+    usnprintf(cMessage, sizeof(cMessage), "SwiCheck Unused: %d words\n",    SwitchCheck_stack);
     UARTSend(cMessage);
     usnprintf(cMessage, sizeof(cMessage), "ADCTrig Unused: %d words\n",     ADCTrig_stack);
     UARTSend(cMessage);
@@ -76,11 +84,21 @@ GetStackUsage(void)
     UARTSend(cMessage);
     usnprintf(cMessage, sizeof(cMessage), "FSMTask Unused: %d words\n",     FSMTask_stack);
     UARTSend(cMessage);
-
 }
 
+
 /*
- * WRITE DESCRIPTION
+ * Function:    vLandTimerCallback
+ * --------------------------------
+ * Callback function for the timer started during the
+ * landing sequence.
+ * Increases timer ID each time function is called.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
  */
 void vLandTimerCallback( TimerHandle_t xTimer )
 {
@@ -92,10 +110,7 @@ void vLandTimerCallback( TimerHandle_t xTimer )
     vTimerSetTimerID( xTimer, (void *) ulCount );
 }
 
-//****************************************************************************
-//Check if found the reference yaw, if it has then set found reference to 1 and
-//reset the integrator error and update yaw reference
-//****************************************************************************
+
 /*
  * Function:    findYawRef
  * ------------------------
@@ -259,7 +274,7 @@ land(void)
 
 /*
  * Function:    landed
- * ------------------------
+ * --------------------
  * Disables all input with the exception of the switches.
  * Helicopter is in an idle state.
  *
@@ -293,7 +308,7 @@ void landed(void)
 
 /*
  * Function:    FSM
- * ------------------------
+ * -----------------
  * FreeRTOS task that periodically checks the current state of the
  * helicopter and runs the appropriate function.
  *

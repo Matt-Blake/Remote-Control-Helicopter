@@ -19,22 +19,22 @@
 #include <stdint.h>
 #include "driverlib/interrupt.h"
 #include "FreeRTOS.h"
-#include "task.h"
-#include "queue.h"
-#include "semphr.h"
-#include "event_groups.h"
-#include "timers.h"
-#include "statusLED.h"
-#include "OLED.h"
+//#include "task.h"
+//#include "queue.h"
+//#include "semphr.h"
+//#include "event_groups.h"
+//#include "timers.h"
+//#include "statusLED.h"
+//#include "OLED.h"
 #include "FreeRTOSCreate.h"
-#include "pwm.h"
+//#include "pwm.h"
 #include "reset.h"
-#include "yaw.h"
-#include "uart.h"
-#include "altitude.h"
-#include "buttons.h"
-#include "pidController.h"
-#include "FSM.h"
+//#include "yaw.h"
+//#include "uart.h"
+//#include "altitude.h"
+//#include "buttons.h"
+//#include "pidController.h"
+//#include "FSM.h"
 
 
 /*
@@ -73,7 +73,7 @@ initSystem(void)
     IntMasterDisable();         // Disable system interrupts while the program is initializing.
     initClk();                  // Initialise the system clock
     initialiseUSB_UART();       // Initialise UART communication over USB
-    //initReset();              // Initialise the hard reset of the system
+    initReset();                // Initialise the hard reset of the system
     initLED();                  // Initialise the status LED
     OLEDInitialise();           // Initialise the OLED display
     initBtns();                 // Initialise the GPIO buttons and switches

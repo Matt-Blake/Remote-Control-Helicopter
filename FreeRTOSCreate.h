@@ -25,10 +25,10 @@
 #include "statusLED.h"
 #include "OLED.h"
 #include "buttons.h"
-#include "adc.h"
+#include "ADC.h"
 #include "altitude.h"
 #include "pwm.h"
-#include "fsm.h"
+#include "FSM.h"
 
 // Task stack sizes in words, calculated experimentally based on uxTaskGetStackHighWaterMark()
 #define LED_STACK_DEPTH         32

@@ -80,7 +80,7 @@ createQueues(void)
 
 /*
  * Function:    createSemaphores
- * -------------------------
+ * ------------------------------
  * Creates all FreeRTOS semaphores and mutexes used in the system.
  *
  * @params:
@@ -102,8 +102,8 @@ createSemaphores(void)
 
 
 /*
- * Function:    createSemaphores
- * -------------------------
+ * Function:    createEventGroups
+ * -------------------------------
  * Creates all FreeRTOS Event groups used as flags in the system.
  *
  * @params:
