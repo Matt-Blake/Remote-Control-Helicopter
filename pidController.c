@@ -27,7 +27,7 @@
 
 #define YAW_KP              30         // Yaw proportional gain
 #define YAW_KI              7          // Yaw integral gain
-#define YAW_KD              10          // Yaw derivative gain
+#define YAW_KD              0          // Yaw derivative gain
 
 #define CONTROL_DIVISOR     100         // Divisor used to achieve certain gains without the use of floating point numbers
 
@@ -100,7 +100,7 @@ getControlSignal(controller_t* piController, int32_t reference, int32_t measurem
 
     double errorSignal;
     double derivativeError;
-
+    char string[20];            // String to be sent over UART
 
     // Calculate error signal
     errorSignal = reference - measurement;
@@ -108,6 +108,8 @@ getControlSignal(controller_t* piController, int32_t reference, int32_t measurem
     //Clockwise rotation corresponds to low power in motors
     if(isYaw)
     {
+        usnprintf(string, sizeof(string), "Error   %4d\n", errorSignal);
+        UARTSend(string);
         //errorSignal = -errorSignal;
         // If the error would cause a rotation in the wrong direction
         if(errorSignal > (DEGREES_CIRCLE/2))
