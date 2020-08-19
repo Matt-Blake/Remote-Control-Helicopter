@@ -304,9 +304,9 @@ rightButtonPush(void)
 
         // Check upper limits of the yaw when left button is pressed
         if (yaw_desired >= MIN_YAW) {
-        yaw_desired = yaw_desired - YAW_CHANGE;
+        yaw_desired = yaw_desired + YAW_CHANGE;
         } else {
-            yaw_desired = DEGREES_CIRCLE - YAW_CHANGE + yaw_desired;
+            yaw_desired = -DEGREES_CIRCLE + YAW_CHANGE + yaw_desired;
         }
 
         xQueueOverwrite(xYawDesQueue, &yaw_desired); // Update the RTOS yaw reference queue
@@ -336,9 +336,9 @@ leftButtonPush(void)
 
         // Check upper limits of the yaw if right button is pressed
         if (yaw_desired <= MAX_YAW) {
-            yaw_desired = yaw_desired + YAW_CHANGE;
+            yaw_desired = yaw_desired - YAW_CHANGE;
         } else {
-            yaw_desired = -DEGREES_CIRCLE + YAW_CHANGE + yaw_desired;
+            yaw_desired = DEGREES_CIRCLE - YAW_CHANGE + yaw_desired;
         }
 
         xQueueOverwrite(xYawDesQueue, &yaw_desired); // Update the RTOS yaw reference queue
