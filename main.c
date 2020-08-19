@@ -40,7 +40,7 @@
 /*
  * Function:    initClk
  * ---------------------
- * Initialises the main system clock to 80MHz
+ * Initialises the main system clock to 80 MHz
  *
  * @params:
  *      - NULL
@@ -51,7 +51,7 @@
 static void
 initClk(void)
 {
-    // Initialise clock frequency to 80MHz
+    // Initialise clock frequency to 80 MHz
     SysCtlClockSet (SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
 }
 
