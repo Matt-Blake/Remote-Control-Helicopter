@@ -87,52 +87,6 @@ initSystem(void)
 
 
 /*
- * Function:    vApplicationStackOverflowHook
- * -------------------------------------------
- * Hook for when the stack overflows.
- * Sends error message and enters infinte loop.
- *
- * @params:
- *      - xTask: Task that triggered the stack
- *      overflow.
- * @return:
- *      - NULL
- * ---------------------
- */
-void
-vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
-{
-    UARTSend("STACK OVERFLOW\n");
-    UARTSend(pcTaskName);
-    while (1){}
-}
-
-
-/*
- * Function:    vApplicationIdleHook
- * ------------------
- * Idle hook
- * Calculates CPU load for each task
- * This function is run when no other task is running.
- *
- *
- * @params:
- *      - xTask: Task that triggered the stack
- *      overflow.
- * @return:
- *      - NULL
- * ---------------------
- */
-void
-vApplicationIdleHook( void )
-{
-    //static char runtime_stats_buffer[512];
-
-    //vTaskGetRunTimeStats(runtime_stats_buffer); // Calculate CPU load stats
-    //UARTSend(runtime_stats_buffer); // Print CPU load stats to UART
-}
-
-/*
  * Function:    main
  * ------------------
  * Main program. Calls initializing functions,
