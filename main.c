@@ -15,14 +15,6 @@
  *
  * ***************************************************************/
 
-
-/*
- * TODO:
- *      - Refine control
- *      - Work out why the 180 turn fucks out when pressed twice
- *      - Finish all comments throughout project.
- */
-
 #include <stdbool.h>
 #include <stdint.h>
 #include "driverlib/interrupt.h"
@@ -70,13 +62,6 @@
 // Timer periods
 #define DBL_BTN_TMR_PERIOD      1000
 #define YAW_FLIP_TMR_PERIOD     1000
-
-EventGroupHandle_t xFoundAltReference;
-EventGroupHandle_t xFoundYawReference;
-
-QueueHandle_t xOLEDQueue;
-
-SemaphoreHandle_t xUARTMutex;
 
 
 /*
@@ -174,7 +159,6 @@ createQueues(void)
     int32_t fsm = 0; // Value used to initalise queues
 
     // Create queues
-    xOLEDQueue      = xQueueCreate(1, sizeof( uint32_t ) );
     xAltBtnQueue    = xQueueCreate(1, sizeof( uint32_t ) );
     xYawBtnQueue    = xQueueCreate(1, sizeof( uint32_t ) );
     xAltMeasQueue   = xQueueCreate(1, sizeof( int32_t ) );
@@ -185,7 +169,6 @@ createQueues(void)
     xYawSlotQueue   = xQueueCreate(1, sizeof( int32_t ) );
 
     // Initalise queues
-    xQueueOverwrite(xOLEDQueue,          &queue_init);
     xQueueOverwrite(xAltBtnQueue,        &queue_init);
     xQueueOverwrite(xYawBtnQueue,        &queue_init);
     xQueueOverwrite(xAltMeasQueue,       &queue_init);
