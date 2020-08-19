@@ -21,40 +21,6 @@
 
 #include "buttons.h"
 
-
-#define U_BTN_PERIPH        SYSCTL_PERIPH_GPIOE         // Up Peripheral
-#define U_BTN_PORT_BASE     GPIO_PORTE_BASE             // Up Port Base
-#define U_BTN_PIN           GPIO_PIN_0                  // Up Pin
-#define U_BTN_NORMAL        false                       // Up Inactive State (Active HIGH)
-#define D_BTN_PERIPH        SYSCTL_PERIPH_GPIOD         // Down Peripheral
-#define D_BTN_PORT_BASE     GPIO_PORTD_BASE             // Down Port Base
-#define D_BTN_PIN           GPIO_PIN_2                  // Down Pin
-#define D_BTN_NORMAL        false                       // Down Inactive State (Active HIGH)
-#define L_BTN_PERIPH        SYSCTL_PERIPH_GPIOF         // Left Peripheral
-#define L_BTN_PORT_BASE     GPIO_PORTF_BASE             // Left Port Base
-#define L_BTN_PIN           GPIO_PIN_4                  // Left Pin
-#define L_BTN_NORMAL        true                        // Left Inactive State (Active LOW)
-#define R_BTN_PERIPH        SYSCTL_PERIPH_GPIOF         // Right Peripheral
-#define R_BTN_PORT_BASE     GPIO_PORTF_BASE             // Right Port Base
-#define R_BTN_PIN           GPIO_PIN_0                  // Right Pin
-#define R_BTN_NORMAL        true                        // Right Inactive State (Active LOW)
-#define NUM_BTN_POLLS       3                           // Number Of Times To Poll The Buttons (For Debouncing)
-#define SW_PERIPH           SYSCTL_PERIPH_GPIOA         // Switch Peripheral
-#define SW_PORT_BASE        GPIO_PORTA_BASE             // Switch Port Base
-#define L_SW_PIN            GPIO_PIN_6                  // Left Switch Pin
-#define R_SW_PIN            GPIO_PIN_7                  // Right Switch Pin
-#define ALT_CHANGE          10                          // The altitude change on button press (percentage)
-#define MODE_1_ALT          50                          // The altitude to fly to on a double up button press
-#define MAX_ALT             100                         // The maximum altitude (percentage)
-#define MIN_ALT             0                           // The minimum altitude (percentage)
-#define YAW_CHANGE          15                          // The yaw change on button press (degrees)
-#define MODE_2_YAW_CHANGE   180
-#define MAX_YAW             179                         // The maximum yaw (degrees)
-#define MIN_YAW             -180                        // The minimum yaw (degrees)
-#define DEGREES_CIRCLE      360                         // The number of degrees in a circle
-
-typedef enum HELI_STATE {LANDED = 0, TAKEOFF = 1, FLYING = 2, LANDING = 3} HELI_STATE;
-
 // *****************************************************
 // Globals
 // *****************************************************
@@ -305,7 +271,7 @@ rightButtonPush(void)
         xQueuePeek(xYawDesQueue, &yaw_desired, 10); // Retrieve desired yaw data from the RTOS queue
 
         // Check upper limits of the yaw when left button is pressed
-        if (yaw_desired <= (MAX_YAW - YAW_CHANGE) {
+        if (yaw_desired <= (MAX_YAW - YAW_CHANGE)) {
         yaw_desired = yaw_desired + YAW_CHANGE;
         } else {
             yaw_desired = -DEGREES_CIRCLE + YAW_CHANGE + yaw_desired;
@@ -337,7 +303,7 @@ leftButtonPush(void)
         xQueuePeek(xYawDesQueue, &yaw_desired, 10); // Retrieve desired yaw data from the RTOS queue
 
         // Check upper limits of the yaw if right button is pressed
-        if (yaw_desired >= (MIN_YAW + YAW_CHANGE) {
+        if (yaw_desired >= (MIN_YAW + YAW_CHANGE)) {
             yaw_desired = yaw_desired - YAW_CHANGE;
         } else {
             yaw_desired = DEGREES_CIRCLE - YAW_CHANGE + yaw_desired;
@@ -403,7 +369,7 @@ ButtonsCheck(void *pvParameters)
 
             if (uxSemaphoreGetCount(xUpBtnSemaphore) == 1) {
                 xSemaphoreTake(xUpBtnSemaphore, 10);
-                desired_alt = MID_POINT_YAW;
+                desired_alt = MODE_1_ALT;
                 xQueueOverwrite(xAltDesQueue, &desired_alt);
             }else {
                 /*

@@ -37,8 +37,6 @@
 
 #define LAND_TMR_PERIOD         300
 
-#define FSM_STACK_DEPTH         128
-
 
 extern controller_t g_alt_controller;
 extern controller_t g_yaw_controller;

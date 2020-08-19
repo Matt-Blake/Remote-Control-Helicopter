@@ -24,9 +24,6 @@
 #include "event_groups.h"
 
 
-#define MEAN_STACK_DEPTH        64
-
-
 extern QueueHandle_t    xAltMeasQueue;
 extern QueueHandle_t    xFSMQueue;
 extern TaskHandle_t     ADCMean;

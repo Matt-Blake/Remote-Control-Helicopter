@@ -53,8 +53,6 @@
 
 
 #define MAIN_ROTOR_FACTOR       64/100 // Factor used to compensate for the effect of main rotor
-#define MAIN_PWM_STACK_DEPTH    128
-#define TAIL_PWM_STACK_DEPTH    128
 
 
 extern controller_t g_alt_controller;
@@ -65,8 +63,6 @@ extern QueueHandle_t xYawMeasQueue;
 extern QueueHandle_t xYawDesQueue;
 extern QueueHandle_t xMainPWMQueue;
 extern QueueHandle_t xTailPWMQueue;
-//QueueHandle_t xAltControllerQueue;
-//QueueHandle_t xYawControllerQueue;
 extern SemaphoreHandle_t xAltMutex;
 extern SemaphoreHandle_t xYawMutex;
 extern TaskHandle_t MainPWM;

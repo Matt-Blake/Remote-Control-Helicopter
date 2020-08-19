@@ -28,24 +28,32 @@
 #include "FSM.h"
 
 
-// Stack sizes in words, calculated experimentally based on uxTaskGetStackHighWaterMark()
+// Task stack sizes in words, calculated experimentally based on uxTaskGetStackHighWaterMark()
 #define LED_STACK_DEPTH         32
 #define OLED_STACK_DEPTH        128
+#define BTN_STACK_DEPTH         64
+#define SWITCH_STACK_DEPTH      64
+#define ADC_STACK_DEPTH         32      // ADC trigger task stack depth
+#define MEAN_STACK_DEPTH        64
+#define MAIN_PWM_STACK_DEPTH    128
+#define TAIL_PWM_STACK_DEPTH    128
+#define FSM_STACK_DEPTH         128
 
-#define TASK_STACK_DEPTH        128
-
-// Max priority is 8
-#define LED_TASK_PRIORITY       5       // LED task priority
-#define OLED_TASK_PRIORITY      5       // OLED priority
-#define MAIN_PWM_TASK_PRIORITY  7       // Main rotor PWM task priority
-#define TAIL_PWM_TASK_PRIORITY  7       // Tail rotor PWM task priority
-#define ADC_TASK_PRIORITY       8               // ADC sampling priority
+// Task priorities. Max priority is 8
+#define LED_TASK_PRIORITY       4       // LED task priority
+#define OLED_TASK_PRIORITY      4       // OLED priority
+#define BTN_TASK_PRIORITY       5       // Button polling task priority
+#define SWI_TASK_PRIORITY       5       // Switch polling task priority
+#define ADC_TASK_PRIORITY       8       // ADC sampling priority
 #define MEAN_TASK_PRIORITY      7       // Mean calculation priority
+#define MAIN_PWM_TASK_PRIORITY  6       // Main rotor PWM task priority
+#define TAIL_PWM_TASK_PRIORITY  6       // Tail rotor PWM task priority
 #define FSM_TASK_PRIORITY       5       // FSM priority
-#define BTN_TASK_PRIORITY       5                           // Button polling task priority
-#define SWI_TASK_PRIORITY       5                           // Switch polling task priority
 
-#define STACK_TASK_PRIORITY     5
+// Timer periods
+#define DISPLAY_PERIOD          200
+#define DBL_BTN_TMR_PERIOD      1000//250
+#define YAW_FLIP_TMR_PERIOD     1000//250
 
 #define ROW_ZERO                0       // Row zero on the OLED display
 #define ROW_ONE                 1       // Row one on the OLED display
@@ -54,12 +62,13 @@
 #define COLUMN_ZERO             0       // Column zero on the OLED display
 #define DISPLAY_SIZE            17      // Size of strings for the OLED display
 
-#define DISPLAY_PERIOD          200
 
-
+// Globals
 EventGroupHandle_t xFoundAltReference;
 EventGroupHandle_t xFoundYawReference;
+
 QueueHandle_t xOLEDQueue;
+
 SemaphoreHandle_t xAltMutex;
 SemaphoreHandle_t xYawMutex;
 SemaphoreHandle_t xUARTMutex;
@@ -236,8 +245,6 @@ createQueues(void)
     xTailPWMQueue   = xQueueCreate(1, sizeof( int32_t ) );
     xFSMQueue       = xQueueCreate(1, sizeof( int32_t ) );
     xYawSlotQueue   = xQueueCreate(1, sizeof( int32_t ) );
-    //xAltControllerQueue   = xQueueCreate(1, sizeof( controller_t ) );
-    //xYawControllerQueue   = xQueueCreate(1, sizeof( controller_t ) );
 
     // Initalise queues
     xQueueOverwrite(xAltBtnQueue,        &queue_init);
@@ -250,8 +257,6 @@ createQueues(void)
     xQueueOverwrite(xTailPWMQueue,       &queue_init);
     xQueueOverwrite(xFSMQueue,           &queue_init);
     xQueueOverwrite(xYawSlotQueue,       &queue_init);
-    //xQueueOverwrite(xAltControllerQueue, &queue_init);
-    //xQueueOverwrite(xYawControllerQueue, &queue_init);
 }
 
 
