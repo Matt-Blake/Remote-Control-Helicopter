@@ -34,6 +34,7 @@ GetStackUsage(void)
 
     uint32_t StatusLED_stack;
     uint32_t OLEDDisp_stack;
+    uint32_t UARTDisp_stack;
     uint32_t BtnCheck_stack;
     uint32_t SwitchCheck_stack;
     uint32_t ADCTrig_stack;
@@ -45,6 +46,7 @@ GetStackUsage(void)
     // Retrieve stack usage information from each task
     StatusLED_stack   = uxTaskGetStackHighWaterMark(StatLED);
     OLEDDisp_stack    = uxTaskGetStackHighWaterMark(OLEDDisp);
+    UARTDisp_stack    = uxTaskGetStackHighWaterMark(UARTDisp);
     BtnCheck_stack    = uxTaskGetStackHighWaterMark(BtnCheck);
     SwitchCheck_stack = uxTaskGetStackHighWaterMark(SwiCheck);
     ADCTrig_stack     = uxTaskGetStackHighWaterMark(ADCTrig);
@@ -57,6 +59,8 @@ GetStackUsage(void)
     usnprintf(cMessage, sizeof(cMessage), "StatusLED unused: %d words\n",   StatusLED_stack);
     UARTSend(cMessage);
     usnprintf(cMessage, sizeof(cMessage), "OLEDDisp unused: %d words\n",    OLEDDisp_stack);
+    UARTSend(cMessage);
+    usnprintf(cMessage, sizeof(cMessage), "OLEDDisp unused: %d words\n",    UARTDisp_stack);
     UARTSend(cMessage);
     usnprintf(cMessage, sizeof(cMessage), "BtnCheck Unused: %d words\n",    BtnCheck_stack);
     UARTSend(cMessage);

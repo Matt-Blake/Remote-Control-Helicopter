@@ -46,6 +46,7 @@
 // Task stack sizes in words, calculated experimentally based on uxTaskGetStackHighWaterMark()
 #define LED_STACK_DEPTH         32
 #define OLED_STACK_DEPTH        128
+#define UART_STACK_DEPTH        128
 #define BTN_STACK_DEPTH         64
 #define SWITCH_STACK_DEPTH      64
 #define ADC_STACK_DEPTH         32
@@ -57,6 +58,7 @@
 // Task priorities. Max priority is 8
 #define LED_TASK_PRIORITY       4
 #define OLED_TASK_PRIORITY      4
+#define UART_TASK_PRIORITY      4
 #define BTN_TASK_PRIORITY       5
 #define SWI_TASK_PRIORITY       5
 #define ADC_TASK_PRIORITY       8
@@ -142,6 +144,7 @@ createTasks(void)
 {
     xTaskCreate(StatusLED,      "LED Task",     LED_STACK_DEPTH,        NULL,       LED_TASK_PRIORITY,      &StatLED);
     xTaskCreate(OLEDDisplay,    "OLED Task",    OLED_STACK_DEPTH,       NULL,       OLED_TASK_PRIORITY,     &OLEDDisp);
+    xTaskCreate(UARTDisplay,    "UART Task",    UART_STACK_DEPTH,       NULL,       UART_TASK_PRIORITY,     &UARTDisp);
     xTaskCreate(ButtonsCheck,   "Btn Poll",     BTN_STACK_DEPTH,        NULL,       BTN_TASK_PRIORITY,      &BtnCheck);
     xTaskCreate(SwitchesCheck,  "Switch Poll",  SWITCH_STACK_DEPTH,     NULL,       SWI_TASK_PRIORITY,      &SwiCheck);
     xTaskCreate(TriggerADC,     "ADC Handler",  ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      &ADCTrig);

@@ -87,9 +87,8 @@ UARTSend (char *pucBuffer)
  * Function:    UARTDisplay
  * ------------------------
  * Puts current yaw degrees, desired yaw degrees, current altitude,
- * desired altitude, main duty cycle, tail duty cycle and current
- * state into a string form which can be send through the UART to
- * the helirig or serial terminal.
+ * desired altitude and current state into a string form which can
+ * be send through the UART to the HeliRig or serial terminal.
  *
  * @params:
  *      - NULL
@@ -98,37 +97,34 @@ UARTSend (char *pucBuffer)
  * ---------------------
  */
 void
-UARTDisplay (int32_t yaw_degrees, int32_t yaw_desired, int32_t altitude, int32_t altitude_desired, uint32_t duty_main, uint32_t duty_tail, uint8_t g_heliState)
+UARTDisplay (void *pvParameters)
 {
-    usprintf (statusStr, "Yaw: %d\r\n", yaw_degrees);
-    UARTSend (statusStr);
 
-    usprintf (statusStr, "Desired Yaw: %d\r\n", yaw_desired);
-    UARTSend (statusStr);
+    int32_t    des_alt;         // Desired altitude
+    int32_t    act_alt;         // Actual altitude
+    int32_t    des_yaw;         // Desired yaw
+    int32_t    act_yaw;         // Actual yaw
+    uint32_t   state;           // Current state in the FSM
 
-    usprintf (statusStr, "Altitude: %d%%\r\n", altitude);
-    UARTSend (statusStr);
+    char UARTstring[20];            // String to be sent over UART
+    char* states[4] = {"Landed", "Take Off", "Flying", "Landing"};
+    while(1)
+    {
+        // Retrieve altitude, yaw and PWM information
+        xQueuePeek(xAltDesQueue, &des_alt, 10);
+        xQueuePeek(xAltMeasQueue, &act_alt, 10);
+        xQueuePeek(xYawDesQueue, &des_yaw, 10);
+        xQueuePeek(xYawMeasQueue, &act_yaw, 10);
+        xQueuePeek(xFSMQueue, &state, 10);
 
-    usprintf (statusStr, "Desired Altitude: %d%%\r\n", altitude_desired);
-    UARTSend (statusStr);
-
-    usprintf (statusStr, "Duty cycle main: %d%%\r\n", duty_main);
-    UARTSend (statusStr);
-
-    usprintf (statusStr, "Duty cycle tail: %d%%\r\n", duty_tail);
-    UARTSend (statusStr);
-
-    if (g_heliState == 0){
-        usprintf(statusStr, "Mode: Landed\r\n");
-    } else if (g_heliState == 1){
-        usprintf(statusStr, "Mode: Take Off\r\n");
-    } else if (g_heliState == 2){
-        usprintf(statusStr, "Mode: Flying\r\n");
-    } else {
-        usprintf(statusStr, "Mode: Landing\r\n");
+        // Send information over UART
+        UARTSend("------------\n");
+        usnprintf(UARTstring, sizeof(UARTstring), "Alt(%%) %3d|%3d\n", des_alt, act_alt);
+        UARTSend(UARTstring);
+        usnprintf(UARTstring, sizeof(UARTstring), "Yaw   %4d|%3d\n", des_yaw, act_yaw);
+        UARTSend(UARTstring);
+        usnprintf(UARTstring, sizeof(UARTstring), "%s\n", states[state]);
+        UARTSend(UARTstring);
+        UARTSend("------------\n");
     }
-    UARTSend (statusStr);
-
-    //usprintf (statusStr, "\r\n");
-    //UARTSend (statusStr);
 }

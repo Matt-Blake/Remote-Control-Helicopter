@@ -53,6 +53,7 @@ extern QueueHandle_t xMainPWMQueue;     // Delete this once debugging done
 
 TaskHandle_t FSMTask;
 TaskHandle_t OLEDDisp;
+TaskHandle_t UARTDisp;
 TaskHandle_t StatLED;
 TaskHandle_t BtnCheck;
 TaskHandle_t SwiCheck;

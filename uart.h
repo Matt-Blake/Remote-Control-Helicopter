@@ -26,14 +26,14 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include "inc/hw_memmap.h"
 #include "driverlib/gpio.h"
 #include "driverlib/uart.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/pin_map.h"
 #include "utils/ustdlib.h"
-#include "stdio.h"
-#include "stdlib.h"
 #include "FreeRTOS.h"
 #include "semphr.h"
 
@@ -48,7 +48,11 @@
 #define UART_USB_GPIO_PINS      UART_USB_GPIO_PIN_RX | UART_USB_GPIO_PIN_TX
 
 extern SemaphoreHandle_t xUARTMutex;
-char statusStr[MAX_STR_LEN + 1];
+extern QueueHandle_t xAltMeasQueue;
+extern QueueHandle_t xAltDesQueue;
+extern QueueHandle_t xYawMeasQueue;
+extern QueueHandle_t xYawDesQueue;
+extern QueueHandle_t xFSMQueue;
 
 
 /*
@@ -95,6 +99,6 @@ UARTSend (char *pucBuffer);
  * ---------------------
  */
 void
-UARTDisplay (int32_t yaw_degrees, int32_t yaw_desired, int32_t altitude, int32_t altitude_desired, uint32_t duty_main, uint32_t duty_tail, uint8_t g_heliState);
+UARTDisplay (void *pvParameters);
 
 #endif /* UART_H_ */
