@@ -48,41 +48,39 @@
 #define OLED_STACK_DEPTH        128
 #define BTN_STACK_DEPTH         64
 #define SWITCH_STACK_DEPTH      64
-#define ADC_STACK_DEPTH         32      // ADC trigger task stack depth
+#define ADC_STACK_DEPTH         32
 #define MEAN_STACK_DEPTH        64
 #define MAIN_PWM_STACK_DEPTH    128
 #define TAIL_PWM_STACK_DEPTH    128
 #define FSM_STACK_DEPTH         128
 
 // Task priorities. Max priority is 8
-#define LED_TASK_PRIORITY       4       // LED task priority
-#define OLED_TASK_PRIORITY      4       // OLED priority
-#define BTN_TASK_PRIORITY       5       // Button polling task priority
-#define SWI_TASK_PRIORITY       5       // Switch polling task priority
-#define ADC_TASK_PRIORITY       8       // ADC sampling priority
-#define MEAN_TASK_PRIORITY      7       // Mean calculation priority
-#define MAIN_PWM_TASK_PRIORITY  6       // Main rotor PWM task priority
-#define TAIL_PWM_TASK_PRIORITY  6       // Tail rotor PWM task priority
-#define FSM_TASK_PRIORITY       5       // FSM priority
+#define LED_TASK_PRIORITY       4
+#define OLED_TASK_PRIORITY      4
+#define BTN_TASK_PRIORITY       5
+#define SWI_TASK_PRIORITY       5
+#define ADC_TASK_PRIORITY       8
+#define MEAN_TASK_PRIORITY      7
+#define MAIN_PWM_TASK_PRIORITY  6
+#define TAIL_PWM_TASK_PRIORITY  6
+#define FSM_TASK_PRIORITY       5
 
 // Timer periods
-#define DBL_BTN_TMR_PERIOD      1000//250
-#define YAW_FLIP_TMR_PERIOD     1000//250
+#define DBL_BTN_TMR_PERIOD      1000
+#define YAW_FLIP_TMR_PERIOD     1000
 
 EventGroupHandle_t xFoundAltReference;
 EventGroupHandle_t xFoundYawReference;
 
 QueueHandle_t xOLEDQueue;
 
-SemaphoreHandle_t xAltMutex;
-SemaphoreHandle_t xYawMutex;
 SemaphoreHandle_t xUARTMutex;
 
 
 /*
  * Function:    initClk
  * ---------------------
- * Initializes the main system clock to 80MHz
+ * Initialises the main system clock to 80MHz
  *
  * @params:
  *      - NULL
@@ -100,8 +98,8 @@ initClk(void)
 /*
  * Function:    initSystem
  * ------------------------
- * Calls to all initializing fuctions required to
- * fully initialize the system.
+ * Calls to all Initialising fuctions required to
+ * fully Initialise the system.
  *
  * @params:
  *      - NULL
@@ -113,16 +111,16 @@ static void
 initSystem(void)
 {
     IntMasterDisable();         // Disable system interrupts while the program is initializing.
-    initClk();                  // Initialize the system clock
-    initialiseUSB_UART();       // Initialize UART communication over USB
-    //initReset();              // Initialize the soft reset of the system
-    initLED();                  // Initialize the status LED
-    OLEDInitialise();           // Initialize the OLED display
-    initBtns();                 // Initialize the GPIO buttons and switches
-    initADC();                  // Initialize the Analog-Digital converter
-    initQuadrature();           // Initialize the quadrature decoding interrupts
-    initReferenceYaw();         // Initialize the reference yaw interrupt
-    initPWM();                  // Initialize the PWM modules
+    initClk();                  // Initialise the system clock
+    initialiseUSB_UART();       // Initialise UART communication over USB
+    //initReset();              // Initialise the hard reset of the system
+    initLED();                  // Initialise the status LED
+    OLEDInitialise();           // Initialise the OLED display
+    initBtns();                 // Initialise the GPIO buttons and switches
+    initADC();                  // Initialise the Analog-Digital converter
+    initQuadrature();           // Initialise the quadrature decoding interrupts
+    initReferenceYaw();         // Initialise the reference yaw interrupt
+    initPWM();                  // Initialise the PWM modules
     IntMasterEnable();          // Re-enable system interrupts
 
 }
@@ -158,7 +156,7 @@ createTasks(void)
  * Function:    createQueues
  * -------------------------
  * Creates all FreeRTOS queues used in the system and
- * initializes the values to zero.
+ * Initialises the values to zero.
  *
  * @params:
  *      - NULL
@@ -217,8 +215,6 @@ createSemaphores(void)
     int event_init = 0; //  Value used to initalise event groups
 
     // Create mutexs to avoid race conditions
-    xAltMutex = xSemaphoreCreateMutex();
-    xYawMutex = xSemaphoreCreateMutex();
     xUARTMutex =  xSemaphoreCreateMutex();
 
     xUpBtnSemaphore = xSemaphoreCreateCounting(2, 0);

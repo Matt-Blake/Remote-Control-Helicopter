@@ -188,19 +188,16 @@ upButtonPush(void)
     int16_t alt_desired = 0;
 
     UARTSend ("Up\n");
-    if(xSemaphoreTake(xAltMutex, 0/portTICK_RATE_MS) == pdPASS){ // If the altitude mutex is free, increment the altitude
-        xQueuePeek(xAltDesQueue, &alt_desired, 10); // Retrieve desired altitude data from the RTOS queue
+    xQueuePeek(xAltDesQueue, &alt_desired, 10); // Retrieve desired altitude data from the RTOS queue
 
-        alt_desired += ALT_CHANGE;
+    alt_desired += ALT_CHANGE;
 
-        // Check upper limits of the altitude when left button is pressed
-        if (alt_desired > MAX_ALT)
-        {
-            alt_desired = MAX_ALT;
-        }
-        xQueueOverwrite(xAltDesQueue, &alt_desired); // Update the RTOS altitude reference queue
-        xSemaphoreGive(xAltMutex); // Give altitude mutex so other mutually exclusive altitude tasks can run
+    // Check upper limits of the altitude when left button is pressed
+    if (alt_desired > MAX_ALT)
+    {
+        alt_desired = MAX_ALT;
     }
+    xQueueOverwrite(xAltDesQueue, &alt_desired); // Update the RTOS altitude reference queue
 
     if(xQueueOverwrite(xAltBtnQueue, &state) != pdPASS) { // Error. The queue should never be full. If so print the error message on UART and wait for ever.
         UARTSend("AltBtnQueue failed.\n");
@@ -218,19 +215,15 @@ downButtonPush(void)
     int16_t alt_desired = 0;
 
     UARTSend ("Down\n");
-    if(xSemaphoreTake(xAltMutex, 0/portTICK_RATE_MS) == pdPASS){ // If the altitude mutex is free, increment the altitude
-        xQueuePeek(xAltDesQueue, &alt_desired, 10); // Retrieve desired altitude data from the RTOS queue
-        alt_desired -= ALT_CHANGE;
+    xQueuePeek(xAltDesQueue, &alt_desired, 10); // Retrieve desired altitude data from the RTOS queue
+    alt_desired -= ALT_CHANGE;
 
-        // Check lower limits of the altitude when left button is pressed
-        if (alt_desired < MIN_ALT)
-        {
-            alt_desired = MIN_ALT;
-        }
-
-        xQueueOverwrite(xAltDesQueue, &alt_desired); // Update the RTOS altitude reference queue
-        xSemaphoreGive(xAltMutex); // Give altitude mutex so other mutually exclusive altitude tasks can run
+    // Check lower limits of the altitude when left button is pressed
+    if (alt_desired < MIN_ALT)
+    {
+        alt_desired = MIN_ALT;
     }
+    xQueueOverwrite(xAltDesQueue, &alt_desired); // Update the RTOS altitude reference queue
 
     if(xQueueOverwrite(xAltBtnQueue, &state) != pdPASS) { // Error. The queue should never be full. If so print the error message on UART and wait for ever.
         UARTSend("AltBtnQueue failed.\n");
@@ -248,21 +241,15 @@ rightButtonPush(void)
     static int32_t yaw_desired = 0;
 
     UARTSend ("Right\n");
+    xQueuePeek(xYawDesQueue, &yaw_desired, 10); // Retrieve desired yaw data from the RTOS queue
 
-    if(xSemaphoreTake(xYawMutex, 0/portTICK_RATE_MS) == pdPASS){ // If the yaw mutex is free, decrement the yaw
-        xQueuePeek(xYawDesQueue, &yaw_desired, 10); // Retrieve desired yaw data from the RTOS queue
-
-        // Check upper limits of the yaw when left button is pressed
-        if (yaw_desired <= (MAX_YAW - YAW_CHANGE)) {
-        yaw_desired = yaw_desired + YAW_CHANGE;
-        } else {
-            yaw_desired = -DEGREES_CIRCLE + YAW_CHANGE + yaw_desired;
-        }
-
-        xQueueOverwrite(xYawDesQueue, &yaw_desired); // Update the RTOS yaw reference queue
-        xSemaphoreGive(xYawMutex); // Give yaw mutex so other mutually exclusive yaw tasks can run
+    // Check upper limits of the yaw when left button is pressed
+    if (yaw_desired <= (MAX_YAW - YAW_CHANGE)) {
+    yaw_desired = yaw_desired + YAW_CHANGE;
+    } else {
+        yaw_desired = -DEGREES_CIRCLE + YAW_CHANGE + yaw_desired;
     }
-
+    xQueueOverwrite(xYawDesQueue, &yaw_desired); // Update the RTOS yaw reference queue
 
     if(xQueueOverwrite(xYawBtnQueue, &state) != pdPASS) {  // Error. The queue should never be full. If so print the error message on UART and wait for ever.
         UARTSend("YawBtnQueue failed.\n");
@@ -280,20 +267,15 @@ leftButtonPush(void)
     static int32_t yaw_desired = 0;
 
     UARTSend ("Left\n");
+    xQueuePeek(xYawDesQueue, &yaw_desired, 10); // Retrieve desired yaw data from the RTOS queue
 
-    if(xSemaphoreTake(xYawMutex, 0/portTICK_RATE_MS) == pdPASS){ // If the yaw mutex is free, increment the yaw
-        xQueuePeek(xYawDesQueue, &yaw_desired, 10); // Retrieve desired yaw data from the RTOS queue
-
-        // Check upper limits of the yaw if right button is pressed
-        if (yaw_desired >= (MIN_YAW + YAW_CHANGE)) {
-            yaw_desired = yaw_desired - YAW_CHANGE;
-        } else {
-            yaw_desired = DEGREES_CIRCLE - YAW_CHANGE + yaw_desired;
-        }
-
-        xQueueOverwrite(xYawDesQueue, &yaw_desired); // Update the RTOS yaw reference queue
-        xSemaphoreGive(xYawMutex); // Give yaw mutex so other mutually exclusive yaw tasks can run
+    // Check upper limits of the yaw if right button is pressed
+    if (yaw_desired >= (MIN_YAW + YAW_CHANGE)) {
+        yaw_desired = yaw_desired - YAW_CHANGE;
+    } else {
+        yaw_desired = DEGREES_CIRCLE - YAW_CHANGE + yaw_desired;
     }
+    xQueueOverwrite(xYawDesQueue, &yaw_desired); // Update the RTOS yaw reference queue
 
     if(xQueueOverwrite(xYawBtnQueue, &state) != pdPASS) {
         // Error. The queue should never be full. If so print the error message on UART and wait for ever.

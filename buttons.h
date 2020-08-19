@@ -86,8 +86,6 @@ extern QueueHandle_t xFSMQueue;
 
 SemaphoreHandle_t xUpBtnSemaphore;
 SemaphoreHandle_t xYawFlipSemaphore;
-extern SemaphoreHandle_t xAltMutex;
-extern SemaphoreHandle_t xYawMutex;
 
 TimerHandle_t xUpBtnTimer;
 TimerHandle_t xYawFlipTimer;
