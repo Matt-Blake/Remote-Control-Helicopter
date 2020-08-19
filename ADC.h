@@ -46,7 +46,7 @@
 #define GROUND_FOUND            (1 << 1)            // Flag value to indicate that ground reference has been found
 
 circBuf_t g_inBuffer;
-EventGroupHandle_t xFoundAltReference;                                                                                               // Should init xFoundAltRef in altitude.c or ADC.c, not main
+extern EventGroupHandle_t xFoundAltReference;                                                                                               // Should init xFoundAltRef in altitude.c or ADC.c, not main
 
 
 /*

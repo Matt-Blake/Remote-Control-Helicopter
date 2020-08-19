@@ -78,7 +78,6 @@ typedef struct Controllers {
  */
 void initController(controller_t* controllerPointer, bool isYAw);
 
-
 /*
  * Function:    getControlSignal
  * ------------------------------

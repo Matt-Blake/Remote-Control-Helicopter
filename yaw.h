@@ -46,10 +46,10 @@
 #define YAW_REFERENCE_BASE  GPIO_PORTC_BASE
 #define YAW_REFERENCE_PIN   GPIO_INT_PIN_4
 
-EventGroupHandle_t xFoundYawReference;
-QueueHandle_t xYawMeasQueue;
-QueueHandle_t xYawDesQueue;
-QueueHandle_t xYawSlotQueue;
+extern EventGroupHandle_t xFoundYawReference;
+extern QueueHandle_t xYawMeasQueue;
+extern QueueHandle_t xYawDesQueue;
+extern QueueHandle_t xYawSlotQueue;
 
 
 /*

@@ -47,7 +47,7 @@
 #define UART_USB_GPIO_PIN_TX    GPIO_PIN_1
 #define UART_USB_GPIO_PINS      UART_USB_GPIO_PIN_RX | UART_USB_GPIO_PIN_TX
 
-SemaphoreHandle_t xUARTMutex;
+extern SemaphoreHandle_t xUARTMutex;
 extern QueueHandle_t xAltMeasQueue;
 extern QueueHandle_t xAltDesQueue;
 extern QueueHandle_t xYawMeasQueue;

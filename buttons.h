@@ -78,15 +78,16 @@ static bool btn_normal[NUM_BTNS];   // Corresponds to the electrical state
 static bool btn_flag[NUM_BTNS];
 static uint8_t btn_count[NUM_BTNS];
 
-QueueHandle_t xAltDesQueue;
+extern QueueHandle_t xAltDesQueue;
 extern QueueHandle_t xYawDesQueue;
 extern QueueHandle_t xFSMQueue;
 
-SemaphoreHandle_t xUpBtnSemaphore;
-SemaphoreHandle_t xYawFlipSemaphore;
+extern SemaphoreHandle_t xUpBtnSemaphore;
+extern SemaphoreHandle_t xDownBtnSemaphore;
+extern SemaphoreHandle_t xYawFlipSemaphore;
 
-TimerHandle_t xUpBtnTimer;
-TimerHandle_t xYawFlipTimer;
+extern TimerHandle_t xUpBtnTimer;
+extern TimerHandle_t xDownBtnTimer;
 
 
 // Debounce algorithm: A state machine is associated with each button.

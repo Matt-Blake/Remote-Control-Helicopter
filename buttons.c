@@ -261,20 +261,16 @@ leftButtonPush(void)
 
 /*
  * FreeRTOS task which polls the buttons to check for button presses
- */
+ * For each button the following procedure is run:
+ *
+ * If Button State is PUSHED:
+ *      Update Target Altitude/Yaw accordingly
+ *      If Target Alt/Yaw is now beyond the limits:
+ *          Update targets to be at limit (0->100 for Alt, -180->179 for Yaw).
+*/
 void
 ButtonsCheck(void *pvParameters)
 {
-
-    /*
-     * For each button the following procedure is run:
-     *
-     * If Button State is PUSHED:
-     *      Update Target Altitude/Yaw accordingly
-     *      If Target Alt/Yaw is now beyond the limits:
-     *          Update targets to be at limit (0->100 for Alt, -180->179 for Yaw).
-     */
-
     portTickType ui16LastTaskTime;
     uint32_t ui32ButtonsDelay = 25;
     uint32_t inUpTimeLoop;
@@ -288,7 +284,7 @@ ButtonsCheck(void *pvParameters)
     while(1)
     {
         inUpTimeLoop = ( uint32_t ) pvTimerGetTimerID( xUpBtnTimer );
-        inYawTimeLoop = ( uint32_t ) pvTimerGetTimerID( xYawFlipTimer );
+        inYawTimeLoop = ( uint32_t ) pvTimerGetTimerID( xDownBtnTimer );
 
         xQueuePeek(xYawDesQueue, &desired_yaw, 10);
         xQueuePeek(xAltDesQueue, &desired_alt, 10);
@@ -321,8 +317,8 @@ ButtonsCheck(void *pvParameters)
         if(checkButton(DOWN) == PUSHED)
         {
             if(inYawTimeLoop == 0) { // check to see if the timer has ran out
-                vTimerSetTimerID(xYawFlipTimer, (void *) 1);
-                xTimerStart(xYawFlipTimer, 10); // Restarts timer
+                vTimerSetTimerID(xDownBtnTimer, (void *) 1);
+                xTimerStart(xDownBtnTimer, 10); // Restarts timer
             } else {
                 xSemaphoreGive(xYawFlipSemaphore);
             }

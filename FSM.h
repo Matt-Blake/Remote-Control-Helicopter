@@ -46,23 +46,23 @@
 extern controller_t g_alt_controller;
 extern controller_t g_yaw_controller;
 
-QueueHandle_t xFSMQueue;
+extern QueueHandle_t xFSMQueue;
 extern QueueHandle_t xAltMesQueue;
 extern QueueHandle_t xAltDesQueue;
 extern QueueHandle_t xMainPWMQueue;     // Delete this once debugging done
 
-TaskHandle_t FSMTask;
-TaskHandle_t OLEDDisp;
-TaskHandle_t UARTDisp;
-TaskHandle_t StatLED;
-TaskHandle_t BtnCheck;
-TaskHandle_t SwiCheck;
-TaskHandle_t ADCTrig;
-TaskHandle_t ADCMean;
-TaskHandle_t MainPWM;
-TaskHandle_t TailPWM;
+extern TaskHandle_t FSMTask;
+extern TaskHandle_t OLEDDisp;
+extern TaskHandle_t UARTDisp;
+extern TaskHandle_t StatLED;
+extern TaskHandle_t BtnCheck;
+extern TaskHandle_t SwiCheck;
+extern TaskHandle_t ADCTrig;
+extern TaskHandle_t ADCMean;
+extern TaskHandle_t MainPWM;
+extern TaskHandle_t TailPWM;
 
-TimerHandle_t xLandingTimer;
+extern TimerHandle_t xLandingTimer;
 
 
 // CREATE DESCRIPTION

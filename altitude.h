@@ -27,9 +27,9 @@
 
 #define ALTITUDE_PERIOD     200         // Period used to average and calculate the altitude (ms)
 
-QueueHandle_t    xAltMeasQueue;
-QueueHandle_t    xFSMQueue;
-TaskHandle_t     ADCMean;
+extern QueueHandle_t    xAltMeasQueue;
+extern QueueHandle_t    xFSMQueue;
+extern TaskHandle_t     ADCMean;
 
 
 /*
