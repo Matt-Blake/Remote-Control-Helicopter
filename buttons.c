@@ -44,11 +44,13 @@
 #define L_SW_PIN            GPIO_PIN_6                  // Left Switch Pin
 #define R_SW_PIN            GPIO_PIN_7                  // Right Switch Pin
 #define ALT_CHANGE          10                          // The altitude change on button press (percentage)
+#define MODE_1_ALT          50                          // The altitude to fly to on a double up button press
 #define MAX_ALT             100                         // The maximum altitude (percentage)
 #define MIN_ALT             0                           // The minimum altitude (percentage)
 #define YAW_CHANGE          15                          // The yaw change on button press (degrees)
-#define MAX_YAW             164                         // The maximum yaw (degrees) before increment
-#define MIN_YAW             -165                        // The minimum yaw (degrees) before increment
+#define MODE_2_YAW_CHANGE   180
+#define MAX_YAW             179                         // The maximum yaw (degrees)
+#define MIN_YAW             -180                        // The minimum yaw (degrees)
 #define DEGREES_CIRCLE      360                         // The number of degrees in a circle
 
 typedef enum HELI_STATE {LANDED = 0, TAKEOFF = 1, FLYING = 2, LANDING = 3} HELI_STATE;
@@ -303,7 +305,7 @@ rightButtonPush(void)
         xQueuePeek(xYawDesQueue, &yaw_desired, 10); // Retrieve desired yaw data from the RTOS queue
 
         // Check upper limits of the yaw when left button is pressed
-        if (yaw_desired <= MAX_YAW) {
+        if (yaw_desired <= (MAX_YAW - YAW_CHANGE) {
         yaw_desired = yaw_desired + YAW_CHANGE;
         } else {
             yaw_desired = -DEGREES_CIRCLE + YAW_CHANGE + yaw_desired;
@@ -335,7 +337,7 @@ leftButtonPush(void)
         xQueuePeek(xYawDesQueue, &yaw_desired, 10); // Retrieve desired yaw data from the RTOS queue
 
         // Check upper limits of the yaw if right button is pressed
-        if (yaw_desired >= MIN_YAW) {
+        if (yaw_desired >= (MIN_YAW + YAW_CHANGE) {
             yaw_desired = yaw_desired - YAW_CHANGE;
         } else {
             yaw_desired = DEGREES_CIRCLE - YAW_CHANGE + yaw_desired;
@@ -401,7 +403,7 @@ ButtonsCheck(void *pvParameters)
 
             if (uxSemaphoreGetCount(xUpBtnSemaphore) == 1) {
                 xSemaphoreTake(xUpBtnSemaphore, 10);
-                desired_alt = 50;
+                desired_alt = MID_POINT_YAW;
                 xQueueOverwrite(xAltDesQueue, &desired_alt);
             }else {
                 /*
@@ -424,11 +426,11 @@ ButtonsCheck(void *pvParameters)
                 xSemaphoreTake(xYawFlipSemaphore, 10);
                 //desired_yaw += 180;
                 if (desired_yaw >= 0) {
-                    desired_yaw = desired_yaw - 180;
+                    desired_yaw = desired_yaw - MODE_2_YAW_CHANGE;
                 } else {
-                    desired_yaw = DEGREES_CIRCLE - 180 + desired_yaw;
+                    desired_yaw = DEGREES_CIRCLE - MODE_2_YAW_CHANGE + desired_yaw;
                 }
-                desired_alt += 10;
+                desired_alt += ALT_CHANGE;
                 xQueueOverwrite(xYawDesQueue, &desired_yaw);
                 xQueueOverwrite(xAltDesQueue, &desired_alt);
             }else {
