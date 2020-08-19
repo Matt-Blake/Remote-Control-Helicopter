@@ -42,8 +42,7 @@ enum btnStates  {RELEASED = 0, PUSHED, NO_CHANGE};
 
 #define DBL_BTN_TMR_PERIOD      1000//250
 #define YAW_FLIP_TMR_PERIOD     1000//250
-#define BTN_TASK_PRIORITY       5                           // Button polling task priority
-#define SWI_TASK_PRIORITY       5                           // Switch polling task priority
+
 #define BTN_STACK_DEPTH         64
 #define SWITCH_STACK_DEPTH      64
 

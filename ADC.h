@@ -30,7 +30,7 @@
 #define GROUND_NOT_FOUND        (0 << 0)        // Flag value to indicate that ground reference hasn't been found
 #define GROUND_BUFFER_FULL      (1 << 0)        // Flag value to indicate that the ADC buffer is full
 #define GROUND_FOUND            (1 << 1)        // Flag value to indicate that ground reference has been found
-#define ADC_TASK_PRIORITY       8               // ADC sampling priority
+
 #define ADC_STACK_DEPTH         32              // ADC trigger task stack depth
 
 

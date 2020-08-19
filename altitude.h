@@ -25,7 +25,7 @@
 
 
 #define MEAN_STACK_DEPTH        64
-#define MEAN_TASK_PRIORITY      7       // Mean calculation priority
+
 
 extern QueueHandle_t    xAltMeasQueue;
 extern QueueHandle_t    xFSMQueue;

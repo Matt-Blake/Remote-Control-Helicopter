@@ -36,7 +36,7 @@
 #include "uart.h"
 
 #define LAND_TMR_PERIOD         300
-#define FSM_TASK_PRIORITY       5       // FSM priority
+
 #define FSM_STACK_DEPTH         128
 
 

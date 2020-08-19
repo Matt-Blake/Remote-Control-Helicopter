@@ -36,6 +36,13 @@
 // Max priority is 8
 #define LED_TASK_PRIORITY       5       // LED task priority
 #define OLED_TASK_PRIORITY      5       // OLED priority
+#define MAIN_PWM_TASK_PRIORITY  6       // Main rotor PWM task priority
+#define TAIL_PWM_TASK_PRIORITY  6       // Tail rotor PWM task priority
+#define ADC_TASK_PRIORITY       8               // ADC sampling priority
+#define MEAN_TASK_PRIORITY      7       // Mean calculation priority
+#define FSM_TASK_PRIORITY       5       // FSM priority
+#define BTN_TASK_PRIORITY       5                           // Button polling task priority
+#define SWI_TASK_PRIORITY       5                           // Switch polling task priority
 
 #define STACK_TASK_PRIORITY     5
 
