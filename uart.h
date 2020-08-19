@@ -1,20 +1,25 @@
-/* ******************************************************
+/* ****************************************************************
+ * uart.h
  *
- * uartDemo.c - Sends information using the serial UART.
+ * Header file of the UART module.
+ * Sends serial information over UART to provide user feedback
  *
- * P.J. Bones UCECE
- * last modified on 16.4.2018
+ * Based off uartDemo.h - P.J. Bones, UCECE, 2018
  *
- * uart.h - This code is an adaptation of uartDemo.h,
- *       the code is tailored to send the information
- *       that is required for heli-copter project.
- *
- * Tue am Group 1
+ * Further based on uart.h
+ * Tue AM Group 1
  * Creators: Brendain Hennessy   57190084
  *           Sarah Kennelly      76389950
  *           Matt Blake          58979250
  * Last modified: 9/05/2019
- * *****************************************************/
+ *
+ * ENCE464 Assignment 1 Group 2
+ * Creators: Grayson Mynott      56353855
+ *           Ryan Earwaker       12832870
+ *           Matt Blake          58979250
+ * Last modified: 19/08/2020
+ *
+ * ***************************************************************/
 
 #ifndef UART_H_
 #define UART_H_

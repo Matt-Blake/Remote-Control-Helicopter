@@ -1,22 +1,30 @@
-/*
+/* ****************************************************************
  * ADC.c
  *
- * Module for Analogue to Digital Conversion and Altitude
- * Calculations.
+ * Source file for Analogue to Digital Conversion Module
  * Uses Successive-Approximation Quantiser
  * Includes initialisers, interrupts and calculation functions
  *
- * Derrick Edward, Grayson Mynott, Ryan Earwaker
- * Thu AM Group 18
- * Last modified:  29.05.2019
- *
  * Based off ADCdemo1.c - P.J. Bones, UCECE, 2018
- */
+ *
+ * Further based on ADC.c
+ * Thu AM Group 18
+ * Creators: Grayson Mynott      56353855
+ *           Ryan Earwaker       12832870
+ *           Derrick Edward      18017758
+ * Last modified: 29/05/2019
+
+ * ENCE464 Assignment 1 Group 2
+ * Creators: Grayson Mynott      56353855
+ *           Ryan Earwaker       12832870
+ *           Matt Blake          58979250
+ * Last modified: 19/08/2020
+ *
+ * ***************************************************************/
 
 #include "ADC.h"
 
 
-/*********************** ADC FUNCTIONS ****************************/
 /*
  * Function:    ADCIntHandler
  * ---------------------------

@@ -7,7 +7,7 @@
  * This program is designed for the Texas Instruments Tiva Board
  * and the Orbit Boosterpack.
  *
- * ENCE464 Assignment 1 Group 2
+ * ENCE464 Assig nment 1 Group 2
  * Creators: Grayson Mynott      56353855
  *           Ryan Earwaker       12832870
  *           Matt Blake          58979250

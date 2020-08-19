@@ -1,14 +1,13 @@
-/*
- * uartDemo.c - Sends information using the serial UART.
+/* ****************************************************************
+ * uart.c
  *
- * P.J. Bones UCECE
- * last modified on 16.4.2018
+ * Header file of the UART module.
+ * Sends serial information over UART to provide user feedback
  *
- * uart.c - This code is an adaptation of uartDemo.h,
- *       the code is tailored to send the information
- *       that is required for helicopter project.
+ * Based off uartDemo.c - P.J. Bones, UCECE, 2018
  *
- * Tue am Group 1
+ * Further based on uart.c
+ * Tue AM Group 1
  * Creators: Brendain Hennessy   57190084
  *           Sarah Kennelly      76389950
  *           Matt Blake          58979250
@@ -18,8 +17,9 @@
  * Creators: Grayson Mynott      56353855
  *           Ryan Earwaker       12832870
  *           Matt Blake          58979250
- * Last modified: 31/07/2020
- */
+ * Last modified: 19/08/2020
+ *
+ * ***************************************************************/
 
 #include "uart.h"
 
@@ -78,7 +78,7 @@ UARTSend (char *pucBuffer)
             UARTCharPut(UART_USB_BASE, *pucBuffer);
             pucBuffer++;
         }
-        xSemaphoreGive(xUARTMutex); // Give altitude mutex so other tasks can access UART
+        xSemaphoreGive(xUARTMutex); // Give UART mutex so other tasks can access UART
     }
 }
 

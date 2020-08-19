@@ -1,35 +1,27 @@
-/*
- * pwm.c - Example code which generates a single PWM
- *     output on J4-05 (M0PWM7) with duty cycle fixed and
- *     the frequency controlled by UP and DOWN buttons in
- *     the range 50 Hz to 400 Hz.
- * 2017: Modified for Tiva and using straightforward, polled
- *     button debouncing implemented in 'buttons4' module.
+/* ****************************************************************
+ * pwm.h
  *
- * P.J. Bones   UCECE
- * Last modified:  07/02/2018
+ * Header file of the pulse width modulation (PWM) module.
+ * Designed to control the speed of the helicopter's motors.
  *
- * pwmMainGen.c - This code was based off the pwmGen.c example
- *      code. We have changed the code only generate a single PWM signal on
- *      Tiva board pin J4-05 = PC5 (M0PWM7). This is the same PWM output as
- *      the helicopter main rotor.
+ * Based off pwm.h - P.J. Bones, UCECE, 2018
  *
- * ENCE Tue am Group 1
+ * Further based on pwmMainGen.h
+ * Tue AM Group 1
  * Creators: Brendain Hennessy   57190084
  *           Sarah Kennelly      76389950
  *           Matt Blake          58979250
- * Last modified: 09/05/2019
+ * Last modified: 9/05/2019
  *
- * pwm.c - This code was based off the pwmMainGen.c code from ENCE361.
- *      This code has been changed to incorporate PWM of the tail rotor.
- *      This is part of ENCE464 Assignment 1.
+ * Code changed to incorporate the tail rotor
  *
  * ENCE464 Assignment 1 Group 2
  * Creators: Grayson Mynott      56353855
  *           Ryan Earwaker       12832870
  *           Matt Blake          58979250
- * Last modified: 31/07/2020
- */
+ * Last modified: 19/08/2020
+ *
+ * ***************************************************************/
 
 #include "pwm.h"
 

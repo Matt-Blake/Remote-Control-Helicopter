@@ -1,16 +1,23 @@
-/*
+/* ****************************************************************
+ * yaw.h
  *
- * yaw.c - Initializes quadrature decoder to deal with yaw.
- * Controls the increase and decrease of yaw using button
- * based interrupts. Finds the yaw zero reference. Converts
- * quadrature values into degrees.
+ * Source file for yaw module
+ * Calculates the helicopter's yaw through quadrature decoding
  *
+ * Based on yaw.h
+ * Tue AM Group 1
  * Creators: Brendain Hennessy   57190084
  *           Sarah Kennelly      76389950
- *           Matt Blake          57190084
+ *           Matt Blake          58979250
  * Last modified: 9/05/2019
  *
- */
+ * ENCE464 Assignment 1 Group 2
+ * Creators: Grayson Mynott      56353855
+ *           Ryan Earwaker       12832870
+ *           Matt Blake          58979250
+ * Last modified: 19/08/2020
+ *
+ * ***************************************************************/
 
 #ifndef YAW_H_
 #define YAW_H_

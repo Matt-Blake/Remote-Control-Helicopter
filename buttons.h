@@ -1,14 +1,18 @@
 /* ****************************************************************
- * BUTTONS.h
+ * buttons.h
  *
  * Header file for the buttons module
  * Supports buttons on the Tiva/Orbit.
  * Comprises of initialisers and button checks
  *
- * Author: P.J. Bones UCECE
- * Edited: Derrick Edward, Grayson Mynott, Ryan Earwaker
+ * Based on buttons4.h - P.J. Bones, UCECE
+ *
+ * Further based on BUTTONS.h
  * Thu AM Group 18
- * Last modified:  29.05.2019
+ * Creators: Grayson Mynott      56353855
+ *           Ryan Earwaker       12832870
+ *           Derrick Edward      18017758
+ * Last modified: 29/05/2019
  *
  * ENCE464 Assignment 1 Group 2
  * Creators: Grayson Mynott      56353855
