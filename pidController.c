@@ -88,7 +88,7 @@ getControlSignal(controller_t* piController, int32_t reference, int32_t measurem
 
     double errorSignal;
     double derivativeError;
-    char string[20];            // String to be sent over UART
+    //char string[20];            // String to be sent over UART
 
     // Calculate error signal
     errorSignal = reference - measurement;
@@ -96,8 +96,12 @@ getControlSignal(controller_t* piController, int32_t reference, int32_t measurem
     //Clockwise rotation corresponds to low power in motors
     if(isYaw)
     {
-        usnprintf(string, sizeof(string), "Error   %4d\n", round(errorSignal));
-        UARTSend(string);
+        //usnprintf(string, sizeof(string), "ref   %4d\n\r", round(reference));
+        //UARTSend(string);
+        //usnprintf(string, sizeof(string), "meas   %4d\n\r", round(measurement));
+        //UARTSend(string);
+        //usnprintf(string, sizeof(string), "Error   %4d\n", round(errorSignal));
+        //UARTSend(string);
         //errorSignal = -errorSignal;
         // If the error would cause a rotation in the wrong direction
         if(errorSignal >= (DEGREES_CIRCLE/2))
@@ -105,7 +109,7 @@ getControlSignal(controller_t* piController, int32_t reference, int32_t measurem
             errorSignal = errorSignal - DEGREES_CIRCLE;
         } else if(errorSignal < (-(DEGREES_CIRCLE/2)))
         {
-            errorSignal = DEGREES_CIRCLE - errorSignal;
+            errorSignal = DEGREES_CIRCLE + errorSignal;
         }
     }
 

@@ -168,6 +168,7 @@ void
 createQueues(void)
 {
     int32_t queue_init = 0; // Value used to initalise queues
+    int32_t fsm = 0; // Value used to initalise queues
 
     // Create queues
     xOLEDQueue      = xQueueCreate(1, sizeof( uint32_t ) );

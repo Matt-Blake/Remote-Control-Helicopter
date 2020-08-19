@@ -24,7 +24,9 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdlib.h>
 #include "uart.h"
+#include "math.h"
 
 #define ALT_KP              45//30          // Altitude proportional gain
 #define ALT_KI              15//20          // Altitude integral gain
@@ -40,7 +42,7 @@
 #define MS_TO_SECONDS       1000        // Conversion factor from ms to s
 #define MAX_DUTY            98          // The maximum duty cycle for the rotors
 #define MIN_DUTY            2           // The minimum duty cycle for the rotors
-#define CONTROL_PERIOD      20          // Period used in the control loops (ms)
+#define CONTROL_PERIOD      20         // Period used in the control loops (ms)
 
 
 /* ******************************************************
