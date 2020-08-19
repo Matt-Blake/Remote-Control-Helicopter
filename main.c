@@ -1,3 +1,20 @@
+/* ****************************************************************
+ * main.c
+ *
+ * Main source file for ENCE464 Assignment 1 - HeliRig Project
+ * This program facilitates the stable flight of a remote
+ * control helicopter attached to a HeliRig.
+ * This program is designed for the Texas Instruments Tiva Board
+ * and the Orbit Boosterpack.
+ *
+ * ENCE464 Assignment 1 Group 2
+ * Creators: Grayson Mynott      56353855
+ *           Ryan Earwaker       12832870
+ *           Matt Blake          58979250
+ * Last modified: 19/08/2020
+ *
+ * ***************************************************************/
+
 /*
  * TODO:
  *      - Refine control
