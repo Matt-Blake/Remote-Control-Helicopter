@@ -98,8 +98,8 @@ getControlSignal(controller_t* piController, int32_t reference, int32_t measurem
     int32_t dutyCycle;
     int32_t controlSignal;
 
-    float errorSignal;
-    float derivativeError;
+    double errorSignal;
+    double derivativeError;
 
 
     // Calculate error signal
