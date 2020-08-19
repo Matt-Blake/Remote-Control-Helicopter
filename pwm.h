@@ -57,14 +57,17 @@
 
 extern controller_t g_alt_controller;
 extern controller_t g_yaw_controller;
+
 extern QueueHandle_t xAltMeasQueue;
 extern QueueHandle_t xAltDesQueue;
 extern QueueHandle_t xYawMeasQueue;
 extern QueueHandle_t xYawDesQueue;
 extern QueueHandle_t xMainPWMQueue;
 extern QueueHandle_t xTailPWMQueue;
+
 extern SemaphoreHandle_t xAltMutex;
 extern SemaphoreHandle_t xYawMutex;
+
 extern TaskHandle_t MainPWM;
 extern TaskHandle_t TailPWM;
 

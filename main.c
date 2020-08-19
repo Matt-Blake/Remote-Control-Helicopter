@@ -10,7 +10,6 @@
 #include <stdint.h>
 #include "driverlib/interrupt.h"
 #include "driverlib/systick.h"
-#include "OrbitOLED/OrbitOLEDInterface.h"
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
@@ -18,6 +17,7 @@
 #include "event_groups.h"
 #include "timers.h"
 #include "statusLED.h"
+#include "OLED.h"
 #include "pwm.h"
 #include "reset.h"
 #include "yaw.h"
@@ -51,16 +51,8 @@
 #define FSM_TASK_PRIORITY       5       // FSM priority
 
 // Timer periods
-#define DISPLAY_PERIOD          200
 #define DBL_BTN_TMR_PERIOD      1000//250
 #define YAW_FLIP_TMR_PERIOD     1000//250
-
-#define ROW_ZERO                0       // Row zero on the OLED display
-#define ROW_ONE                 1       // Row one on the OLED display
-#define ROW_TWO                 2       // Row two on the OLED display
-#define ROW_THREE               3       // Row three on the OLED display
-#define COLUMN_ZERO             0       // Column zero on the OLED display
-#define DISPLAY_SIZE            17      // Size of strings for the OLED display
 
 
 // Globals
@@ -72,73 +64,6 @@ QueueHandle_t xOLEDQueue;
 SemaphoreHandle_t xAltMutex;
 SemaphoreHandle_t xYawMutex;
 SemaphoreHandle_t xUARTMutex;
-
-/*
- * Function:    OLEDDisplay
- * -------------------------
- * FreeRTOS task that periodically displays flight
- * information on the Orbit BoosterPack OLED display.
- *
- * @params:
- *      - NULL
- * @return:
- *      - NULL
- * ---------------------
- */
-static void
-OLEDDisplay (void *pvParameters)
-{
-    //char string[DISPLAY_SIZE];  // String of the correct size to be displayed on the OLED screen
-    char string[20];            // String to be sent over UART
-    int32_t    des_alt;         // Desired altitude
-    int32_t    act_alt;         // Actual altitude
-    int32_t    des_yaw;         // Desired yaw
-    int32_t    act_yaw;         // Actual yaw
-    uint32_t   main_PWM;        // Current main duty cycle
-    uint32_t   tail_PWM;        // Current tail duty cycle
-    uint32_t   state;           // Current state in the FSM
-
-    char* states[4] = {"Landed", "Take Off", "Flying", "Landing"};
-
-    while(1)
-    {
-        xQueuePeek(xAltDesQueue, &des_alt, 10);
-        xQueuePeek(xAltMeasQueue, &act_alt, 10);
-
-        xQueuePeek(xYawDesQueue, &des_yaw, 10);
-        xQueuePeek(xYawMeasQueue, &act_yaw, 10);
-
-        //xQueuePeek(xMainPWMQueue, &main_PWM, 10);
-        //xQueuePeek(xTailPWMQueue, &tail_PWM, 10);
-        main_PWM = PWMPulseWidthGet(PWM0_BASE, PWM_OUT_7);
-        tail_PWM = PWMPulseWidthGet(PWM1_BASE, PWM_OUT_5);
-
-        xQueuePeek(xFSMQueue, &state, 10);
-        UARTSend("------------\n");
-        //usnprintf(string, sizeof(string), "Alt(%%) %3d|%3d ", des_alt, act_alt);
-        //OLEDStringDraw(string, COLUMN_ZERO, ROW_ZERO);
-        usnprintf(string, sizeof(string), "Alt(%%) %3d|%3d\n", des_alt, act_alt);
-        UARTSend(string);
-
-        //usnprintf(string, sizeof(string), "Yaw   %4d|%3d ", des_yaw, act_yaw);
-        //OLEDStringDraw(string, COLUMN_ZERO, ROW_ONE);
-        usnprintf(string, sizeof(string), "Yaw   %4d|%3d\n", des_yaw, act_yaw);
-        UARTSend(string);
-
-        //usnprintf(string, sizeof(string), "PWM(%%) %3d|%3d ", main_PWM, tail_PWM);
-        //OLEDStringDraw(string, COLUMN_ZERO, ROW_TWO);
-        usnprintf(string, sizeof(string), "PWM %3d|%3d\n", main_PWM/250, tail_PWM/250);
-        UARTSend(string);
-
-        //usnprintf(string, sizeof(string), "%s     ", states[state]);
-        //OLEDStringDraw(string, COLUMN_ZERO, ROW_THREE);
-        usnprintf(string, sizeof(string), "%s\n", states[state]);
-        UARTSend(string);
-        UARTSend("------------\n");
-
-        vTaskDelay(DISPLAY_PERIOD / portTICK_RATE_MS);
-    }
-}
 
 
 /*
