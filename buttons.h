@@ -78,8 +78,6 @@ static bool btn_normal[NUM_BTNS];   // Corresponds to the electrical state
 static bool btn_flag[NUM_BTNS];
 static uint8_t btn_count[NUM_BTNS];
 
-QueueHandle_t xAltBtnQueue;
-QueueHandle_t xYawBtnQueue;
 QueueHandle_t xAltDesQueue;
 extern QueueHandle_t xYawDesQueue;
 extern QueueHandle_t xFSMQueue;

@@ -184,8 +184,7 @@ checkButton(uint8_t btnName)
 void
 upButtonPush(void)
 {
-    uint8_t state;
-    int16_t alt_desired = 0;
+    int32_t alt_desired = 0;
 
     UARTSend ("Up\n");
     xQueuePeek(xAltDesQueue, &alt_desired, 10); // Retrieve desired altitude data from the RTOS queue
@@ -198,11 +197,6 @@ upButtonPush(void)
         alt_desired = MAX_ALT;
     }
     xQueueOverwrite(xAltDesQueue, &alt_desired); // Update the RTOS altitude reference queue
-
-    if(xQueueOverwrite(xAltBtnQueue, &state) != pdPASS) { // Error. The queue should never be full. If so print the error message on UART and wait for ever.
-        UARTSend("AltBtnQueue failed.\n");
-        while(1){}
-    }
 }
 
 /*
@@ -211,8 +205,7 @@ upButtonPush(void)
 void
 downButtonPush(void)
 {
-    uint8_t state;
-    int16_t alt_desired = 0;
+    int32_t alt_desired = 0;
 
     UARTSend ("Down\n");
     xQueuePeek(xAltDesQueue, &alt_desired, 10); // Retrieve desired altitude data from the RTOS queue
@@ -224,11 +217,6 @@ downButtonPush(void)
         alt_desired = MIN_ALT;
     }
     xQueueOverwrite(xAltDesQueue, &alt_desired); // Update the RTOS altitude reference queue
-
-    if(xQueueOverwrite(xAltBtnQueue, &state) != pdPASS) { // Error. The queue should never be full. If so print the error message on UART and wait for ever.
-        UARTSend("AltBtnQueue failed.\n");
-        while(1){}
-    }
 }
 
 /*
@@ -237,8 +225,7 @@ downButtonPush(void)
 void
 rightButtonPush(void)
 {
-    uint8_t state;
-    static int32_t yaw_desired = 0;
+    int32_t yaw_desired = 0;
 
     UARTSend ("Right\n");
     xQueuePeek(xYawDesQueue, &yaw_desired, 10); // Retrieve desired yaw data from the RTOS queue
@@ -250,11 +237,6 @@ rightButtonPush(void)
         yaw_desired = -DEGREES_CIRCLE + YAW_CHANGE + yaw_desired;
     }
     xQueueOverwrite(xYawDesQueue, &yaw_desired); // Update the RTOS yaw reference queue
-
-    if(xQueueOverwrite(xYawBtnQueue, &state) != pdPASS) {  // Error. The queue should never be full. If so print the error message on UART and wait for ever.
-        UARTSend("YawBtnQueue failed.\n");
-        while(1){}
-    }
 }
 
 /*
@@ -263,8 +245,7 @@ rightButtonPush(void)
 void
 leftButtonPush(void)
 {
-    uint8_t state;
-    static int32_t yaw_desired = 0;
+    int32_t yaw_desired = 0;
 
     UARTSend ("Left\n");
     xQueuePeek(xYawDesQueue, &yaw_desired, 10); // Retrieve desired yaw data from the RTOS queue
@@ -276,12 +257,6 @@ leftButtonPush(void)
         yaw_desired = DEGREES_CIRCLE - YAW_CHANGE + yaw_desired;
     }
     xQueueOverwrite(xYawDesQueue, &yaw_desired); // Update the RTOS yaw reference queue
-
-    if(xQueueOverwrite(xYawBtnQueue, &state) != pdPASS) {
-        // Error. The queue should never be full. If so print the error message on UART and wait for ever.
-        UARTSend("YawBtnQueue failed.\n");
-        while(1){}
-    }
 }
 
 /*

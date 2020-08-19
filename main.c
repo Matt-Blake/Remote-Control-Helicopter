@@ -144,7 +144,7 @@ createTasks(void)
  * Function:    createQueues
  * -------------------------
  * Creates all FreeRTOS queues used in the system and
- * Initialises the values to zero.
+ * initialises the values to zero.
  *
  * @params:
  *      - NULL
@@ -156,21 +156,16 @@ void
 createQueues(void)
 {
     int32_t queue_init = 0; // Value used to initalise queues
-    int32_t fsm = 0; // Value used to initalise queues
 
     // Create queues
-    xAltBtnQueue    = xQueueCreate(1, sizeof( uint32_t ) );
-    xYawBtnQueue    = xQueueCreate(1, sizeof( uint32_t ) );
     xAltMeasQueue   = xQueueCreate(1, sizeof( int32_t ) );
-    xAltDesQueue    = xQueueCreate(2, sizeof( int32_t ) );
+    xAltDesQueue    = xQueueCreate(1, sizeof( int32_t ) );
     xYawMeasQueue   = xQueueCreate(1, sizeof( int32_t ) );
     xYawDesQueue    = xQueueCreate(1, sizeof( int32_t ) );
     xFSMQueue       = xQueueCreate(1, sizeof( int32_t ) );
     xYawSlotQueue   = xQueueCreate(1, sizeof( int32_t ) );
 
     // Initalise queues
-    xQueueOverwrite(xAltBtnQueue,        &queue_init);
-    xQueueOverwrite(xYawBtnQueue,        &queue_init);
     xQueueOverwrite(xAltMeasQueue,       &queue_init);
     xQueueOverwrite(xAltDesQueue,        &queue_init);
     xQueueOverwrite(xYawMeasQueue,       &queue_init);
