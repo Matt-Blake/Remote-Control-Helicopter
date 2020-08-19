@@ -52,6 +52,27 @@ GetStackUsage(void)
     MainPWM_stack     = uxTaskGetStackHighWaterMark(MainPWM);
     TailPWM_stack     = uxTaskGetStackHighWaterMark(TailPWM);
     FSMTask_stack     = uxTaskGetStackHighWaterMark(FSMTask);
+
+    // Send stack information via UART
+    usnprintf(cMessage, sizeof(cMessage), "StatusLED unused: %d words\n",   StatusLED_stack);
+    UARTSend(cMessage);
+    usnprintf(cMessage, sizeof(cMessage), "OLEDDisp unused: %d words\n",    OLEDDisp_stack);
+    UARTSend(cMessage);
+    usnprintf(cMessage, sizeof(cMessage), "BtnCheck Unused: %d words\n",    BtnCheck_stack);
+    UARTSend(cMessage);
+    usnprintf(cMessage, sizeof(cMessage), "SwiCheck Unused: %d words\n", SwitchCheck_stack);
+    UARTSend(cMessage);
+    usnprintf(cMessage, sizeof(cMessage), "ADCTrig Unused: %d words\n",     ADCTrig_stack);
+    UARTSend(cMessage);
+    usnprintf(cMessage, sizeof(cMessage), "ADCMean Unused: %d words\n",     ADCMean_stack);
+    UARTSend(cMessage);
+    usnprintf(cMessage, sizeof(cMessage), "MainPWM Unused: %d words\n",     MainPWM_stack);
+    UARTSend(cMessage);
+    usnprintf(cMessage, sizeof(cMessage), "TailPWM Unused: %d words\n",     TailPWM_stack);
+    UARTSend(cMessage);
+    usnprintf(cMessage, sizeof(cMessage), "FSMTask Unused: %d words\n",     FSMTask_stack);
+    UARTSend(cMessage);
+
 }
 
 /*

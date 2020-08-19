@@ -86,7 +86,7 @@ initPWM (void)
 /*
  * Function:    initControllers
  * -----------------------------
- * Initializes the structs used to hold the PWM PID controller
+ * Initializes the structs used to hold the PID controllers
  * gains and errors.
  *
  * @params:
@@ -98,26 +98,8 @@ initPWM (void)
 void
 initControllers(void)
 {
-    // Create empty controllers
-    //controller_t alt_controller;
-    //controller_t yaw_controller;
-    //controller_t* alt_controller_address;
-    //controller_t* yaw_controller_address;
-
-    // Assign addresses to controllers
-    //alt_controller_address = &alt_controller;
-    //yaw_controller_address = &yaw_controller;
-
-    // Inialise controllers with predefined gains
-    //initController(alt_controller_address, false);
-    //initController(yaw_controller_address, true);
-
     initController(&g_alt_controller, false);
     initController(&g_yaw_controller, true);
-
-    // Store pointers to controllers in queues so they can be accessed by other functions
-    //xQueueOverwrite(xAltControllerQueue, &alt_controller);
-    //xQueueOverwrite(xYawControllerQueue, &yaw_controller);
 }
 
 /*
@@ -207,7 +189,6 @@ SetMainDuty(void *pvParameters)
     int32_t alt_PWM = 0;
     int32_t alt_meas = 0;
     int32_t alt_desired = 0;
-    //controller_t alt_controller;
 
     while (1)
     {
@@ -216,15 +197,8 @@ SetMainDuty(void *pvParameters)
         xQueuePeek(xAltDesQueue,  &alt_desired, 10); // Retrieve desired altitude data from the RTOS queue
 
         // Set PWM duty cycle of main rotor in order to hover to the desired altitude
-        //xQueuePeek(xAltControllerQueue, &alt_controller, 10); // Get altitude controller information
         alt_PWM = getControlSignal(&g_alt_controller, alt_desired, alt_meas, false); // Use the error to calculate a PWM duty cycle for the main rotor
-        if(alt_PWM > MAX_DUTY){
-            alt_PWM = MAX_DUTY;
-        }else if(alt_PWM < MIN_DUTY){
-            alt_PWM = MIN_DUTY;
-        }
         setRotorPWM(alt_PWM, 1); // Set main rotor to calculated PWM
-        xQueueOverwrite(xMainPWMQueue, &alt_PWM); // Store the main PWM duty cycle in a queue
 
         vTaskDelay(CONTROL_PERIOD / portTICK_RATE_MS); // Block task so lower priority tasks can run
     }
@@ -250,31 +224,17 @@ SetTailDuty(void *pvParameters)
     int32_t yaw_meas = 0;
     int32_t yaw_desired = 0;
     int32_t alt_PWM = 0;
-    //controller_t yaw_controller;
-
-//    char cMessage[20];
 
     while (1)
     {
         // Retrieve yaw information
         xQueuePeek(xYawMeasQueue, &yaw_meas,   10); // Retrieve measured yaw data from the RTOS queue
         xQueuePeek(xYawDesQueue, &yaw_desired, 10); // Retrieve desired yaw data from the RTOS queue
-        xQueuePeek(xMainPWMQueue, &alt_PWM, 10); // Retrieve the main rotor's duty cycle
 
         // Set PWM duty cycle of tail rotor in order to spin to target yaw
-        //xQueuePeek(xYawControllerQueue, &yaw_controller, 10); // Get yaw controller information
         yaw_PWM = getControlSignal(&g_yaw_controller, yaw_desired, yaw_meas, true); // Use the error to calculate a PWM duty cycle for the tail rotor
         yaw_PWM = yaw_PWM + (alt_PWM * MAIN_ROTOR_FACTOR); // Compensate tail PWM due to effect of main rotor duty cycle
-
-        //yaw_PWM = alt_PWM * MAIN_ROTOR_FACTOR;
-
-        if (yaw_PWM > MAX_DUTY){
-            yaw_PWM = MAX_DUTY;
-        }else if(yaw_PWM < MIN_DUTY){
-            yaw_PWM = MIN_DUTY;
-        }
         setRotorPWM(yaw_PWM, 0); // Set tail rotor to calculated PWM
-        xQueueOverwrite(xTailPWMQueue, &yaw_PWM); // Store the tail PWM duty cycle in a queue
 
         vTaskDelay(CONTROL_PERIOD / portTICK_RATE_MS); // Block task so lower priority tasks can run
     }

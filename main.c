@@ -177,20 +177,17 @@ createQueues(void)
     xAltDesQueue    = xQueueCreate(2, sizeof( int32_t ) );
     xYawMeasQueue   = xQueueCreate(1, sizeof( int32_t ) );
     xYawDesQueue    = xQueueCreate(1, sizeof( int32_t ) );
-    xMainPWMQueue   = xQueueCreate(1, sizeof( int32_t ) );
-    xTailPWMQueue   = xQueueCreate(1, sizeof( int32_t ) );
     xFSMQueue       = xQueueCreate(1, sizeof( int32_t ) );
     xYawSlotQueue   = xQueueCreate(1, sizeof( int32_t ) );
 
     // Initalise queues
+    xQueueOverwrite(xOLEDQueue,          &queue_init);
     xQueueOverwrite(xAltBtnQueue,        &queue_init);
     xQueueOverwrite(xYawBtnQueue,        &queue_init);
     xQueueOverwrite(xAltMeasQueue,       &queue_init);
     xQueueOverwrite(xAltDesQueue,        &queue_init);
     xQueueOverwrite(xYawMeasQueue,       &queue_init);
     xQueueOverwrite(xYawDesQueue,        &queue_init);
-    xQueueOverwrite(xMainPWMQueue,       &queue_init);
-    xQueueOverwrite(xTailPWMQueue,       &queue_init);
     xQueueOverwrite(xFSMQueue,           &queue_init);
     xQueueOverwrite(xYawSlotQueue,       &queue_init);
 }

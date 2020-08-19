@@ -80,14 +80,6 @@ extern QueueHandle_t xAltMeasQueue;
 extern QueueHandle_t xAltDesQueue;
 extern QueueHandle_t xYawMeasQueue;
 extern QueueHandle_t xYawDesQueue;
-QueueHandle_t xMainPWMQueue;
-QueueHandle_t xTailPWMQueue;
-
-extern SemaphoreHandle_t xAltMutex;
-extern SemaphoreHandle_t xYawMutex;
-
-extern TaskHandle_t MainPWM;
-extern TaskHandle_t TailPWM;
 
 
 /*
