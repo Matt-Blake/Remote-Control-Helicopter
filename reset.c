@@ -46,7 +46,7 @@ void resetInterrupt(void)
 
 /*
  * Function:    initReset
- * ----------------------------
+ * -----------------------
  * Initializes the reset interrupt on Port A Pin 6.
  *
  * @params:
