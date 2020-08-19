@@ -16,17 +16,6 @@
 #include "ADC.h"
 
 
-#define SEQ_NUM             3
-#define ADC_PERIPH          SYSCTL_PERIPH_ADC0
-#define ADC_BASE            ADC0_BASE
-#define ADC_PRIORITY        1
-#define ADC_CHANNEL         ADC_CTL_CH9
-
-#define ADC_PERIOD          10 // 100Hz
-
-circBuf_t g_inBuffer;
-TaskHandle_t ADCTrig;
-
 /*********************** ADC FUNCTIONS ****************************/
 /*
  * Function:    ADCIntHandler
@@ -111,7 +100,7 @@ TriggerADC(void *pvParameters)
     while(1){
         ADCProcessorTrigger(ADC0_BASE, 3);
 
-        vTaskDelay(ADC_PERIOD / portTICK_RATE_MS);
+        vTaskDelay(SAMPLING_PERIOD / portTICK_RATE_MS);
     }
 }
 

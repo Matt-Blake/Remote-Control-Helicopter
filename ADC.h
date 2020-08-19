@@ -14,7 +14,6 @@
 #ifndef ADC_H
 #define ADC_H
 
-
 #include <stdint.h>
 #include <stdbool.h>
 #include "driverlib/adc.h"
@@ -23,18 +22,21 @@
 #include "event_groups.h"
 #include "uart.h"
 
+#define SEQ_NUM                 3
+#define ADC_PERIPH              SYSCTL_PERIPH_ADC0
+#define ADC_BASE                ADC0_BASE
+#define ADC_PRIORITY            1
+#define ADC_CHANNEL             ADC_CTL_CH9
+#define ADC_BUF_SIZE            8                   // Size of the circular buffer used for moving averages
+#define SAMPLING_PERIOD         10                  // Period used to sample the altitude (ms)
+#define VOLTAGE_DROP_ADC        1200                // Voltage drop value found on HeliRig
+#define GROUND_NOT_FOUND        (0 << 0)            // Flag value to indicate that ground reference hasn't been found
+#define GROUND_BUFFER_FULL      (1 << 0)            // Flag value to indicate that the ADC buffer is full
+#define GROUND_FOUND            (1 << 1)            // Flag value to indicate that ground reference has been found
 
-#define ADC_BUF_SIZE            8               // Size of the circular buffer used for moving averages
-//#define VOLTAGE_DROP_ADC    4096                // FOR ORBIT BOARD POTENTIOMETER
-#define VOLTAGE_DROP_ADC        1200            // FOR RIG
-#define GROUND_NOT_FOUND        (0 << 0)        // Flag value to indicate that ground reference hasn't been found
-#define GROUND_BUFFER_FULL      (1 << 0)        // Flag value to indicate that the ADC buffer is full
-#define GROUND_FOUND            (1 << 1)        // Flag value to indicate that ground reference has been found
+circBuf_t g_inBuffer;
 
-
-extern circBuf_t g_inBuffer;
 extern EventGroupHandle_t xFoundAltReference;                                                                                               // Should init xFoundAltRef in altitude.c or ADC.c, not main
-extern TaskHandle_t ADCTrig;
 
 
 /*

@@ -21,24 +21,17 @@
 #ifndef BUTTONS_H
 #define BUTTONS_H
 
-
 #include <stdint.h>
 #include <stdbool.h>
 #include "inc/hw_memmap.h"
 #include "driverlib/gpio.h"
 #include "driverlib/sysctl.h"
 #include "inc/tm4c123gh6pm.h"  // Board specific defines (for PF0)
-#include "FSM.h"
 #include "FreeRTOS.h"
 #include "queue.h"
 #include "semphr.h"
 #include "timers.h"
 #include "uart.h"
-
-
-enum btnNames   {UP = 0, DOWN, LEFT, RIGHT, NUM_BTNS};
-enum btnStates  {RELEASED = 0, PUSHED, NO_CHANGE};
-typedef enum HELI_STATE {LANDED = 0, TAKEOFF = 1, FLYING = 2, LANDING = 3} HELI_STATE;
 
 #define U_BTN_PERIPH        SYSCTL_PERIPH_GPIOE         // Up Peripheral
 #define U_BTN_PORT_BASE     GPIO_PORTE_BASE             // Up Port Base
@@ -72,20 +65,28 @@ typedef enum HELI_STATE {LANDED = 0, TAKEOFF = 1, FLYING = 2, LANDING = 3} HELI_
 #define MIN_YAW             -180                        // The minimum yaw (degrees)
 #define DEGREES_CIRCLE      360                         // The number of degrees in a circle
 
+enum btnNames   {UP = 0, DOWN, LEFT, RIGHT, NUM_BTNS};
+enum btnStates  {RELEASED = 0, PUSHED, NO_CHANGE};
+typedef enum HELI_STATE {LANDED = 0, TAKEOFF = 1, FLYING = 2, LANDING = 3} HELI_STATE;
 
-extern QueueHandle_t xAltBtnQueue;
-extern QueueHandle_t xYawBtnQueue;
-extern QueueHandle_t xAltDesQueue;
+static bool btn_state[NUM_BTNS];    // Corresponds to the electrical state
+static bool btn_normal[NUM_BTNS];   // Corresponds to the electrical state
+static bool btn_flag[NUM_BTNS];
+static uint8_t btn_count[NUM_BTNS];
+
+QueueHandle_t xAltBtnQueue;
+QueueHandle_t xYawBtnQueue;
+QueueHandle_t xAltDesQueue;
 extern QueueHandle_t xYawDesQueue;
 extern QueueHandle_t xFSMQueue;
+
+SemaphoreHandle_t xUpBtnSemaphore;
+SemaphoreHandle_t xYawFlipSemaphore;
 extern SemaphoreHandle_t xAltMutex;
 extern SemaphoreHandle_t xYawMutex;
-extern SemaphoreHandle_t xUpBtnSemaphore;
-extern SemaphoreHandle_t xYawFlipSemaphore;
-extern TaskHandle_t BtnCheck;
-extern TaskHandle_t SwitchCheck;
-extern TimerHandle_t xUpBtnTimer;
-extern TimerHandle_t xYawFlipTimer;
+
+TimerHandle_t xUpBtnTimer;
+TimerHandle_t xYawFlipTimer;
 
 
 // Debounce algorithm: A state machine is associated with each button.

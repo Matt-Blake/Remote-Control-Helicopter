@@ -15,6 +15,7 @@
  *
  * ***************************************************************/
 
+
 /*
  * TODO:
  *      - Refine control
@@ -22,11 +23,9 @@
  *      - Finish all comments throughout project.
  */
 
-
 #include <stdbool.h>
 #include <stdint.h>
 #include "driverlib/interrupt.h"
-#include "driverlib/systick.h"
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
@@ -43,7 +42,6 @@
 #include "buttons.h"
 #include "pidController.h"
 #include "FSM.h"
-
 
 // Task stack sizes in words, calculated experimentally based on uxTaskGetStackHighWaterMark()
 #define LED_STACK_DEPTH         32
@@ -71,8 +69,6 @@
 #define DBL_BTN_TMR_PERIOD      1000//250
 #define YAW_FLIP_TMR_PERIOD     1000//250
 
-
-// Globals
 EventGroupHandle_t xFoundAltReference;
 EventGroupHandle_t xFoundYawReference;
 
@@ -149,7 +145,7 @@ createTasks(void)
     xTaskCreate(StatusLED,      "LED Task",     LED_STACK_DEPTH,        NULL,       LED_TASK_PRIORITY,      &StatLED);
     xTaskCreate(OLEDDisplay,    "OLED Task",    OLED_STACK_DEPTH,       NULL,       OLED_TASK_PRIORITY,     &OLEDDisp);
     xTaskCreate(ButtonsCheck,   "Btn Poll",     BTN_STACK_DEPTH,        NULL,       BTN_TASK_PRIORITY,      &BtnCheck);
-    xTaskCreate(SwitchesCheck,  "Switch Poll",  SWITCH_STACK_DEPTH,     NULL,       SWI_TASK_PRIORITY,      &SwitchCheck);
+    xTaskCreate(SwitchesCheck,  "Switch Poll",  SWITCH_STACK_DEPTH,     NULL,       SWI_TASK_PRIORITY,      &SwiCheck);
     xTaskCreate(TriggerADC,     "ADC Handler",  ADC_STACK_DEPTH,        NULL,       ADC_TASK_PRIORITY,      &ADCTrig);
     xTaskCreate(MeanADC,        "ADC Mean",     MEAN_STACK_DEPTH,       NULL,       MEAN_TASK_PRIORITY,     &ADCMean);
     xTaskCreate(SetMainDuty,    "Main PWM",     MAIN_PWM_STACK_DEPTH,   NULL,       MAIN_PWM_TASK_PRIORITY, &MainPWM);

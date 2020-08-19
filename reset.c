@@ -9,13 +9,7 @@
  */
 
 #include "reset.h"
-#include "uart.h"
 
-//******************************************************
-// Constants
-//******************************************************
-#define RESET_GPIO_BASE  GPIO_PORTA_BASE //Sets the base for pins J1-03 (PB0, channel A) and J1-04 (PB1, channel B)
-#define RESET_GPIO_PIN   GPIO_INT_PIN_6
 
 /*
  * Function:    resetInterrupt

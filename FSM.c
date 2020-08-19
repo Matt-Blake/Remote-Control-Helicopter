@@ -21,27 +21,6 @@
 
 #include "FSM.h"
 
-#define ALT_TOLERANCE           2       // The tolerance in altitude value to trigger state change
-#define YAW_TOLERANCE           2       // The tolerance in yaw value to trigger state change
-#define FIND_REF_PWM_MAIN       20      // The main rotor PWM used to find the reference yaw
-#define FIND_REF_PWM_TAIL       0       // The tail rotor PWM used to find the reference yaw
-#define FSM_PERIOD              200
-
-typedef enum HELI_STATE {LANDED = 0, TAKEOFF = 1, FLYING = 2, LANDING = 3} HELI_STATE;
-
-QueueHandle_t xFSMQueue;
-TimerHandle_t xLandingTimer;
-
-TaskHandle_t StatLED;
-TaskHandle_t OLEDDisp;
-//TaskHandle_t BtnCheck;
-//TaskHandle_t SwitchCheck;
-//TaskHandle_t ADCTrig;
-//TaskHandle_t ADCMean;
-//TaskHandle_t MainPWM;
-//TaskHandle_t TailPWM;
-TaskHandle_t FSMTask;
-
 
 // Functions
 /*
@@ -66,7 +45,7 @@ GetStackUsage(void)
     StatusLED_stack   = uxTaskGetStackHighWaterMark(StatLED);
     OLEDDisp_stack    = uxTaskGetStackHighWaterMark(OLEDDisp);
     BtnCheck_stack    = uxTaskGetStackHighWaterMark(BtnCheck);
-    SwitchCheck_stack = uxTaskGetStackHighWaterMark(SwitchCheck);
+    SwitchCheck_stack = uxTaskGetStackHighWaterMark(SwiCheck);
     ADCTrig_stack     = uxTaskGetStackHighWaterMark(ADCTrig);
     ADCMean_stack     = uxTaskGetStackHighWaterMark(ADCMean);
     MainPWM_stack     = uxTaskGetStackHighWaterMark(MainPWM);
@@ -77,7 +56,7 @@ GetStackUsage(void)
     usnprintf(cMessage, sizeof(cMessage), "StatusLED unused: %d words\n",   StatusLED_stack);
     usnprintf(cMessage, sizeof(cMessage), "OLEDDisp unused: %d words\n",    OLEDDisp_stack);
     usnprintf(cMessage, sizeof(cMessage), "BtnCheck Unused: %d words\n",    BtnCheck_stack);
-    usnprintf(cMessage, sizeof(cMessage), "SwitchCheck Unused: %d words\n", SwitchCheck_stack);
+    usnprintf(cMessage, sizeof(cMessage), "SwiCheck Unused: %d words\n", SwitchCheck_stack);
     usnprintf(cMessage, sizeof(cMessage), "ADCTrig Unused: %d words\n",     ADCTrig_stack);
     usnprintf(cMessage, sizeof(cMessage), "ADCMean Unused: %d words\n",     ADCMean_stack);
     usnprintf(cMessage, sizeof(cMessage), "MainPWM Unused: %d words\n",     MainPWM_stack);
@@ -157,7 +136,7 @@ takeoff(void)
         vTaskSuspend(MainPWM);      // Suspend the PWM control systems until ref is found
         vTaskSuspend(TailPWM);
         vTaskSuspend(BtnCheck);     // Disable user input while the ref is being found
-        vTaskSuspend(SwitchCheck);
+        vTaskSuspend(SwiCheck);     // Stop checking the switches until takeoff is complete
         findYawRef();               // Find the reference yaw
     } else {
         xQueueOverwrite(xYawDesQueue, &desired_yaw); // Rotate to reference yaw
@@ -165,7 +144,7 @@ takeoff(void)
         vTaskResume(MainPWM);       // Re-enable the control system
         vTaskResume(TailPWM);
         vTaskResume(BtnCheck);      // Re-enable user input
-        vTaskResume(SwitchCheck);
+        vTaskResume(SwiCheck);
         xQueuePeek(xAltMeasQueue, &alt, 10); // Retrieve the current altitude value
         xQueuePeek(xYawMeasQueue, &yaw, 10); // Retrieve the current yaw value
 
@@ -201,7 +180,7 @@ hover(void)
     vTaskResume(MainPWM);
     vTaskResume(TailPWM);
     vTaskResume(BtnCheck);
-    vTaskResume(SwitchCheck);
+    vTaskResume(SwiCheck);
 }
 
 
@@ -232,7 +211,7 @@ land(void)
     int32_t timerID = ( uint32_t ) pvTimerGetTimerID( xLandingTimer );
 
     vTaskSuspend(BtnCheck); // Disable changes to yaw and altitude while landing
-    vTaskSuspend(SwitchCheck);
+    vTaskSuspend(SwiCheck); // Disable changes to the helicopter state while landing
 
     xQueueOverwrite(xYawDesQueue, &ref_yaw);
     xQueuePeek(xAltMeasQueue, &meas, 10);
@@ -256,7 +235,7 @@ land(void)
         vTimerSetTimerID( xLandingTimer, (void *) 0 );
         prev_timerID = 0;
         xTimerStop( xLandingTimer, 0 );
-        vTaskResume(SwitchCheck);
+        vTaskResume(SwiCheck);
     }
     xQueueOverwrite(xAltDesQueue, &descent);
     xQueueOverwrite(xFSMQueue, &state);
@@ -277,22 +256,15 @@ land(void)
  */
 void landed(void)
 {
-    //controller_t alt_controller;
-    //controller_t yaw_controller;
-
     // Suspend unwanted tasks
     vTaskSuspend(MainPWM); // Suspend the control system while landed
     vTaskSuspend(TailPWM);
     vTaskSuspend(BtnCheck); // Disable changes to yaw and altitude while landed
+    vTaskResume(SwiCheck); // Resume checking the switches
 
     // Set motor duty cycles to minimum
     setRotorPWM(MIN_DUTY, 1);
     setRotorPWM(MIN_DUTY, 0);
-
-    //Retrieve controller information
-    //xQueuePeek(xAltControllerQueue, &alt_controller, 10);
-    //xQueuePeek(xYawControllerQueue, &yaw_controller, 10);
-
 
     // Reset error on controllers
     g_alt_controller.previousError   = 0;
@@ -301,9 +273,7 @@ void landed(void)
     g_yaw_controller.integratedError = 0;
 
     // Get max stack usage
-    //GetStackUsage();
-
-    //vTaskResume(SwitchCheck);
+    GetStackUsage();
 }
 
 /*

@@ -21,27 +21,6 @@
 
 #include "buttons.h"
 
-// *****************************************************
-// Globals
-// *****************************************************
-static bool btn_state[NUM_BTNS];	// Corresponds to the electrical state
-static uint8_t btn_count[NUM_BTNS];
-static bool btn_flag[NUM_BTNS];
-static bool btn_normal[NUM_BTNS];   // Corresponds to the electrical state
-
-TimerHandle_t xUpBtnTimer;
-TimerHandle_t xYawFlipTimer;
-
-TaskHandle_t BtnCheck;
-TaskHandle_t SwitchCheck;
-
-QueueHandle_t xAltBtnQueue;
-QueueHandle_t xYawBtnQueue;
-
-
-SemaphoreHandle_t xUpBtnSemaphore;
-SemaphoreHandle_t xYawFlipSemaphore;
-
 
 /*
  * Function:    vBtnTimerCallback
@@ -169,7 +148,7 @@ updateButtons(void)
             if (btn_count[i] >= NUM_BTN_POLLS)
             {
                 btn_state[i] = btn_value[i];
-                btn_flag[i] = true;	   // Reset by call to checkbutton()
+                btn_flag[i] = true;	   // Reset by call to checkButton()
                 btn_count[i] = 0;
             }
         }

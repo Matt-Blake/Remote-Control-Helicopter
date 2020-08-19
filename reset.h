@@ -12,12 +12,15 @@
 #ifndef RESET_H_
 #define RESET_H_
 
-
 #include <stdint.h>
 #include <stdbool.h>
 #include "driverlib/gpio.h"
 #include "driverlib/sysctl.h"
 #include "inc/hw_memmap.h"
+#include "uart.h"
+
+#define RESET_GPIO_BASE  GPIO_PORTA_BASE //Sets the base for pins J1-03 (PB0, channel A) and J1-04 (PB1, channel B)
+#define RESET_GPIO_PIN   GPIO_INT_PIN_6
 
 
 /*

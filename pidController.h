@@ -24,15 +24,25 @@
 #ifndef PIDCONTROLLER_H_
 #define PIDCONTROLLER_H_
 
-
 #include <stdint.h>
 #include <stdbool.h>
 #include "uart.h"
 
+#define ALT_KP              45//30          // Altitude proportional gain
+#define ALT_KI              15//20          // Altitude integral gain
+#define ALT_KD              10//20          // Altitude derivative gain
 
+#define YAW_KP              30          // Yaw proportional gain
+#define YAW_KI              7           // Yaw integral gain
+#define YAW_KD              0           // Yaw derivative gain
+
+#define CONTROL_DIVISOR     100         // Divisor used to achieve certain gains without the use of floating point numbers
+
+#define DEGREES_CIRCLE      360         // The number of degrees in a circle
+#define MS_TO_SECONDS       1000        // Conversion factor from ms to s
 #define MAX_DUTY            98          // The maximum duty cycle for the rotors
 #define MIN_DUTY            2           // The minimum duty cycle for the rotors
-#define CONTROL_PERIOD      20      // Period used in the control loops (ms)
+#define CONTROL_PERIOD      20          // Period used in the control loops (ms)
 
 
 /* ******************************************************

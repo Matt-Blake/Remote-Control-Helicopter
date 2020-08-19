@@ -12,7 +12,6 @@
 #ifndef ALTITUDE_H_
 #define ALTITUDE_H_
 
-
 #include <stdint.h>
 #include <stdbool.h>
 #include "ADC.h"
@@ -23,10 +22,12 @@
 #include "queue.h"
 #include "event_groups.h"
 
+#define ALTITUDE_PERIOD     200         // Period used to average and calculate the altitude (ms)
 
-extern QueueHandle_t    xAltMeasQueue;
-extern QueueHandle_t    xFSMQueue;
-extern TaskHandle_t     ADCMean;
+QueueHandle_t    xAltMeasQueue;
+QueueHandle_t    xFSMQueue;
+TaskHandle_t     ADCMean;
+
 
 /*
  * Function:    Mean_ADC

@@ -22,7 +22,6 @@
 #ifndef FSM_H
 #define FSM_H
 
-
 #include <stdint.h>
 #include <stdbool.h>
 #include "driverlib/gpio.h"
@@ -34,27 +33,34 @@
 #include "event_groups.h"
 #include "timers.h"
 #include "uart.h"
+#include "buttons.h"
 
+#define ALT_TOLERANCE           2       // The tolerance in altitude value to trigger state change
+#define YAW_TOLERANCE           2       // The tolerance in yaw value to trigger state change
+#define FIND_REF_PWM_MAIN       20      // The main rotor PWM used to find the reference yaw
+#define FIND_REF_PWM_TAIL       0       // The tail rotor PWM used to find the reference yaw
 #define LAND_TMR_PERIOD         300
-
+#define FSM_PERIOD              200
 
 extern controller_t g_alt_controller;
 extern controller_t g_yaw_controller;
-extern QueueHandle_t xFSMQueue;
+
+QueueHandle_t xFSMQueue;
 extern QueueHandle_t xAltMesQueue;
 extern QueueHandle_t xAltDesQueue;
-extern QueueHandle_t xMainPWMQueue; // Delete this once debugging done
-extern TaskHandle_t StatLED;
-extern TaskHandle_t OLEDDisp;
-extern TaskHandle_t BtnCheck;
-extern TaskHandle_t SwitchCheck;
-extern TaskHandle_t ADCTrig;
-extern TaskHandle_t ADCMean;
-extern TaskHandle_t MainPWM;
-extern TaskHandle_t TailPWM;
-extern TaskHandle_t FSMTask;
-extern TimerHandle_t xLandingTimer;
+extern QueueHandle_t xMainPWMQueue;     // Delete this once debugging done
 
+TaskHandle_t FSMTask;
+TaskHandle_t OLEDDisp;
+TaskHandle_t StatLED;
+TaskHandle_t BtnCheck;
+TaskHandle_t SwiCheck;
+TaskHandle_t ADCTrig;
+TaskHandle_t ADCMean;
+TaskHandle_t MainPWM;
+TaskHandle_t TailPWM;
+
+TimerHandle_t xLandingTimer;
 
 
 // CREATE DESCRIPTION
