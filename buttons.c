@@ -1,23 +1,26 @@
-/*
- * BUTTONS.c
+/* ****************************************************************
+ * buttons.c
  *
- * Module for the D-Pad Buttons (U/D/L/R) and Switches
+ * Source file for the buttons module
  * Supports buttons on the Tiva/Orbit.
  * Comprises of initialisers and button checks
  *
- * Author: P.J. Bones UCECE
- * Edited: Derrick Edward, Grayson Mynott, Ryan Earwaker
- * Thu AM Group 18
- * Last modified:  29.05.2019
+ * Based on buttons4.c - P.J. Bones, UCECE
  *
- * buttons.c - Code updated for use with FreeRTOS
+ * Further based on BUTTONS.c
+ * Thu AM Group 18
+ * Creators: Grayson Mynott      56353855
+ *           Ryan Earwaker       12832870
+ *           Derrick Edward      18017758
+ * Last modified: 29/05/2019
  *
  * ENCE464 Assignment 1 Group 2
  * Creators: Grayson Mynott      56353855
  *           Ryan Earwaker       12832870
  *           Matt Blake          58979250
  * Last modified: 05/08/2020
- */
+ *
+ * ***************************************************************/
 
 #include "buttons.h"
 

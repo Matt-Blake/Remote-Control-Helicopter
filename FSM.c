@@ -1,30 +1,31 @@
-/*
- * FSM.c - Helicopter finite state machine
+/* ****************************************************************
+ * FSM.c
  *
- * Tue am Group 1
+ * Source file for the finite state machine (FSM) module
+ * Control the tasks operated based on if the helicopter is trying
+ * to take off, hover, land or is landed.
+ *
+ * Based on FSM.c
+ * Tue AM Group 1
  * Creators: Brendain Hennessy   57190084
  *           Sarah Kennelly      76389950
  *           Matt Blake          58979250
  * Last modified: 9/05/2019
  *
- * pidController.c - This code was based off the FSM.c code from ENEL361.
- * It has been edited to include FreeRTOS functionality and has two extra
- * modes allowing the helicopter to reach the mid-point altitude and turn
- * 180 degrees.
- *
  * ENCE464 Assignment 1 Group 2
  * Creators: Grayson Mynott      56353855
  *           Ryan Earwaker       12832870
  *           Matt Blake          58979250
- * Last modified: 10/08/2020
- */
-
+ * Last modified: 19/08/2020
+ *
+ * ***************************************************************/
 #include "FSM.h"
 
 
 // Functions
 /*
- * Calculate the maximum stack usage all of the RTOS tasks.
+ * Calculate the maximum stack remaining of all of the RTOS tasks.
+ * These values are checked through the debugger.
  */
 void
 GetStackUsage(void)
@@ -51,17 +52,6 @@ GetStackUsage(void)
     MainPWM_stack     = uxTaskGetStackHighWaterMark(MainPWM);
     TailPWM_stack     = uxTaskGetStackHighWaterMark(TailPWM);
     FSMTask_stack     = uxTaskGetStackHighWaterMark(FSMTask);
-
-    // Send stack information via UART
-    usnprintf(cMessage, sizeof(cMessage), "StatusLED unused: %d words\n",   StatusLED_stack);
-    usnprintf(cMessage, sizeof(cMessage), "OLEDDisp unused: %d words\n",    OLEDDisp_stack);
-    usnprintf(cMessage, sizeof(cMessage), "BtnCheck Unused: %d words\n",    BtnCheck_stack);
-    usnprintf(cMessage, sizeof(cMessage), "SwiCheck Unused: %d words\n", SwitchCheck_stack);
-    usnprintf(cMessage, sizeof(cMessage), "ADCTrig Unused: %d words\n",     ADCTrig_stack);
-    usnprintf(cMessage, sizeof(cMessage), "ADCMean Unused: %d words\n",     ADCMean_stack);
-    usnprintf(cMessage, sizeof(cMessage), "MainPWM Unused: %d words\n",     MainPWM_stack);
-    usnprintf(cMessage, sizeof(cMessage), "TailPWM Unused: %d words\n",     TailPWM_stack);
-    usnprintf(cMessage, sizeof(cMessage), "FSMTask Unused: %d words\n",     FSMTask_stack);
 }
 
 /*

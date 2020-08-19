@@ -1,11 +1,14 @@
 /* ****************************************************************
  * altitude.h
  *
- * Header file for calculating the altitude of the helicopter
+ * Header file for the altitude module
+ * Calculates the altitude of the helicopter based on buffer values
  *
- * Grayson Mynott, Matt Blake, Ryan Earwaker
- * Group 2
- * Last modified:  13.08.2020
+ * ENCE464 Assignment 1 Group 2
+ * Creators: Grayson Mynott      56353855
+ *           Ryan Earwaker       12832870
+ *           Matt Blake          58979250
+ * Last modified: 19/08/2020
  *
  * ***************************************************************/
 

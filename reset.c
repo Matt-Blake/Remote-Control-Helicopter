@@ -1,12 +1,24 @@
-/*
- * reset.c - Initialises the helicopter to have a hard reset interrupt
+/* ****************************************************************
+ * reset.c
  *
- * Tue am Group 1
+ * Source file for reset module
+ * Triggers a hard rest interrupt for the Tiva board
+ * Includes initialisers, interrupts and calculation functions
+ *
+ * Based on reset.c
+ * Tue AM Group 1
  * Creators: Brendain Hennessy   57190084
  *           Sarah Kennelly      76389950
  *           Matt Blake          58979250
  * Last modified: 9/05/2019
- */
+ *
+ * ENCE464 Assignment 1 Group 2
+ * Creators: Grayson Mynott      56353855
+ *           Ryan Earwaker       12832870
+ *           Matt Blake          58979250
+ * Last modified: 19/08/2020
+ *
+ * ***************************************************************/
 
 #include "reset.h"
 

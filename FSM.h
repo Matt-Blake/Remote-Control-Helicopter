@@ -1,22 +1,23 @@
 /* ****************************************************************
- * FSM.c - Helicopter finite state machine
+ * FSM.h
  *
- * Tue am Group 1
+ * Source file for the finite state machine (FSM) module
+ * Control the tasks operated based on if the helicopter is trying
+ * to take off, hover, land or is landed.
+ *
+ * Based on FSM.h
+ * Tue AM Group 1
  * Creators: Brendain Hennessy   57190084
  *           Sarah Kennelly      76389950
  *           Matt Blake          58979250
  * Last modified: 9/05/2019
  *
- * pidController.c - This code was based off the FSM.c code from ENEL361.
- * It has been edited to include FreeRTOS functionality and has two extra
- * modes allowing the helicopter to reach the mid-point altitude and turn
- * 180 degrees.
- *
  * ENCE464 Assignment 1 Group 2
  * Creators: Grayson Mynott      56353855
  *           Ryan Earwaker       12832870
  *           Matt Blake          58979250
- * Last modified: 10/08/2020
+ * Last modified: 19/08/2020
+ *
  * ***************************************************************/
 
 #ifndef FSM_H

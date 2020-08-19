@@ -1,9 +1,16 @@
-/*
+/* ****************************************************************
  * altitude.c
  *
- *  Created on: 13/08/2020
- *      Author: grayson-uc
- */
+ * Source file for the altitude module
+ * Calculates the altitude of the helicopter based on buffer values
+ *
+ * ENCE464 Assignment 1 Group 2
+ * Creators: Grayson Mynott      56353855
+ *           Ryan Earwaker       12832870
+ *           Matt Blake          58979250
+ * Last modified: 19/08/2020
+ *
+ * ***************************************************************/
 
 #include "altitude.h"
 
