@@ -76,9 +76,6 @@
 #define MAIN_ROTOR_FACTOR       64/100              // Factor used to compensate for the effect of main rotor
 #define CONVERT_TO_PERCENTAGE   100                 // Factor used to convert to percentage
 
-extern controller_t g_alt_controller;
-extern controller_t g_yaw_controller;
-
 extern QueueHandle_t xAltMeasQueue;
 extern QueueHandle_t xAltDesQueue;
 extern QueueHandle_t xYawMeasQueue;

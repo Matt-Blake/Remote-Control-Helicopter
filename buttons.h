@@ -77,17 +77,6 @@ enum btnNames   {UP = 0, DOWN, LEFT, RIGHT, NUM_BTNS};
 enum btnStates  {RELEASED = 0, PUSHED, NO_CHANGE};
 typedef enum HELI_STATE {LANDED = 0, TAKEOFF = 1, FLYING = 2, LANDING = 3} HELI_STATE;
 
-extern QueueHandle_t xAltDesQueue;
-extern QueueHandle_t xYawDesQueue;
-extern QueueHandle_t xFSMQueue;
-
-extern SemaphoreHandle_t xUpBtnSemaphore;
-extern SemaphoreHandle_t xDownBtnSemaphore;
-extern SemaphoreHandle_t xYawFlipSemaphore;
-
-extern TimerHandle_t xUpBtnTimer;
-extern TimerHandle_t xDownBtnTimer;
-
 
 /*
  * Function:    vBtnTimerCallback

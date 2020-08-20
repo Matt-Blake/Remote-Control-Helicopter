@@ -24,14 +24,9 @@
 #include "FreeRTOS.h"
 #include "queue.h"
 #include "event_groups.h"
+#include "FreeRTOSCreate.h"
 
 #define HUNDRED_PERCENT     100         // 100 percent value used for percentage calculations
-
-extern QueueHandle_t    xAltMeasQueue;
-extern QueueHandle_t    xFSMQueue;
-extern TaskHandle_t     ADCMean;
-extern circBuf_t g_inBuffer;
-
 
 /*
  * Function:    Mean_ADC

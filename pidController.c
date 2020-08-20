@@ -21,6 +21,8 @@
 
 #include "pidController.h"
 
+controller_t g_alt_controller;
+controller_t g_yaw_controller;
 
 /*
  * Function:    initController
@@ -88,7 +90,6 @@ getControlSignal(controller_t* piController, int32_t reference, int32_t measurem
 
     double errorSignal;
     double derivativeError;
-    //char string[20];            // String to be sent over UART
 
     // Calculate error signal
     errorSignal = reference - measurement;

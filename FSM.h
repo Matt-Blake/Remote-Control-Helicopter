@@ -36,6 +36,7 @@
 #include "uart.h"
 #include "pidController.h"
 #include "buttons.h"
+#include "FreeRTOSCreate.h"
 
 #define ALT_TOLERANCE           2       // The tolerance in altitude value to trigger state change
 #define YAW_TOLERANCE           2       // The tolerance in yaw value to trigger state change
@@ -45,27 +46,6 @@
 #define LANDING_ALT             30      // The inital desired altitude during the landing sequence
 #define LAND_TMR_PERIOD         300
 #define UART_MESSAGE_SIZE       17      // The number of chars that will be transmitted over UART
-
-extern controller_t g_alt_controller;
-extern controller_t g_yaw_controller;
-
-extern QueueHandle_t xFSMQueue;
-extern QueueHandle_t xAltMesQueue;
-extern QueueHandle_t xAltDesQueue;
-extern QueueHandle_t xMainPWMQueue;     // Delete this once debugging done
-
-extern TaskHandle_t FSMTask;
-extern TaskHandle_t OLEDDisp;
-extern TaskHandle_t UARTDisp;
-extern TaskHandle_t StatLED;
-extern TaskHandle_t BtnCheck;
-extern TaskHandle_t SwiCheck;
-extern TaskHandle_t ADCTrig;
-extern TaskHandle_t ADCMean;
-extern TaskHandle_t MainPWM;
-extern TaskHandle_t TailPWM;
-
-extern TimerHandle_t xLandingTimer;
 
 
 /*

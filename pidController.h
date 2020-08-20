@@ -60,6 +60,8 @@ typedef struct Controllers {
     int32_t     integratedError;  // The total integrated error from previous control cycles. Used in integral control
 } controller_t;
 
+extern controller_t g_alt_controller;
+extern controller_t g_yaw_controller;
 
 /*
  * Function:    initController
