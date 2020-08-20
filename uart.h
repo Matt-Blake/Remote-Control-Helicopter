@@ -28,11 +28,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "inc/hw_memmap.h"
-#include "driverlib/gpio.h"
 #include "driverlib/uart.h"
-#include "driverlib/sysctl.h"
-#include "driverlib/pin_map.h"
 #include "utils/ustdlib.h"
 #include "FreeRTOS.h"
 #include "semphr.h"
