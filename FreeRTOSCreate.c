@@ -15,6 +15,35 @@
 
 #include "FreeRTOSCreate.h"
 
+TaskHandle_t FSMTask;
+TaskHandle_t OLEDDisp;
+TaskHandle_t UARTDisp;
+TaskHandle_t StatLED;
+TaskHandle_t BtnCheck;
+TaskHandle_t SwiCheck;
+TaskHandle_t ADCTrig;
+TaskHandle_t ADCMean;
+TaskHandle_t MainPWM;
+TaskHandle_t TailPWM;
+
+QueueHandle_t xAltMeasQueue;
+QueueHandle_t xAltDesQueue;
+QueueHandle_t xYawMeasQueue;
+QueueHandle_t xYawDesQueue;
+QueueHandle_t xYawSlotQueue;
+QueueHandle_t xFSMQueue;
+
+SemaphoreHandle_t xUARTMutex;
+SemaphoreHandle_t xUpBtnSemaphore;
+SemaphoreHandle_t xYawFlipSemaphore;
+
+EventGroupHandle_t xFoundAltReference;
+EventGroupHandle_t xFoundYawReference;
+
+TimerHandle_t xUpBtnTimer;
+TimerHandle_t xDownBtnTimer;
+TimerHandle_t xLandingTimer;
+
 
 /*
  * Function:    createTasks

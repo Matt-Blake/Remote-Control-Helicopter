@@ -126,5 +126,7 @@ UARTDisplay (void *pvParameters)
         usnprintf(UARTstring, sizeof(UARTstring), "%s\n", states[state]);
         UARTSend(UARTstring);
         UARTSend("------------\n");
+
+        vTaskDelay(UART_PERIOD / portTICK_RATE_MS);
     }
 }

@@ -26,7 +26,6 @@
 #include "FreeRTOSCreate.h"
 #include "uart.h"
 
-#define DISPLAY_PERIOD          200     // Period to refresh the OLED display (ms)
 #define ROW_ZERO                0       // Row zero on the OLED display
 #define ROW_ONE                 1       // Row one on the OLED display
 #define ROW_TWO                 2       // Row two on the OLED display

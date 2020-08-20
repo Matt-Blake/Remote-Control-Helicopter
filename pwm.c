@@ -25,6 +25,9 @@
 
 #include "pwm.h"
 
+controller_t g_alt_controller;
+controller_t g_yaw_controller;
+
 
 /*
  * Function:    initPWM

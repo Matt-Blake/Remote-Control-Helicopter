@@ -23,8 +23,7 @@
 #include "inc/hw_memmap.h"
 #include "FreeRTOS.h"
 #include "task.h"
-
-#define LED_PERIOD      200         // The period used for the statusLED FreeRTOS task (ms)
+#include "FreeRTOSCreate.h"
 
 
 /*

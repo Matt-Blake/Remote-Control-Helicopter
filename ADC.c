@@ -24,6 +24,8 @@
 
 #include "ADC.h"
 
+circBuf_t g_inBuffer;
+
 
 /*
  * Function:    ADCIntHandler

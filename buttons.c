@@ -24,6 +24,11 @@
 
 #include "buttons.h"
 
+static bool btn_state[NUM_BTNS];    // Corresponds to the electrical state
+static bool btn_normal[NUM_BTNS];   // Corresponds to the electrical state
+static bool btn_flag[NUM_BTNS];
+static uint8_t btn_count[NUM_BTNS];
+
 
 /*
  * Function:    vBtnTimerCallback
@@ -414,7 +419,7 @@ ButtonsCheck(void *pvParameters)
             rightButtonPush();
         }
 
-        vTaskDelayUntil(&ui16LastTaskTime, BUTTON_PERIOD/portTICK_RATE_MS); // Wait for the required amount of time to check back.
+        vTaskDelayUntil(&ui16LastTaskTime, INPUT_PERIOD/portTICK_RATE_MS); // Wait for the required amount of time to check back.
     }
 }
 
@@ -434,7 +439,6 @@ void
 SwitchesCheck(void *pvParameters)
 {
     portTickType ui16LastTaskTime;
-    uint32_t ui32SwitchDelay = 25;
     uint32_t state;
     uint16_t R_PREV = GPIOPinRead(SW_PORT_BASE, R_SW_PIN);
     uint16_t L_PREV = GPIOPinRead(SW_PORT_BASE, L_SW_PIN);
@@ -468,6 +472,6 @@ SwitchesCheck(void *pvParameters)
                 UARTSend ("L_SW Low\n\r");
             }
         }
-        vTaskDelayUntil(&ui16LastTaskTime, ui32SwitchDelay/portTICK_RATE_MS);
+        vTaskDelayUntil(&ui16LastTaskTime, INPUT_PERIOD/portTICK_RATE_MS);
     }
 }

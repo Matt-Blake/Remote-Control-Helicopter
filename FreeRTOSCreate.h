@@ -54,6 +54,16 @@
 #define TAIL_PWM_TASK_PRIORITY  6
 #define FSM_TASK_PRIORITY       5
 
+// Task periods (in ms)
+#define LED_PERIOD              200         // The period used for the statusLED FreeRTOS task
+#define DISPLAY_PERIOD          200         // Period to refresh the OLED display
+#define UART_PERIOD             1000        // The period used to send information over UART
+#define INPUT_PERIOD            25          // The period used for the button and switch polling FreeRTOS tasks
+#define SAMPLING_PERIOD         10          // Period of ADC trigger task used to sample the altitude
+#define ALTITUDE_PERIOD         200         // Period used to average and calculate the altitude
+#define CONTROL_PERIOD          20          // Period used in the control loops
+#define FSM_PERIOD              200         // Period used to control state changes in the helicopter's FSM
+
 // Timer periods
 #define DBL_BTN_TMR_PERIOD      1000
 #define YAW_FLIP_TMR_PERIOD     1000
@@ -62,34 +72,34 @@
 #define SEMAPHORE_SIZE          2           // The size used for counting semaphores
 #define TICKS_TO_WAIT           10          // The number of ticks to wait to get a value from a FreeRTOS variable
 
-TaskHandle_t FSMTask;
-TaskHandle_t OLEDDisp;
-TaskHandle_t UARTDisp;
-TaskHandle_t StatLED;
-TaskHandle_t BtnCheck;
-TaskHandle_t SwiCheck;
-TaskHandle_t ADCTrig;
-TaskHandle_t ADCMean;
-TaskHandle_t MainPWM;
-TaskHandle_t TailPWM;
+extern TaskHandle_t FSMTask;
+extern TaskHandle_t OLEDDisp;
+extern TaskHandle_t UARTDisp;
+extern TaskHandle_t StatLED;
+extern TaskHandle_t BtnCheck;
+extern TaskHandle_t SwiCheck;
+extern TaskHandle_t ADCTrig;
+extern TaskHandle_t ADCMean;
+extern TaskHandle_t MainPWM;
+extern TaskHandle_t TailPWM;
 
-QueueHandle_t xAltMeasQueue;
-QueueHandle_t xAltDesQueue;
-QueueHandle_t xYawMeasQueue;
-QueueHandle_t xYawDesQueue;
-QueueHandle_t xYawSlotQueue;
-QueueHandle_t xFSMQueue;
+extern QueueHandle_t xAltMeasQueue;
+extern QueueHandle_t xAltDesQueue;
+extern QueueHandle_t xYawMeasQueue;
+extern QueueHandle_t xYawDesQueue;
+extern QueueHandle_t xYawSlotQueue;
+extern QueueHandle_t xFSMQueue;
 
-SemaphoreHandle_t xUARTMutex;
-SemaphoreHandle_t xUpBtnSemaphore;
-SemaphoreHandle_t xYawFlipSemaphore;
+extern SemaphoreHandle_t xUARTMutex;
+extern SemaphoreHandle_t xUpBtnSemaphore;
+extern SemaphoreHandle_t xYawFlipSemaphore;
 
-EventGroupHandle_t xFoundAltReference;
-EventGroupHandle_t xFoundYawReference;
+extern EventGroupHandle_t xFoundAltReference;
+extern EventGroupHandle_t xFoundYawReference;
 
-TimerHandle_t xUpBtnTimer;
-TimerHandle_t xDownBtnTimer;
-TimerHandle_t xLandingTimer;
+extern TimerHandle_t xUpBtnTimer;
+extern TimerHandle_t xDownBtnTimer;
+extern TimerHandle_t xLandingTimer;
 
 
 /*

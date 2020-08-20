@@ -36,6 +36,7 @@
 #include "utils/ustdlib.h"
 #include "FreeRTOS.h"
 #include "semphr.h"
+#include "FreeRTOSCreate.h"
 
 #define MAX_STR_LEN             32
 #define BAUD_RATE               9600

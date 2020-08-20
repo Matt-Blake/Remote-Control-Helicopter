@@ -26,7 +26,6 @@
 #ifndef PWM_H_
 #define PWM_H_
 
-
 #include <stdint.h>
 #include <stdbool.h>
 #include "inc/hw_memmap.h"
@@ -35,11 +34,12 @@
 #include "driverlib/pwm.h"
 #include "driverlib/sysctl.h"
 #include "yaw.h"
-#include "pidController.h"
 #include "FreeRTOS.h"
 #include "queue.h"
 #include "semphr.h"
 #include "uart.h"
+#include "FreeRTOSCreate.h"
+#include "pidController.h"
 
 //  PWM Hardware Details M0PWM7 (gen 3)
 #define PWM_START_RATE_HZ       200
@@ -76,8 +76,8 @@
 #define MAIN_ROTOR_FACTOR       64/100 // Factor used to compensate for the effect of main rotor
 #define CONVERT_TO_PERCENTAGE   100    // Factor used to convert to percentage
 
-controller_t g_alt_controller;
-controller_t g_yaw_controller;
+extern controller_t g_alt_controller;
+extern controller_t g_yaw_controller;
 
 extern QueueHandle_t xAltMeasQueue;
 extern QueueHandle_t xAltDesQueue;

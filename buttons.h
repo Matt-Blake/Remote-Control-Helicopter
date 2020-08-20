@@ -71,17 +71,11 @@
 #define MIN_YAW             -180                        // The minimum yaw (degrees)
 #define DEGREES_CIRCLE      360                         // The number of degrees in a circle
 
-#define BUTTON_PERIOD       25                          // The period used for the button polling FreeRTOS task (ms)
 #define TIMER_EXPIRY        1                           // The value used to indicate a FreeRTOS time has expired
 
 enum btnNames   {UP = 0, DOWN, LEFT, RIGHT, NUM_BTNS};
 enum btnStates  {RELEASED = 0, PUSHED, NO_CHANGE};
 typedef enum HELI_STATE {LANDED = 0, TAKEOFF = 1, FLYING = 2, LANDING = 3} HELI_STATE;
-
-static bool btn_state[NUM_BTNS];    // Corresponds to the electrical state
-static bool btn_normal[NUM_BTNS];   // Corresponds to the electrical state
-static bool btn_flag[NUM_BTNS];
-static uint8_t btn_count[NUM_BTNS];
 
 extern QueueHandle_t xAltDesQueue;
 extern QueueHandle_t xYawDesQueue;
