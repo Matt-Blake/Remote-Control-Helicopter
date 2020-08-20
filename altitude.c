@@ -33,17 +33,18 @@ static int32_t
 calculateMean(void)
 {
     uint8_t i;
-    int32_t sum = 0;        // Initialize sum
+    int32_t sum = 0;
     int32_t reading;
-    int32_t mean = 0;       // Initialize mean
+    int32_t mean = 0;
 
+    // Sum all values in the circular buffer
     for (i = 0; i < ADC_BUF_SIZE; i++){
         reading = readCircBuf(&g_inBuffer);
         sum = sum + reading;
-    }// Sum all values in circBuf
+    }
 
     mean = (sum/ADC_BUF_SIZE);
-    return mean;                       // Returns mean value
+    return mean;
 }
 
 
@@ -70,11 +71,11 @@ percentageHeight(int32_t groundLevel, int32_t currentValue)
     int32_t maxHeight = 0;
     int32_t percent = 0;
 
-    maxHeight = groundLevel - VOLTAGE_DROP_ADC;                             // ADC value at maximum height
+    maxHeight = groundLevel - VOLTAGE_DROP_ADC;                      // ADC value at maximum height
     percent = HUNDRED_PERCENT - HUNDRED_PERCENT *
-            (currentValue - maxHeight)/(VOLTAGE_DROP_ADC);                  // Calculates percentage altitude
+            (currentValue - maxHeight)/(VOLTAGE_DROP_ADC);           // Calculates percentage altitude
 
-    return percent;                                                         // Returns percentage value
+    return percent;
 }
 
 
@@ -102,17 +103,22 @@ MeanADC(void *pvParameters)
 
     while(1){
         ground_flag = xEventGroupGetBits(xFoundAltReference); // Retrieve the current state of the ground reference
+
+        // Set ground reference if needed
         if (ground_flag == GROUND_BUFFER_FULL) {
             ground = calculateMean();
             xEventGroupClearBits(xFoundAltReference, GROUND_BUFFER_FULL); // Clear previous flag
             xEventGroupSetBits(xFoundAltReference, GROUND_FOUND); // Set flag indicating that the ground reference has been set
             usnprintf(cMessage, sizeof(cMessage), "Ground Found: %d\n\r", ground);
             UARTSend(cMessage);
+
+        // If ground reference has already been set, calculate the current average ADC reading
         } else if (ground_flag == GROUND_FOUND) {
             mean = calculateMean();
             altitude = percentageHeight(ground, mean);
         }
-        xQueueOverwrite(xAltMeasQueue, &altitude);
+
+        xQueueOverwrite(xAltMeasQueue, &altitude); // Update the altitude queue with the new measurement
 
         vTaskDelay(ALTITUDE_PERIOD / portTICK_RATE_MS);
     }

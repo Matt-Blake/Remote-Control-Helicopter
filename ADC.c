@@ -44,17 +44,20 @@ circBuf_t g_inBuffer;
 void
 ADCIntHandler(void)
 {
-    uint32_t ulValue;                                                   // Initialize variable to be used to store ADC value
+    uint32_t ulValue;
     uint32_t ground_flag;
 
-    ground_flag = xEventGroupGetBits(xFoundAltReference);               // Calculate the current state of the ground flag
+    ground_flag = xEventGroupGetBits(xFoundAltReference);                               // Calculate the current state of the ground flag
 
+    // Check if the ground (0% altitude) value can and should be initalised
     if ((g_inBuffer.windex) == (ADC_BUF_SIZE - 1) && (ground_flag == GROUND_NOT_FOUND)) {
         xEventGroupSetBitsFromISR(xFoundAltReference, GROUND_BUFFER_FULL, pdFALSE);     // Set flag indicating the buffer is full and can now be averaged
         UARTSend("ADC Buffer Full\n\r");
     }
+
+    // Sample the analog waveform and store the value in a circular buffer
     ADCSequenceDataGet(ADC0_BASE, ADC_SEQ_NUM, &ulValue);                         // Runs the A-D Conversion and stores the value in ulValue
-    writeCircBuf(&g_inBuffer, ulValue);                                 // Writes the ADC value to the Circular Buffer
+    writeCircBuf(&g_inBuffer, ulValue);                                           // Writes the ADC value to the Circular Buffer
     ADCIntClear(ADC0_BASE, ADC_SEQ_NUM);                                          // Clears the interrupt
 }
 
@@ -108,7 +111,7 @@ void
 TriggerADC(void *pvParameters)
 {
     while(1){
-        ADCProcessorTrigger(ADC0_BASE, ADC_SEQ_NUM);
+        ADCProcessorTrigger(ADC0_BASE, ADC_SEQ_NUM);                // Trigger an ADC reading
 
         vTaskDelay(SAMPLING_PERIOD / portTICK_RATE_MS);
     }
