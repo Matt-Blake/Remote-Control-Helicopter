@@ -40,8 +40,11 @@
 #define YAW_TOLERANCE           2       // The tolerance in yaw value to trigger state change
 #define FIND_REF_PWM_MAIN       15      // The main rotor PWM used to find the reference yaw
 #define FIND_REF_PWM_TAIL       0       // The tail rotor PWM used to find the reference yaw
+#define TAKEOFF_ALT             15      // The desired altitude during the takeoff sequence
+#define LANDING_ALT             30      // The inital desired altitude during the landing sequence
 #define LAND_TMR_PERIOD         300
 #define FSM_PERIOD              200
+#define UART_MESSAGE_SIZE       17      // The number of chars that will be transmitted over UART
 
 extern controller_t g_alt_controller;
 extern controller_t g_yaw_controller;

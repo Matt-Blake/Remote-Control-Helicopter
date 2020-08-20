@@ -40,11 +40,13 @@
 #define DEGREES_CIRCLE      360                         // The number of degrees in a circle
 #define MAX_YAW_LIMIT       179                         // The maximum yaw (degrees)
 #define MIN_YAW_LIMIT       -180                        // The minimum yaw (degrees)
+
 #define YAW_GPIO_BASE       GPIO_PORTB_BASE             // Sets the base for pins J1-03 (PB0, channel A) and J1-04 (PB1, channel B)
 #define QEI_PIN0            GPIO_INT_PIN_0
 #define QEI_PIN1            GPIO_INT_PIN_1
 #define YAW_REFERENCE_BASE  GPIO_PORTC_BASE
 #define YAW_REFERENCE_PIN   GPIO_INT_PIN_4
+#define VALUES_PER_READING  2                           // Number of bits per quadrature reading
 
 extern EventGroupHandle_t xFoundYawReference;
 extern QueueHandle_t xYawMeasQueue;

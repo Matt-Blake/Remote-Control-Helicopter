@@ -70,8 +70,8 @@ initPWM (void)
     PWMGenConfigure(PWM_TAIL_BASE, PWM_TAIL_GEN, PWM_GEN_MODE_UP_DOWN | PWM_GEN_MODE_NO_SYNC);
 
     // Set initial duty cycles
-    setRotorPWM(PWM_FIXED_DUTY, 1);         // Set the initial main PWM parameters
-    setRotorPWM(PWM_FIXED_DUTY, 0);         // Set the initial tail PWM parameters
+    setRotorPWM(PWM_FIXED_DUTY, IS_MAIN_ROTOR);         // Set the initial main PWM parameters
+    setRotorPWM(PWM_FIXED_DUTY, IS_TAIL_ROTOR);         // Set the initial tail PWM parameters
 
     // Enable PWM generators
     PWMGenEnable(PWM_MAIN_BASE, PWM_MAIN_GEN);
@@ -124,12 +124,12 @@ setRotorPWM (uint32_t ui32Duty, bool SET_MAIN)
     if (SET_MAIN == true) // Set PWM freq/duty of the main rotor
     {
         PWMGenPeriodSet(PWM_MAIN_BASE, PWM_MAIN_GEN, ui32Period);
-        PWMPulseWidthSet(PWM_MAIN_BASE, PWM_MAIN_OUTNUM, ui32Period * ui32Duty / 100);
+        PWMPulseWidthSet(PWM_MAIN_BASE, PWM_MAIN_OUTNUM, ui32Period * ui32Duty / CONVERT_TO_PERCENTAGE);
     }
     else // Set PWM freq/duty of the tail rotor
     {
         PWMGenPeriodSet(PWM_TAIL_BASE, PWM_TAIL_GEN, ui32Period);
-        PWMPulseWidthSet(PWM_TAIL_BASE, PWM_TAIL_OUTNUM, ui32Period * ui32Duty / 100);
+        PWMPulseWidthSet(PWM_TAIL_BASE, PWM_TAIL_OUTNUM, ui32Period * ui32Duty / CONVERT_TO_PERCENTAGE);
     }
 }
 
@@ -193,8 +193,8 @@ SetMainDuty(void *pvParameters)
     while (1)
     {
         // Retrieve altitude information
-        xQueuePeek(xAltMeasQueue, &alt_meas,    10); // Retrieve measured altitude data from the RTOS queue
-        xQueuePeek(xAltDesQueue,  &alt_desired, 10); // Retrieve desired altitude data from the RTOS queue
+        xQueuePeek(xAltMeasQueue, &alt_meas,    TICKS_TO_WAIT); // Retrieve measured altitude data from the RTOS queue
+        xQueuePeek(xAltDesQueue,  &alt_desired, TICKS_TO_WAIT); // Retrieve desired altitude data from the RTOS queue
 
         // Set PWM duty cycle of main rotor in order to hover to the desired altitude
         alt_PWM = getControlSignal(&g_alt_controller, alt_desired, alt_meas, false); // Use the error to calculate a PWM duty cycle for the main rotor
@@ -228,8 +228,8 @@ SetTailDuty(void *pvParameters)
     while (1)
     {
         // Retrieve yaw information
-        xQueuePeek(xYawMeasQueue, &yaw_meas,   10); // Retrieve measured yaw data from the RTOS queue
-        xQueuePeek(xYawDesQueue, &yaw_desired, 10); // Retrieve desired yaw data from the RTOS queue
+        xQueuePeek(xYawMeasQueue, &yaw_meas,   TICKS_TO_WAIT); // Retrieve measured yaw data from the RTOS queue
+        xQueuePeek(xYawDesQueue, &yaw_desired, TICKS_TO_WAIT); // Retrieve desired yaw data from the RTOS queue
 
         // Set PWM duty cycle of tail rotor in order to spin to target yaw
         yaw_PWM = getControlSignal(&g_yaw_controller, yaw_desired, yaw_meas, true); // Use the error to calculate a PWM duty cycle for the tail rotor

@@ -96,8 +96,8 @@ createSemaphores(void)
     xUARTMutex =  xSemaphoreCreateMutex();
 
     // Create semaphores used to count button presses
-    xUpBtnSemaphore = xSemaphoreCreateCounting(2, 0);
-    xYawFlipSemaphore = xSemaphoreCreateCounting(2, 0);
+    xUpBtnSemaphore = xSemaphoreCreateCounting(SEMAPHORE_SIZE, 0);
+    xYawFlipSemaphore = xSemaphoreCreateCounting(SEMAPHORE_SIZE, 0);
 }
 
 

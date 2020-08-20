@@ -26,6 +26,7 @@
 #include "event_groups.h"
 
 #define ALTITUDE_PERIOD     200         // Period used to average and calculate the altitude (ms)
+#define HUNDRED_PERCENT     100         // 100 percent value used for percentage calculations
 
 extern QueueHandle_t    xAltMeasQueue;
 extern QueueHandle_t    xFSMQueue;

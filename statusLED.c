@@ -39,7 +39,7 @@ StatusLED(void *pvParameters)
         state ^= GPIO_PIN_2;
         GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, state);
 
-        vTaskDelay(200 / portTICK_RATE_MS);
+        vTaskDelay(LED_PERIOD / portTICK_RATE_MS);
     }
 }
 

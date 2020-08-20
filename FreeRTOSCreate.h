@@ -58,6 +58,10 @@
 #define DBL_BTN_TMR_PERIOD      1000
 #define YAW_FLIP_TMR_PERIOD     1000
 
+// FreeRTOS constants
+#define SEMAPHORE_SIZE          2           // The size used for counting semaphores
+#define TICKS_TO_WAIT           10          // The number of ticks to wait to get a value from a FreeRTOS variable
+
 TaskHandle_t FSMTask;
 TaskHandle_t OLEDDisp;
 TaskHandle_t UARTDisp;

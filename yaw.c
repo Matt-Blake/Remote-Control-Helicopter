@@ -69,7 +69,7 @@ checkYawThresholds(void)
     int32_t yaw;
     int32_t yaw_slot;
 
-    xQueuePeek(xYawSlotQueue, &yaw_slot, 10);
+    xQueuePeek(xYawSlotQueue, &yaw_slot, TICKS_TO_WAIT);
 
     yaw = yaw_slot * DEGREES_CIRCLE / MAX_YAW_SLOTS;
 
@@ -108,7 +108,7 @@ quadratureFSMInterrupt(void)
     static int32_t currentChannelReading = 0;
 
     // Bit shift the old reading and combine with new reading. Creates a 4-bit code unique to each state.
-    uint8_t state_code = currentChannelReading << 2 | newChannelReading;
+    uint8_t state_code = currentChannelReading << VALUES_PER_READING | newChannelReading;
 
     xQueuePeekFromISR(xYawSlotQueue, &yaw_slot); // Get the current number of slots traveled
 
@@ -143,15 +143,14 @@ quadratureFSMInterrupt(void)
 
     currentChannelReading = newChannelReading;
 
+    // Reset the yaw if it has reached upper or lower limit
     if (yaw_slot >= MAX_YAW_SLOTS || yaw_slot <= MIN_YAW_SLOTS)
     {
         yaw_slot = 0;
     }
 
     // Calculate yaw in degrees and store the results
-    //yaw = yaw_slot * MOUNT_SLOT_COUNT/DEGREES_HALF_CIRCLE;      // Convert the number of yaw slots to degrees
     xQueueOverwriteFromISR(xYawSlotQueue, &yaw_slot, pdFALSE);  // Store the current number of slots traveled in the RTOS queue
-    //xQueueOverwriteFromISR(xYawMeasQueue, &yaw, pdFALSE);       // Store the resulting yaw measurement in the RTOS queue
     checkYawThresholds();                                       //Check if yaw has reached its threshold values
     GPIOIntClear(YAW_GPIO_BASE, QEI_PIN0);
     GPIOIntClear(YAW_GPIO_BASE, QEI_PIN1);     // Clears the interrupt on either of the pins
@@ -198,7 +197,6 @@ initQuadrature(void)
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
     GPIOPinTypeQEI(YAW_GPIO_BASE, QEI_PIN0|QEI_PIN1);    // Sets pin types to be Quad Decoding pins (Just makes Phase B HIGH = 2 instead of 1)
     GPIOIntRegister(YAW_GPIO_BASE, quadratureFSMInterrupt);                  // Sets QDIntHandler to be function to handle interrupt
-    //GPIOIntTypeSet(YAW_GPIO_BASE, QEI_PIN0|QEI_PIN1, GPIO_BOTH_EDGES);       // Sets Phase A interrupt on both rising and falling edges
     GPIOIntTypeSet(YAW_GPIO_BASE, QEI_PIN0, GPIO_BOTH_EDGES);       // Sets Phase A interrupt on both rising and falling edges
     GPIOIntTypeSet(YAW_GPIO_BASE, QEI_PIN1, GPIO_BOTH_EDGES);       // Sets Phase B interrupt on both rising and falling edges
     GPIOIntEnable(YAW_GPIO_BASE, QEI_PIN0|QEI_PIN1);       // Enables interruptss

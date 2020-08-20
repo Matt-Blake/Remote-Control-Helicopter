@@ -38,7 +38,7 @@
 void
 GetStackUsage(void)
 {
-    char cMessage[17];
+    char cMessage[UART_MESSAGE_SIZE];
 
     uint32_t StatusLED_stack;
     uint32_t OLEDDisp_stack;
@@ -130,8 +130,10 @@ void
 findYawRef(void)
 {
     UARTSend("Finding Ref\n\r");
-    setRotorPWM(FIND_REF_PWM_MAIN, 1);      // Set the main rotor to on, the torque from the main rotor should work better than using the tail, have to test and actually see whats best
-    setRotorPWM(FIND_REF_PWM_TAIL, 0);
+
+    // Start rotating until reference yaw is found
+    setRotorPWM(FIND_REF_PWM_MAIN, IS_MAIN_ROTOR);
+    setRotorPWM(FIND_REF_PWM_TAIL, IS_TAIL_ROTOR);
 }
 
 
@@ -156,7 +158,7 @@ takeoff(void)
     int32_t yaw;
     int32_t alt;
     int32_t desired_yaw = 0;
-    int32_t desired_alt = 20;
+    int32_t desired_alt = TAKEOFF_ALT;
     int32_t found_yaw;
     int32_t state;
 
@@ -175,8 +177,8 @@ takeoff(void)
         vTaskResume(TailPWM);
         vTaskResume(BtnCheck);      // Re-enable user input
         vTaskResume(SwiCheck);
-        xQueuePeek(xAltMeasQueue, &alt, 10); // Retrieve the current altitude value
-        xQueuePeek(xYawMeasQueue, &yaw, 10); // Retrieve the current yaw value
+        xQueuePeek(xAltMeasQueue, &alt, TICKS_TO_WAIT); // Retrieve the current altitude value
+        xQueuePeek(xYawMeasQueue, &yaw, TICKS_TO_WAIT); // Retrieve the current yaw value
 
         if ((yaw > (-YAW_TOLERANCE)) && (yaw < YAW_TOLERANCE)) { // If reached desired yaw
 
@@ -232,10 +234,10 @@ void
 land(void)
 {
     int32_t ref_yaw = 0;
-    int32_t yaw;
-    int32_t meas;
+    int32_t meas_yaw;
+    int32_t meas_alt;
     int32_t state = LANDING;
-    static int32_t descent = 30;
+    static int32_t descent_alt = LANDING_ALT;
     static int32_t prev_timerID = 0;
 
     int32_t timerID = ( uint32_t ) pvTimerGetTimerID( xLandingTimer );
@@ -244,22 +246,23 @@ land(void)
     vTaskSuspend(SwiCheck); // Disable changes to the helicopter state while landing
 
     xQueueOverwrite(xYawDesQueue, &ref_yaw);
-    xQueuePeek(xAltMeasQueue, &meas, 10);
-    xQueuePeek(xYawMeasQueue, &yaw, 10);
+    xQueuePeek(xAltMeasQueue, &meas_alt, TICKS_TO_WAIT);
+    xQueuePeek(xYawMeasQueue, &meas_yaw, TICKS_TO_WAIT);
 
     if (timerID == 0){
-        xTimerStart(xLandingTimer, 10); // Starts timer
+        xTimerStart(xLandingTimer, TICKS_TO_WAIT); // Starts timer
         vTimerSetTimerID( xLandingTimer, (void *) 1 );
-        descent = meas;
-    }else if ((timerID != prev_timerID) && (meas <= descent)){
-        descent -= 10;
-        if (descent <= 0){ // when landing the heli gives up sometimes and jsut cuts power before reaching the ground
-            descent = 0;
+        descent_alt = meas_alt;
+    }else if ((timerID != prev_timerID) && (meas_alt <= descent_alt)){
+        descent_alt -= ALT_CHANGE; // Slowely decrement altitude
+        if (descent_alt <= 0){ // When landing the heli gives up sometimes and cuts power before reaching the ground
+            descent_alt = 0;
         }
     }
     prev_timerID = timerID;
 
-    if (descent < 2 && meas <= 1 && (yaw <= 2) && (yaw >= -2)) {
+    // Check if have reached landed position
+    if (descent_alt < ALT_TOLERANCE && meas_alt <= ALT_TOLERANCE && (meas_yaw <= YAW_TOLERANCE) && (meas_yaw >= YAW_TOLERANCE)) {
         UARTSend("LANDING_SEQ_FIN\n\r");
         state = LANDED;
         vTimerSetTimerID( xLandingTimer, (void *) 0 );
@@ -267,7 +270,7 @@ land(void)
         xTimerStop( xLandingTimer, 0 );
         vTaskResume(SwiCheck);
     }
-    xQueueOverwrite(xAltDesQueue, &descent);
+    xQueueOverwrite(xAltDesQueue, &descent_alt);
     xQueueOverwrite(xFSMQueue, &state);
 }
 
@@ -294,8 +297,8 @@ landed(void)
     vTaskResume(SwiCheck); // Resume checking the switches
 
     // Set motor duty cycles to minimum
-    setRotorPWM(MIN_DUTY, 1);
-    setRotorPWM(MIN_DUTY, 0);
+    setRotorPWM(MIN_DUTY, IS_MAIN_ROTOR);
+    setRotorPWM(MIN_DUTY, IS_TAIL_ROTOR);
 
     // Reset error on controllers
     g_alt_controller.previousError   = 0;
@@ -326,7 +329,7 @@ FSM(void *pvParameters) {
 
     while(1)
     {
-        xQueuePeek(xFSMQueue, &state, 10);      // Read the current flight mode/state.
+        xQueuePeek(xFSMQueue, &state, TICKS_TO_WAIT);      // Read the current flight mode/state.
         switch(state) {
             case LANDED:
                 landed();

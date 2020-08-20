@@ -33,7 +33,8 @@
 #include "event_groups.h"
 #include "uart.h"
 
-#define SEQ_NUM                 3
+#define ADC_SEQ_NUM             3
+#define ADC_STEP                0
 #define ADC_PERIPH              SYSCTL_PERIPH_ADC0
 #define ADC_BASE                ADC0_BASE
 #define ADC_PRIORITY            1

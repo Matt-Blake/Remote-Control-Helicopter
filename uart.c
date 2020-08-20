@@ -111,11 +111,11 @@ UARTDisplay (void *pvParameters)
     while(1)
     {
         // Retrieve altitude, yaw and PWM information
-        xQueuePeek(xAltDesQueue, &des_alt, 10);
-        xQueuePeek(xAltMeasQueue, &act_alt, 10);
-        xQueuePeek(xYawDesQueue, &des_yaw, 10);
-        xQueuePeek(xYawMeasQueue, &act_yaw, 10);
-        xQueuePeek(xFSMQueue, &state, 10);
+        xQueuePeek(xAltDesQueue,  &des_alt, TICKS_TO_WAIT);
+        xQueuePeek(xAltMeasQueue, &act_alt, TICKS_TO_WAIT);
+        xQueuePeek(xYawDesQueue,  &des_yaw, TICKS_TO_WAIT);
+        xQueuePeek(xYawMeasQueue, &act_yaw, TICKS_TO_WAIT);
+        xQueuePeek(xFSMQueue,     &state,   TICKS_TO_WAIT);
 
         // Send information over UART
         UARTSend("------------\n");

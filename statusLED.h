@@ -24,6 +24,8 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
+#define LED_PERIOD      200         // The period used for the statusLED FreeRTOS task (ms)
+
 
 /*
  * Function:    StatusLED

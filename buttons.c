@@ -53,7 +53,7 @@ vDblBtnTimerCallback( TimerHandle_t xTimer )
     //ulCount++;
 
     /* If the timer has expired stop it from running. */
-    if( ulCount >= 1 )
+    if( ulCount >= TIMER_EXPIRY )
     {
         /* Do not use a block time if calling a timer API function
         from a timer callback function, as doing so could cause a
@@ -217,7 +217,7 @@ upButtonPush(void)
     int32_t alt_desired = 0;
 
     UARTSend ("Up\n");
-    xQueuePeek(xAltDesQueue, &alt_desired, 10); // Retrieve desired altitude data from the RTOS queue
+    xQueuePeek(xAltDesQueue, &alt_desired, TICKS_TO_WAIT); // Retrieve desired altitude data from the RTOS queue
 
     alt_desired += ALT_CHANGE;
 
@@ -247,7 +247,7 @@ downButtonPush(void)
     int32_t alt_desired = 0;
 
     UARTSend ("Down\n");
-    xQueuePeek(xAltDesQueue, &alt_desired, 10); // Retrieve desired altitude data from the RTOS queue
+    xQueuePeek(xAltDesQueue, &alt_desired, TICKS_TO_WAIT); // Retrieve desired altitude data from the RTOS queue
     alt_desired -= ALT_CHANGE;
 
     // Check lower limits of the altitude when left button is pressed
@@ -276,7 +276,7 @@ rightButtonPush(void)
     int32_t yaw_desired = 0;
 
     UARTSend ("Right\n");
-    xQueuePeek(xYawDesQueue, &yaw_desired, 10); // Retrieve desired yaw data from the RTOS queue
+    xQueuePeek(xYawDesQueue, &yaw_desired, TICKS_TO_WAIT); // Retrieve desired yaw data from the RTOS queue
 
     // Check upper limits of the yaw when left button is pressed
     if (yaw_desired <= (MAX_YAW - YAW_CHANGE)) {
@@ -305,7 +305,7 @@ leftButtonPush(void)
     int32_t yaw_desired = 0;
 
     UARTSend ("Left\n");
-    xQueuePeek(xYawDesQueue, &yaw_desired, 10); // Retrieve desired yaw data from the RTOS queue
+    xQueuePeek(xYawDesQueue, &yaw_desired, TICKS_TO_WAIT); // Retrieve desired yaw data from the RTOS queue
 
     // Check upper limits of the yaw if right button is pressed
     if (yaw_desired >= (MIN_YAW + YAW_CHANGE)) {
@@ -337,7 +337,6 @@ void
 ButtonsCheck(void *pvParameters)
 {
     portTickType ui16LastTaskTime;
-    uint32_t ui32ButtonsDelay = 25;
     uint32_t inUpTimeLoop;
     uint32_t inYawTimeLoop;
     int32_t desired_alt;
@@ -351,8 +350,8 @@ ButtonsCheck(void *pvParameters)
         inUpTimeLoop = ( uint32_t ) pvTimerGetTimerID( xUpBtnTimer );
         inYawTimeLoop = ( uint32_t ) pvTimerGetTimerID( xDownBtnTimer );
 
-        xQueuePeek(xYawDesQueue, &desired_yaw, 10);
-        xQueuePeek(xAltDesQueue, &desired_alt, 10);
+        xQueuePeek(xYawDesQueue, &desired_yaw, TICKS_TO_WAIT);
+        xQueuePeek(xAltDesQueue, &desired_alt, TICKS_TO_WAIT);
         /*
          * Check if any buttons have been pressed. Update button state.
          */
@@ -362,13 +361,13 @@ ButtonsCheck(void *pvParameters)
         {
             if(inUpTimeLoop == 0) { // check to see if the timer has ran out
                 vTimerSetTimerID(xUpBtnTimer, (void *) 1);
-                xTimerStart(xUpBtnTimer, 10); // Restarts timer
+                xTimerStart(xUpBtnTimer, TICKS_TO_WAIT); // Restarts timer
             } else {
                 xSemaphoreGive(xUpBtnSemaphore);
             }
 
             if (uxSemaphoreGetCount(xUpBtnSemaphore) == 1) {
-                xSemaphoreTake(xUpBtnSemaphore, 10);
+                xSemaphoreTake(xUpBtnSemaphore, TICKS_TO_WAIT);
                 desired_alt = MODE_1_ALT;
                 xQueueOverwrite(xAltDesQueue, &desired_alt);
             }else {
@@ -383,13 +382,13 @@ ButtonsCheck(void *pvParameters)
         {
             if(inYawTimeLoop == 0) { // check to see if the timer has ran out
                 vTimerSetTimerID(xDownBtnTimer, (void *) 1);
-                xTimerStart(xDownBtnTimer, 10); // Restarts timer
+                xTimerStart(xDownBtnTimer, TICKS_TO_WAIT); // Restarts timer
             } else {
                 xSemaphoreGive(xYawFlipSemaphore);
             }
 
             if (uxSemaphoreGetCount(xYawFlipSemaphore) == 1) {
-                xSemaphoreTake(xYawFlipSemaphore, 10);
+                xSemaphoreTake(xYawFlipSemaphore, TICKS_TO_WAIT);
                 //desired_yaw += 180;
                 if (desired_yaw >= 0) {
                     desired_yaw = desired_yaw - MODE_2_YAW_CHANGE;
@@ -415,7 +414,7 @@ ButtonsCheck(void *pvParameters)
             rightButtonPush();
         }
 
-        vTaskDelayUntil(&ui16LastTaskTime, ui32ButtonsDelay/portTICK_RATE_MS); // Wait for the required amount of time to check back.
+        vTaskDelayUntil(&ui16LastTaskTime, BUTTON_PERIOD/portTICK_RATE_MS); // Wait for the required amount of time to check back.
     }
 }
 
@@ -443,7 +442,7 @@ SwitchesCheck(void *pvParameters)
     ui16LastTaskTime = xTaskGetTickCount(); // Get the current tick count.
 
     while(1) {
-        xQueuePeek(xFSMQueue, &state, 10);
+        xQueuePeek(xFSMQueue, &state, TICKS_TO_WAIT);
         if(GPIOPinRead(SW_PORT_BASE, R_SW_PIN) != R_PREV)
         {
             R_PREV = GPIOPinRead(SW_PORT_BASE, R_SW_PIN);

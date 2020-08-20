@@ -40,16 +40,16 @@ OLEDDisplay (void *pvParameters)
     uint32_t   tail_PWM;        // Current tail duty cycle
     uint32_t   state;           // Current state in the FSM
 
-    char* states[4] = {"Landed", "Take Off", "Flying", "Landing"};
+    char* states[NUM_STATES] = {"Landed", "Take Off", "Flying", "Landing"};
 
     while(1)
     {
         // Retrieve altitude, yaw and PWM information
-        xQueuePeek(xAltDesQueue, &des_alt, 10);
-        xQueuePeek(xAltMeasQueue, &act_alt, 10);
-        xQueuePeek(xYawDesQueue, &des_yaw, 10);
-        xQueuePeek(xYawMeasQueue, &act_yaw, 10);
-        xQueuePeek(xFSMQueue, &state, 10);
+        xQueuePeek(xAltDesQueue, &des_alt, TICKS_TO_WAIT);
+        xQueuePeek(xAltMeasQueue, &act_alt, TICKS_TO_WAIT);
+        xQueuePeek(xYawDesQueue, &des_yaw, TICKS_TO_WAIT);
+        xQueuePeek(xYawMeasQueue, &act_yaw, TICKS_TO_WAIT);
+        xQueuePeek(xFSMQueue, &state, TICKS_TO_WAIT);
         main_PWM = PWMPulseWidthGet(PWM0_BASE, PWM_OUT_7);
         tail_PWM = PWMPulseWidthGet(PWM1_BASE, PWM_OUT_5);
 

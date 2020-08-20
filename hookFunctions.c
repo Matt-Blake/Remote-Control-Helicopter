@@ -55,7 +55,7 @@ vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 void
 vApplicationIdleHook( void )
 {
-    static char runtime_stats_buffer[512];
+    static char runtime_stats_buffer[STAT_BUFFER_SIZE];
 
     vTaskGetRunTimeStats(runtime_stats_buffer); // Calculate CPU load stats
     UARTSend(runtime_stats_buffer); // Print CPU load stats to UART

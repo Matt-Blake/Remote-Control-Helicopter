@@ -20,6 +20,9 @@
 #include "task.h"
 #include "uart.h"
 
+#define STAT_BUFFER_SIZE    512     // The UART buffer size used to send CPU load information
+
+
 /*
  * Function:    vApplicationStackOverflowHook
  * -------------------------------------------

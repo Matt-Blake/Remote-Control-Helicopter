@@ -36,6 +36,7 @@
 #include "semphr.h"
 #include "timers.h"
 #include "uart.h"
+#include "FreeRTOSCreate.h"
 
 #define U_BTN_PERIPH        SYSCTL_PERIPH_GPIOE         // Up Peripheral
 #define U_BTN_PORT_BASE     GPIO_PORTE_BASE             // Up Port Base
@@ -63,11 +64,15 @@
 #define MODE_1_ALT          50                          // The altitude to fly to on a double up button press
 #define MAX_ALT             100                         // The maximum altitude (percentage)
 #define MIN_ALT             0                           // The minimum altitude (percentage)
+
 #define YAW_CHANGE          15                          // The yaw change on button press (degrees)
 #define MODE_2_YAW_CHANGE   180                         // The change in yaw on double down button press
 #define MAX_YAW             179                         // The maximum yaw (degrees)
 #define MIN_YAW             -180                        // The minimum yaw (degrees)
 #define DEGREES_CIRCLE      360                         // The number of degrees in a circle
+
+#define BUTTON_PERIOD       25                          // The period used for the button polling FreeRTOS task (ms)
+#define TIMER_EXPIRY        1                           // The value used to indicate a FreeRTOS time has expired
 
 enum btnNames   {UP = 0, DOWN, LEFT, RIGHT, NUM_BTNS};
 enum btnStates  {RELEASED = 0, PUSHED, NO_CHANGE};

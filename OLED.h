@@ -21,9 +21,10 @@
 #include "driverlib/pwm.h"
 #include "OrbitOLED/OrbitOLEDInterface.h"
 #include "inc/hw_memmap.h"
-#include "uart.h"
 #include "FreeRTOS.h"
 #include "queue.h"
+#include "FreeRTOSCreate.h"
+#include "uart.h"
 
 #define DISPLAY_PERIOD          200     // Period to refresh the OLED display (ms)
 #define ROW_ZERO                0       // Row zero on the OLED display
@@ -32,6 +33,7 @@
 #define ROW_THREE               3       // Row three on the OLED display
 #define COLUMN_ZERO             0       // Column zero on the OLED display
 #define DISPLAY_SIZE            17      // Size of strings for the OLED display
+#define NUM_STATES              4       // The number of helicopter states
 
 extern QueueHandle_t xAltMeasQueue;
 extern QueueHandle_t xAltDesQueue;

@@ -70,7 +70,8 @@ percentageHeight(int32_t groundLevel, int32_t currentValue)
     int32_t percent = 0;
 
     maxHeight = groundLevel - VOLTAGE_DROP_ADC;                             // ADC value at maximum height
-    percent = 100 - (100 * (currentValue - maxHeight)/(VOLTAGE_DROP_ADC));  // Calculates percentage
+    percent = HUNDRED_PERCENT - HUNDRED_PERCENT *
+            (currentValue - maxHeight)/(VOLTAGE_DROP_ADC);                  // Calculates percentage altitude
 
     return percent;                                                         // Returns percentage value
 }
