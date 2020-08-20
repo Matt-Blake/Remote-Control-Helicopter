@@ -53,9 +53,11 @@ extern QueueHandle_t xYawSlotQueue;
 
 
 /*
- * Function:    initQuadrature
- * ----------------------------
- * Initialises the pins and interrupts for quadrature decoding.
+ * Function:    checkYawThresholds
+ * --------------------------------
+ * This function checks whether the yaw has reached the
+ * positive or negative thresholds and resets it to the
+ * opposite threshold if necessary.
  *
  * @params:
  *      - NULL
@@ -63,7 +65,7 @@ extern QueueHandle_t xYawSlotQueue;
  *      - NULL
  * ---------------------
  */
-void initQuadrature(void);
+void checkYawThresholds(void);
 
 /*
  * Function:    initReferenceYaw
@@ -77,5 +79,18 @@ void initQuadrature(void);
  * ---------------------
  */
 void initReferenceYaw(void);
+
+/*
+ * Function:    initQuadrature
+ * ----------------------------
+ * Initialises the pins and interrupts for quadrature decoding.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
+void initQuadrature(void);
 
 #endif /* YAW_H_ */
