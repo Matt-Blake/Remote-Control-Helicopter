@@ -63,7 +63,7 @@ referenceInterrupt(void)
  *      - NULL
  * ---------------------
  */
-void
+static void
 checkYawThresholds(void)
 {
     int32_t yaw;
