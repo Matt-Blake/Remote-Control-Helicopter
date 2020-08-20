@@ -284,7 +284,8 @@ land(void)
  *      - NULL
  * ---------------------
  */
-void landed(void)
+void
+landed(void)
 {
     // Suspend unwanted tasks
     vTaskSuspend(MainPWM); // Suspend the control system while landed

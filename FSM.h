@@ -65,12 +65,113 @@ extern TaskHandle_t TailPWM;
 extern TimerHandle_t xLandingTimer;
 
 
-// CREATE DESCRIPTION
-//void GetStackUsage(void);
+/*
+ * Function:    GetStackUsage
+ * ---------------------------
+ * Function that calculates and transmits over UART
+ * statistics about the stack usage.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
+void GetStackUsage(void);
 
-// CREATE DESCRIPTION
+/*
+ * Function:    vLandTimerCallback
+ * --------------------------------
+ * Callback function for the timer started during the
+ * landing sequence.
+ * Increases timer ID each time function is called.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
 void vLandTimerCallback( TimerHandle_t xTimer );
 
+/*
+ * Function:    findYawRef
+ * ------------------------
+ * Disables the PWM control, buttons, and switches.
+ * Sets the main PWM to be 50% duty cycle in order for the
+ * helicopter to spin.
+ * Once the yaw reference flag has been set by an interrupt,
+ * all tasks resume.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
+void findYawRef(void);
+
+/*
+ * Function:    takeoff
+ * ---------------------
+ * If the reference has not be found, the findYawRef function is
+ * called.
+ * If the reference flag has been set, the helicopter ascends to
+ * 20% height, and rotates to 0 degrees yaw.
+ * Once this position has been reached, the state changes to FLYING.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
+void takeoff(void);
+
+/*
+ * Function:    hover
+ * -------------------
+ * Basic flying mode. All tasks are functional.
+ * Movement is controlled by the GPIO buttons and the PID
+ * controller.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
+void hover(void);
+
+/*
+ * Function:    land
+ * ------------------
+ * Function that sets the desired altitude to 10%, and then
+ * decreases this value by 2% every second.
+ * Once the desired position is reached, the state is changed to
+ * LANDED.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
+void land(void);
+
+/*
+ * Function:    landed
+ * --------------------
+ * Disables all input with the exception of the switches.
+ * Helicopter is in an idle state.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
+void landed(void);
 
 /*
  * Function:    FSM
