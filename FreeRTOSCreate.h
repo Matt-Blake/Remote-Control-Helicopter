@@ -103,69 +103,9 @@ extern TimerHandle_t xLandingTimer;
 
 
 /*
- * Function:    createTasks
- * -------------------------
- * Creates all FreeRTOS tasks used in the system.
- *
- * @params:
- *      - NULL
- * @return:
- *      - NULL
- * ---------------------
- */
-void
-createTasks(void);
-
-
-/*
- * Function:    createQueues
- * -------------------------
- * Creates all FreeRTOS queues used in the system and
- * initialises the values to zero.
- *
- * @params:
- *      - NULL
- * @return:
- *      - NULL
- * ---------------------
- */
-void
-createQueues(void);
-
-
-/*
- * Function:    createSemaphores
- * -------------------------
- * Creates all FreeRTOS semaphores, mutexes and event groups
- * used in the system.
- *
- * @params:
- *      - NULL
- * @return:
- *      - NULL
- * ---------------------
- */
-void createSemaphores(void);
-
-
-/*
- * Function:    createSemaphores
- * -------------------------
- * Creates all FreeRTOS EventGroups used as flags in the system.
- *
- * @params:
- *      - NULL
- * @return:
- *      - NULL
- * ---------------------
- */
-void createEventGroups(void);
-
-
-/*
- * Function:    createTimers
+ * Function:    initFreeRTOS
  * --------------------------
- * Creates all FreeRTOS timers used in the system.
+ * Call to all initialize functions for FreeRTOS components
  *
  * @params:
  *      - NULL
@@ -173,7 +113,6 @@ void createEventGroups(void);
  *      - NULL
  * ---------------------
  */
-void
-createTimers(void);
+void initFreeRTOS(void);
 
 #endif /* FREERTOSCREATE_H_ */
