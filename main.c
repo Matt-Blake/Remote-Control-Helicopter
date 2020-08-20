@@ -59,6 +59,7 @@ initSystem(void)
     IntMasterDisable();         // Disable system interrupts while the program is initializing.
     initClk();                  // Initialise the system clock
     initialiseUSB_UART();       // Initialise UART communication over USB
+    initFreeRTOS();             // Initialize FreeRTOS components
     initReset();                // Initialise the hard reset of the system
     initLED();                  // Initialise the status LED
     OLEDInitialise();           // Initialise the OLED display
@@ -89,11 +90,7 @@ int
 main(void)
  {
     initSystem();
-    createTasks();
-    createQueues();
     initControllers();          // Initalaize the PWM duty controllers
-    createSemaphores();
-    createTimers();
     UARTSend("Starting...\n");
 
     vTaskStartScheduler();

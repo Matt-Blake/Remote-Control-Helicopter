@@ -56,7 +56,7 @@ TimerHandle_t xLandingTimer;
  *      - NULL
  * ---------------------
  */
-void
+static void
 createTasks(void)
 {
     xTaskCreate(StatusLED,      "LED Task",     LED_STACK_DEPTH,        NULL,       LED_TASK_PRIORITY,      &StatLED);
@@ -84,7 +84,7 @@ createTasks(void)
  *      - NULL
  * ---------------------
  */
-void
+static void
 createQueues(void)
 {
     int32_t queue_init = 0; // Value used to initalise queuea
@@ -118,7 +118,7 @@ createQueues(void)
  *      - NULL
  * ---------------------
  */
-void
+static void
 createSemaphores(void)
 {
     // Create mutexs to avoid race conditions
@@ -141,7 +141,7 @@ createSemaphores(void)
  *      - NULL
  * ---------------------
  */
-void
+static void
 createEventGroups(void)
 {
     int event_init = 0; //  Value used to initalise event groups
@@ -166,7 +166,7 @@ createEventGroups(void)
  *      - NULL
  * ---------------------
  */
-void
+static void
 createTimers(void)
 {
     xUpBtnTimer     = xTimerCreate( "Button Timer", DBL_BTN_TMR_PERIOD
@@ -175,6 +175,28 @@ createTimers(void)
                                     / portTICK_RATE_MS, pdFALSE, ( void * ) 0, vDblBtnTimerCallback );
     xLandingTimer   = xTimerCreate( "Land Timer", LAND_TMR_PERIOD
                                     / portTICK_RATE_MS, pdTRUE,  ( void * ) 0, vLandTimerCallback );
+}
+
+
+/*
+ * Function:    initFreeRTOS
+ * --------------------------
+ * Call to all initialize functions for FreeRTOS components
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
+void
+initFreeRTOS(void)
+{
+    createTasks();
+    createQueues();
+    createSemaphores();
+    createEventGroups();
+    createTimers();
 }
 
 
