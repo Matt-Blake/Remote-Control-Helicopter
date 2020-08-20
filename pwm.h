@@ -73,8 +73,8 @@
 
 #define IS_MAIN_ROTOR           1
 #define IS_TAIL_ROTOR           0
-#define MAIN_ROTOR_FACTOR       64/100 // Factor used to compensate for the effect of main rotor
-#define CONVERT_TO_PERCENTAGE   100    // Factor used to convert to percentage
+#define MAIN_ROTOR_FACTOR       64/100              // Factor used to compensate for the effect of main rotor
+#define CONVERT_TO_PERCENTAGE   100                 // Factor used to convert to percentage
 
 extern controller_t g_alt_controller;
 extern controller_t g_yaw_controller;

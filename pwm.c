@@ -201,7 +201,7 @@ SetMainDuty(void *pvParameters)
 
         // Set PWM duty cycle of main rotor in order to hover to the desired altitude
         alt_PWM = getControlSignal(&g_alt_controller, alt_desired, alt_meas, false); // Use the error to calculate a PWM duty cycle for the main rotor
-        setRotorPWM(alt_PWM, 1); // Set main rotor to calculated PWM
+        setRotorPWM(alt_PWM, IS_MAIN_ROTOR); // Set main rotor to calculated PWM
 
         vTaskDelay(CONTROL_PERIOD / portTICK_RATE_MS); // Block task so lower priority tasks can run
     }
@@ -237,7 +237,7 @@ SetTailDuty(void *pvParameters)
         // Set PWM duty cycle of tail rotor in order to spin to target yaw
         yaw_PWM = getControlSignal(&g_yaw_controller, yaw_desired, yaw_meas, true); // Use the error to calculate a PWM duty cycle for the tail rotor
         yaw_PWM = yaw_PWM + (alt_PWM * MAIN_ROTOR_FACTOR); // Compensate tail PWM due to effect of main rotor duty cycle
-        setRotorPWM(yaw_PWM, 0); // Set tail rotor to calculated PWM
+        setRotorPWM(yaw_PWM, IS_TAIL_ROTOR); // Set tail rotor to calculated PWM
 
         vTaskDelay(CONTROL_PERIOD / portTICK_RATE_MS); // Block task so lower priority tasks can run
     }

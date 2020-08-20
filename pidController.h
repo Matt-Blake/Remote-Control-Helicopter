@@ -26,7 +26,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include "uart.h"
-//#include "FreeRTOSCreate.h"
+#include "FreeRTOSCreate.h"
 
 #define ALT_KP              45          // Altitude proportional gain
 #define ALT_KI              15          // Altitude integral gain
