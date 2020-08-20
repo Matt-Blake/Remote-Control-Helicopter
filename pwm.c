@@ -134,42 +134,6 @@ setRotorPWM (uint32_t ui32Duty, bool SET_MAIN)
 
 
 /*
- * Function:    turnOnMainPWM
- * ---------------------------
- * Turns on the main motor PWM output.
- *
- * @params:
- *      - NULL
- * @return:
- *      - NULL
- * ---------------------
- */
-static void
-turnOnMainPWM(void)
-{
-    PWMOutputState(PWM_MAIN_BASE, PWM_MAIN_OUTBIT, true);
-}
-
-
-/*
- * Function:    turnOnTailPWM
- * ---------------------------
- * Turns on the tail motor PWM output.
- *
- * @params:
- *      - NULL
- * @return:
- *      - NULL
- * ---------------------
- */
-static void
-turnOnTailPWM(void)
-{
-    PWMOutputState(PWM_TAIL_BASE, PWM_TAIL_OUTBIT, true);
-}
-
-
-/*
  * Function:    SetMainDuty
  * -------------------------
  * FreeRTOS task that periodically calls functions to set the PWM
