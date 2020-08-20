@@ -25,9 +25,6 @@
 
 #include "pwm.h"
 
-controller_t g_alt_controller;
-controller_t g_yaw_controller;
-
 
 /*
  * Function:    initPWM
@@ -147,7 +144,7 @@ setRotorPWM (uint32_t ui32Duty, bool SET_MAIN)
  *      - NULL
  * ---------------------
  */
-void
+static void
 turnOnMainPWM(void)
 {
     PWMOutputState(PWM_MAIN_BASE, PWM_MAIN_OUTBIT, true);
@@ -165,7 +162,7 @@ turnOnMainPWM(void)
  *      - NULL
  * ---------------------
  */
-void
+static void
 turnOnTailPWM(void)
 {
     PWMOutputState(PWM_TAIL_BASE, PWM_TAIL_OUTBIT, true);

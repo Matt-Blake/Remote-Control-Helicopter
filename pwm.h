@@ -90,6 +90,7 @@
  */
 void initPWM (void);
 
+
 /*
  * Function:    initControllers
  * -----------------------------
@@ -102,8 +103,9 @@ void initPWM (void);
  *      - NULL
  * ---------------------
  */
-void
-initControllers(void);
+void initControllers(void);
+
+
 /*
  * Function:    setRotorPWM
  * -------------------------
@@ -119,31 +121,6 @@ initControllers(void);
  */
 void setRotorPWM(uint32_t ui32Duty, bool SET_MAIN);
 
-/*
- * Function:    turnOnMainPWM
- * ---------------------------
- * Turns on the main motor PWM output.
- *
- * @params:
- *      - NULL
- * @return:
- *      - NULL
- * ---------------------
- */
-void turnOnMainPWM(void);
-
-/*
- * Function:    turnOnTailPWM
- * ---------------------------
- * Turns on the tail motor PWM output.
- *
- * @params:
- *      - NULL
- * @return:
- *      - NULL
- * ---------------------
- */
-void turnOnTailPWM(void);
 
 /*
  * Function:    SetMainDuty
