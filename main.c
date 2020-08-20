@@ -7,7 +7,7 @@
  * This program is designed for the Texas Instruments Tiva Board
  * and the Orbit Boosterpack.
  *
- * ENCE464 Assig nment 1 Group 2
+ * ENCE464 Assignment 1 Group 2
  * Creators: Grayson Mynott      56353855
  *           Ryan Earwaker       12832870
  *           Matt Blake          58979250
@@ -37,7 +37,6 @@
 static void
 initClk(void)
 {
-    // Initialise clock frequency to 80 MHz
     SysCtlClockSet (SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
 }
 
