@@ -353,15 +353,15 @@ ButtonsCheck(void *pvParameters)
     // Loop forever.
     while(1)
     {
+        // Initalise timers used to count double button presses
         inUpTimeLoop = ( uint32_t ) pvTimerGetTimerID( xUpBtnTimer );
         inYawTimeLoop = ( uint32_t ) pvTimerGetTimerID( xDownBtnTimer );
 
+        // Retrieve desired helicopter values
         xQueuePeek(xYawDesQueue, &desired_yaw, TICKS_TO_WAIT);
         xQueuePeek(xAltDesQueue, &desired_alt, TICKS_TO_WAIT);
-        /*
-         * Check if any buttons have been pressed. Update button state.
-         */
-        updateButtons();
+
+        updateButtons(); // Check if any buttons have been pressed
 
         if(checkButton(UP) == PUSHED)
         {
@@ -372,30 +372,26 @@ ButtonsCheck(void *pvParameters)
                 xSemaphoreGive(xUpBtnSemaphore);
             }
 
-            if (uxSemaphoreGetCount(xUpBtnSemaphore) == 1) {
+            if (uxSemaphoreGetCount(xUpBtnSemaphore) == 1) { // If a double button press is recorded
                 xSemaphoreTake(xUpBtnSemaphore, TICKS_TO_WAIT);
                 desired_alt = MODE_1_ALT;
                 xQueueOverwrite(xAltDesQueue, &desired_alt);
-            }else {
-                /*
-                 * Call the up button handler to increase target altitude by 10%
-                 */
+            }else { // If a single button press is recorded
                 upButtonPush();
             }
         }
 
         if(checkButton(DOWN) == PUSHED)
         {
-            if(inYawTimeLoop == 0) { // check to see if the timer has ran out
+            if(inYawTimeLoop == 0) { // Check to see if the timer has ran out
                 vTimerSetTimerID(xDownBtnTimer, (void *) 1);
                 xTimerStart(xDownBtnTimer, TICKS_TO_WAIT); // Restarts timer
             } else {
                 xSemaphoreGive(xYawFlipSemaphore);
             }
 
-            if (uxSemaphoreGetCount(xYawFlipSemaphore) == 1) {
+            if (uxSemaphoreGetCount(xYawFlipSemaphore) == 1) { // If a double button press is recorded
                 xSemaphoreTake(xYawFlipSemaphore, TICKS_TO_WAIT);
-                //desired_yaw += 180;
                 if (desired_yaw >= 0) {
                     desired_yaw = desired_yaw - MODE_2_YAW_CHANGE;
                 } else {
@@ -404,10 +400,7 @@ ButtonsCheck(void *pvParameters)
                 desired_alt += ALT_CHANGE;
                 xQueueOverwrite(xYawDesQueue, &desired_yaw);
                 xQueueOverwrite(xAltDesQueue, &desired_alt);
-            }else {
-                /*
-                 * Call the down button handler to decrease target altitude by 10%
-                 */
+            }else { // If a single button press is recorded
                 downButtonPush();
             }
         }

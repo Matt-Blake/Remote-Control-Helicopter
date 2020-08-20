@@ -110,7 +110,6 @@ getControlSignal(controller_t* piController, int32_t reference, int32_t measurem
     //Calculate the control signal using PID methods and duty cycle
     derivativeError = (errorSignal - piController->previousError)/(piController->timeStep);
     piController->integratedError += piController->timeStep * errorSignal;
-
     controlSignal = (piController->Kp * errorSignal)  + (piController->Ki * piController->integratedError)/MS_TO_SECONDS + (piController->Kd) * derivativeError * MS_TO_SECONDS;
     dutyCycle = (controlSignal/(piController->divisor));
 

@@ -36,6 +36,7 @@ StatusLED(void *pvParameters)
 
     while(1)
     {
+        // Toggle LED on/off
         state ^= GPIO_PIN_2;
         GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, state);
 

@@ -53,17 +53,19 @@ OLEDDisplay (void *pvParameters)
         main_PWM = PWMPulseWidthGet(PWM0_BASE, PWM_OUT_7);
         tail_PWM = PWMPulseWidthGet(PWM1_BASE, PWM_OUT_5);
 
-
+        // Print altitude information
         usnprintf(string, sizeof(string), "Alt(%%) %3d|%3d ", des_alt, act_alt);
         OLEDStringDraw(string, COLUMN_ZERO, ROW_ZERO);
 
+        // Print yaw information
         usnprintf(string, sizeof(string), "Yaw   %4d|%3d ", des_yaw, act_yaw);
         OLEDStringDraw(string, COLUMN_ZERO, ROW_ONE);
 
-
+        // Print PWM information
         usnprintf(string, sizeof(string), "PWM(%%) %3d|%3d ", main_PWM, tail_PWM);
         OLEDStringDraw(string, COLUMN_ZERO, ROW_TWO);
 
+        // Print state information
         usnprintf(string, sizeof(string), "%s     ", states[state]);
         OLEDStringDraw(string, COLUMN_ZERO, ROW_THREE);
 
