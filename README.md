@@ -1,6 +1,8 @@
 # ENCE464 FreeRTOS Helicopter Project
 Matt Blake       (ID: 58979250)
+
 Ryan Earwaker    (ID: 12832870)
+
 Grayson Mynott   (ID: 56353855)
 
 # Project Description
