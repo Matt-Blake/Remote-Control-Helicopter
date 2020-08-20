@@ -147,7 +147,7 @@ initBtns(void)
  *      - NULL
  * ---------------------
  */
-void
+static void
 updateButtons(void)
 {
     bool btn_value[NUM_BTNS];
@@ -191,7 +191,7 @@ updateButtons(void)
  *      - uint8_t btnState - The chance in the button's state
  * ---------------------
  */
-uint8_t
+static uint8_t
 checkButton(uint8_t btnName)
 {
     if (btn_flag[btnName])
@@ -217,7 +217,7 @@ checkButton(uint8_t btnName)
  *      - NULL
  * ---------------------
  */
-void
+static void
 upButtonPush(void)
 {
     int32_t alt_desired = 0;
@@ -247,7 +247,7 @@ upButtonPush(void)
  *      - NULL
  * ---------------------
  */
-void
+static void
 downButtonPush(void)
 {
     int32_t alt_desired = 0;
@@ -276,7 +276,7 @@ downButtonPush(void)
  *      - NULL
  * ---------------------
  */
-void
+static void
 rightButtonPush(void)
 {
     int32_t yaw_desired = 0;
@@ -305,7 +305,7 @@ rightButtonPush(void)
  *      - NULL
  * ---------------------
  */
-void
+static void
 leftButtonPush(void)
 {
     int32_t yaw_desired = 0;

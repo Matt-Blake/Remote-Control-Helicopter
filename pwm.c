@@ -25,9 +25,6 @@
 
 #include "pwm.h"
 
-controller_t g_alt_controller;
-controller_t g_yaw_controller;
-
 
 /*
  * Function:    initPWM
@@ -133,42 +130,6 @@ setRotorPWM (uint32_t ui32Duty, bool SET_MAIN)
         PWMGenPeriodSet(PWM_TAIL_BASE, PWM_TAIL_GEN, ui32Period);
         PWMPulseWidthSet(PWM_TAIL_BASE, PWM_TAIL_OUTNUM, ui32Period * ui32Duty / CONVERT_TO_PERCENTAGE);
     }
-}
-
-
-/*
- * Function:    turnOnMainPWM
- * ---------------------------
- * Turns on the main motor PWM output.
- *
- * @params:
- *      - NULL
- * @return:
- *      - NULL
- * ---------------------
- */
-void
-turnOnMainPWM(void)
-{
-    PWMOutputState(PWM_MAIN_BASE, PWM_MAIN_OUTBIT, true);
-}
-
-
-/*
- * Function:    turnOnTailPWM
- * ---------------------------
- * Turns on the tail motor PWM output.
- *
- * @params:
- *      - NULL
- * @return:
- *      - NULL
- * ---------------------
- */
-void
-turnOnTailPWM(void)
-{
-    PWMOutputState(PWM_TAIL_BASE, PWM_TAIL_OUTBIT, true);
 }
 
 

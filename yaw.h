@@ -24,9 +24,6 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "driverlib/gpio.h"
-#include "driverlib/sysctl.h"
-#include "inc/hw_memmap.h"
 #include "FreeRTOS.h"
 #include "queue.h"
 #include "event_groups.h"
@@ -48,21 +45,6 @@
 #define YAW_REFERENCE_PIN   GPIO_INT_PIN_4
 #define VALUES_PER_READING  2                           // Number of bits per quadrature reading
 
-
-/*
- * Function:    checkYawThresholds
- * --------------------------------
- * This function checks whether the yaw has reached the
- * positive or negative thresholds and resets it to the
- * opposite threshold if necessary.
- *
- * @params:
- *      - NULL
- * @return:
- *      - NULL
- * ---------------------
- */
-void checkYawThresholds(void);
 
 /*
  * Function:    initReferenceYaw

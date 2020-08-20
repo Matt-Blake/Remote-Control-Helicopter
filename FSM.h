@@ -25,17 +25,12 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "driverlib/gpio.h"
-#include "driverlib/sysctl.h"
-#include "inc/hw_memmap.h"
-#include "pwm.h"
 #include "FreeRTOS.h"
 #include "queue.h"
 #include "event_groups.h"
 #include "timers.h"
+#include "pwm.h"
 #include "uart.h"
-#include "pidController.h"
-#include "buttons.h"
 #include "FreeRTOSCreate.h"
 
 #define ALT_TOLERANCE           2       // The tolerance in altitude value to trigger state change
@@ -47,20 +42,6 @@
 #define LAND_TMR_PERIOD         300
 #define UART_MESSAGE_SIZE       17      // The number of chars that will be transmitted over UART
 
-
-/*
- * Function:    GetStackUsage
- * ---------------------------
- * Function that calculates and transmits over UART
- * statistics about the stack usage.
- *
- * @params:
- *      - NULL
- * @return:
- *      - NULL
- * ---------------------
- */
-void GetStackUsage(void);
 
 /*
  * Function:    vLandTimerCallback
@@ -77,84 +58,6 @@ void GetStackUsage(void);
  */
 void vLandTimerCallback( TimerHandle_t xTimer );
 
-/*
- * Function:    findYawRef
- * ------------------------
- * Disables the PWM control, buttons, and switches.
- * Sets the main PWM to be 50% duty cycle in order for the
- * helicopter to spin.
- * Once the yaw reference flag has been set by an interrupt,
- * all tasks resume.
- *
- * @params:
- *      - NULL
- * @return:
- *      - NULL
- * ---------------------
- */
-void findYawRef(void);
-
-/*
- * Function:    takeoff
- * ---------------------
- * If the reference has not be found, the findYawRef function is
- * called.
- * If the reference flag has been set, the helicopter ascends to
- * 20% height, and rotates to 0 degrees yaw.
- * Once this position has been reached, the state changes to FLYING.
- *
- * @params:
- *      - NULL
- * @return:
- *      - NULL
- * ---------------------
- */
-void takeoff(void);
-
-/*
- * Function:    hover
- * -------------------
- * Basic flying mode. All tasks are functional.
- * Movement is controlled by the GPIO buttons and the PID
- * controller.
- *
- * @params:
- *      - NULL
- * @return:
- *      - NULL
- * ---------------------
- */
-void hover(void);
-
-/*
- * Function:    land
- * ------------------
- * Function that sets the desired altitude to 10%, and then
- * decreases this value by 2% every second.
- * Once the desired position is reached, the state is changed to
- * LANDED.
- *
- * @params:
- *      - NULL
- * @return:
- *      - NULL
- * ---------------------
- */
-void land(void);
-
-/*
- * Function:    landed
- * --------------------
- * Disables all input with the exception of the switches.
- * Helicopter is in an idle state.
- *
- * @params:
- *      - NULL
- * @return:
- *      - NULL
- * ---------------------
- */
-void landed(void);
 
 /*
  * Function:    FSM

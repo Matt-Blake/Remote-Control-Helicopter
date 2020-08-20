@@ -35,7 +35,7 @@
  *      - NULL
  * ---------------------
  */
-void
+static void
 GetStackUsage(void)
 {
     char cMessage[UART_MESSAGE_SIZE];
@@ -126,7 +126,7 @@ void vLandTimerCallback( TimerHandle_t xTimer )
  *      - NULL
  * ---------------------
  */
-void
+static void
 findYawRef(void)
 {
     UARTSend("Finding Ref\n\r");
@@ -152,7 +152,7 @@ findYawRef(void)
  *      - NULL
  * ---------------------
  */
-void
+static void
 takeoff(void)
 {
     int32_t yaw;
@@ -205,7 +205,7 @@ takeoff(void)
  *      - NULL
  * ---------------------
  */
-void
+static void
 hover(void)
 {
     // Resume suspended tasks
@@ -230,7 +230,7 @@ hover(void)
  *      - NULL
  * ---------------------
  */
-void
+static void
 land(void)
 {
     int32_t ref_yaw = 0;
@@ -287,7 +287,7 @@ land(void)
  *      - NULL
  * ---------------------
  */
-void
+static void
 landed(void)
 {
     // Suspend unwanted tasks

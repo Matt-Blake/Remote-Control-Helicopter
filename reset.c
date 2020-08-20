@@ -35,7 +35,8 @@
  *      - NULL
  * ---------------------
  */
-void resetInterrupt(void)
+void
+resetInterrupt(void)
 {
     int32_t resetRead = GPIOPinRead(GPIO_PORTB_BASE, RESET_GPIO_PIN);
     UARTSend("RESET/n/r");
@@ -55,7 +56,8 @@ void resetInterrupt(void)
  *      - NULL
  * ---------------------
  */
-void initReset(void)
+void
+initReset(void)
 {
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
 

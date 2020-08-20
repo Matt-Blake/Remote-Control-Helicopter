@@ -97,13 +97,6 @@ getControlSignal(controller_t* piController, int32_t reference, int32_t measurem
     //Clockwise rotation corresponds to low power in motors
     if(isYaw)
     {
-        //usnprintf(string, sizeof(string), "ref   %4d\n\r", round(reference));
-        //UARTSend(string);
-        //usnprintf(string, sizeof(string), "meas   %4d\n\r", round(measurement));
-        //UARTSend(string);
-        //usnprintf(string, sizeof(string), "Error   %4d\n", round(errorSignal));
-        //UARTSend(string);
-        //errorSignal = -errorSignal;
         // If the error would cause a rotation in the wrong direction
         if(errorSignal >= (DEGREES_CIRCLE/2))
         {

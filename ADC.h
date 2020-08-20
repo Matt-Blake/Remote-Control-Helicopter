@@ -45,7 +45,7 @@
 #define GROUND_BUFFER_FULL      (1 << 0)            // Flag value to indicate that the ADC buffer is full
 #define GROUND_FOUND            (1 << 1)            // Flag value to indicate that ground reference has been found
 
-extern circBuf_t g_inBuffer;                                                                                              // Should init xFoundAltRef in altitude.c or ADC.c, not main
+extern circBuf_t g_inBuffer;
 
 
 /*
