@@ -34,12 +34,6 @@
 #define DISPLAY_SIZE            17      // Size of strings for the OLED display
 #define NUM_STATES              4       // The number of helicopter states
 
-extern QueueHandle_t xAltMeasQueue;
-extern QueueHandle_t xAltDesQueue;
-extern QueueHandle_t xYawMeasQueue;
-extern QueueHandle_t xYawDesQueue;
-extern QueueHandle_t xFSMQueue;
-
 
 /*
  * Function:    OLEDDisplay

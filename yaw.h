@@ -48,11 +48,6 @@
 #define YAW_REFERENCE_PIN   GPIO_INT_PIN_4
 #define VALUES_PER_READING  2                           // Number of bits per quadrature reading
 
-extern EventGroupHandle_t xFoundYawReference;
-extern QueueHandle_t xYawMeasQueue;
-extern QueueHandle_t xYawDesQueue;
-extern QueueHandle_t xYawSlotQueue;
-
 
 /*
  * Function:    checkYawThresholds
