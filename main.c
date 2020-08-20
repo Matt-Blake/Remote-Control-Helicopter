@@ -19,22 +19,8 @@
 #include <stdint.h>
 #include "driverlib/interrupt.h"
 #include "FreeRTOS.h"
-//#include "task.h"
-//#include "queue.h"
-//#include "semphr.h"
-//#include "event_groups.h"
-//#include "timers.h"
-//#include "statusLED.h"
-//#include "OLED.h"
 #include "FreeRTOSCreate.h"
-//#include "pwm.h"
 #include "reset.h"
-//#include "yaw.h"
-//#include "uart.h"
-//#include "altitude.h"
-//#include "buttons.h"
-//#include "pidController.h"
-//#include "FSM.h"
 
 
 /*
@@ -59,7 +45,7 @@ initClk(void)
  * Function:    initSystem
  * ------------------------
  * Calls to all Initialising fuctions required to
- * fully Initialise the system.
+ * fully initialise the system.
  *
  * @params:
  *      - NULL

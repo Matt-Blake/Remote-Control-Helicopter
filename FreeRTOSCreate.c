@@ -58,7 +58,7 @@ createTasks(void)
 void
 createQueues(void)
 {
-    int32_t queue_init = 0; // Value used to initalise queues
+    int32_t queue_init = 0; // Value used to initalise queuea
 
     // Create queues
     xAltMeasQueue   = xQueueCreate(1, sizeof( int32_t ) );

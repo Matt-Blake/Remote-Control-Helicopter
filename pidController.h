@@ -46,8 +46,9 @@
 
 
 /* ******************************************************
- * Sets up PID controller struct values that will be used
- * for both the altitude control and the yaw control.
+ * Define a structure which will contain all the
+ * information needed to create a control system, such
+ * as the gains and previous errors.
  * *****************************************************/
 typedef struct Controllers {
     int32_t     Kp;             // Proportional gain

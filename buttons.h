@@ -90,30 +90,153 @@ extern TimerHandle_t xUpBtnTimer;
 extern TimerHandle_t xDownBtnTimer;
 
 
-// Debounce algorithm: A state machine is associated with each button.
-// A state change occurs only after NUM_BUT_POLLS consecutive polls have
-// read the pin in the opposite condition, before the state changes and
-// a flag is set.  Set NUM_BUT_POLLS according to the polling rate.
-
-
+/*
+ * Function:    vBtnTimerCallback
+ * -------------------------------
+ * Handler for the button timer.
+ * When the button timer expires, this function
+ * resets the timer ID.
+ *
+ * @params:
+ *      - TimeHandle_t xTimer - the timer being handled
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
 void vDblBtnTimerCallback( TimerHandle_t xTimer );
 
-/* ******************************************************
- * initButtons: Initialise the variables associated with the set of buttons
- * defined by the constants above.
- * *****************************************************/
+/*
+ * Function:    initBtns
+ * ---------------------
+ * Initialises the Tiva board and Orbit Boosterback's
+ * buttons and switches for user input.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
 void initBtns (void);
 
-/* ******************************************************
- * ButtonsCheck: checks if buttons associated with altitude and yaw have
- * been pushed and increments accordingly
- * *****************************************************/
+/*
+ * Function:    updateButtons
+ * ---------------------
+ * Polls the buttons to check for button presses.
+ * This includes a FSM where a state change occurs
+ * only after NUM_BTN_POLLS consecutive polls have
+ * read the pin in the opposite condition, before the state changes and
+ * a flag is set.  Set NUM_BTN_POLLS according to the polling rate.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
+void updateButtons(void);
+
+/*
+ * Function:    checkButton
+ * ---------------------
+ * Function that returns if the logic state of a button has
+ * changed since last called.
+ *
+ * @params:
+ *      - uint8_t btnName - the button being checked
+ * @return:
+ *      - uint8_t btnState - The chance in the button's state
+ * ---------------------
+ */
+uint8_t checkButton(uint8_t btnName);
+
+/*
+ * Function:    upButtonPush
+ * ---------------------
+ * Handler for the up button.
+ * Increments the helicopter's desired altitude by 10%
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
+void upButtonPush(void);
+
+/*
+ * Function:    downButtonPush
+ * ---------------------
+ * Handler for the down button.
+ * Decrements the helicopter's desired altitude by 10%
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
+void downButtonPush(void);
+
+/*
+ * Function:    rightButtonPush
+ * ---------------------
+ * Handler for the right button.
+ * Increments the helicopter's desired altitude by 10%
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
+void rightButtonPush(void);
+
+/*
+ * Function:    leftButtonPush
+ * ---------------------
+ * Handler for the left button.
+ * decrements the helicopter's desired altitude by 10%
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
+void leftButtonPush(void);
+
+/*
+ * Function:    ButtonsCheck
+ * ---------------------
+ * FreeRTOS task which polls the buttons to check for button presses
+ * For each button the following procedure is run:
+ *
+ * If Button State is PUSHED:
+ *      Update Target Altitude/Yaw accordingly
+ *      If Target Alt/Yaw is now beyond the limits:
+ *          Update targets to be at limit (0->100 for Alt, -180->179 for Yaw).
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
 void ButtonsCheck(void *pvParameters);
 
-/* ******************************************************
- * SwitchesCheck: checks if switches associated with helicopter's state
- * been pushed and change the state accordingly
- * *****************************************************/
+/*
+ * Function:    SwitchesCheck
+ * ---------------------
+ * FreeRTOS task which polls the switches to check for switch pushes
+ * For each button the following procedure is run:
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
 void SwitchesCheck(void *pvParameters);
 
 #endif /*BUTTONS_H*/

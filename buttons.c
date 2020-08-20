@@ -33,12 +33,13 @@
  * resets the timer ID.
  *
  * @params:
- *      - NULL
+ *      - TimeHandle_t xTimer - the timer being handled
  * @return:
  *      - NULL
  * ---------------------
  */
-void vDblBtnTimerCallback( TimerHandle_t xTimer )
+void
+vDblBtnTimerCallback( TimerHandle_t xTimer )
 {
     uint32_t    ulCount;
     uint8_t     reset = 0;
@@ -65,9 +66,18 @@ void vDblBtnTimerCallback( TimerHandle_t xTimer )
 
 
 
-// *****************************************************
-// initButtons: Initialise the variables associated with the set of buttons
-// defined by the constants in the buttons2.h header file.
+/*
+ * Function:    initBtns
+ * ---------------------
+ * Initialises the Tiva board and Orbit Boosterback's
+ * buttons and switches for user input.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
 void
 initBtns(void)
 {
@@ -95,13 +105,9 @@ initBtns(void)
     btn_normal[LEFT] = L_BTN_NORMAL;
 
     // RIGHT button (active LOW)
-    // Note that PF0 is one of a handful of GPIO pins that need to be
-    // "unlocked" before they can be reconfigured.  This also requires
-    //      #include "inc/tm4c123gh6pm.h"
     SysCtlPeripheralEnable(R_BTN_PERIPH);
-    //---Unlock PF0 for the right button:
-    GPIO_PORTF_LOCK_R = GPIO_LOCK_KEY;
-    GPIO_PORTF_CR_R |= GPIO_PIN_0; //PF0 unlocked
+    GPIO_PORTF_LOCK_R = GPIO_LOCK_KEY; // Unlock PF0 for the right button:
+    GPIO_PORTF_CR_R |= GPIO_PIN_0; // PF0 unlocked
     GPIO_PORTF_LOCK_R = GPIO_LOCK_M;
     GPIOPinTypeGPIOInput(R_BTN_PORT_BASE, R_BTN_PIN);
     GPIOPadConfigSet(R_BTN_PORT_BASE, R_BTN_PIN, GPIO_STRENGTH_2MA,
@@ -122,15 +128,21 @@ initBtns(void)
                      GPIO_PIN_TYPE_STD_WPD);
 }
 
-// *******************************************************
-// updateButtons: Function designed to be called regularly. It polls all
-// buttons once and updates variables associated with the buttons if
-// necessary.  It is efficient enough to be part of an ISR, e.g. from
-// a SysTick interrupt.
-// Debounce algorithm: A state machine is associated with each button.
-// A state change occurs only after NUM_BTN_POLLS consecutive polls have
-// read the pin in the opposite condition, before the state changes and
-// a flag is set.  Set NUM_BTN_POLLS according to the polling rate.
+/*
+ * Function:    updateButtons
+ * ---------------------
+ * Polls the buttons to check for button presses.
+ * This includes a FSM where a state change occurs
+ * only after NUM_BTN_POLLS consecutive polls have
+ * read the pin in the opposite condition, before the state changes and
+ * a flag is set.  Set NUM_BTN_POLLS according to the polling rate.
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
 void
 updateButtons(void)
 {
@@ -142,6 +154,7 @@ updateButtons(void)
     btn_value[DOWN] =   (GPIOPinRead(D_BTN_PORT_BASE, D_BTN_PIN) == D_BTN_PIN);
     btn_value[LEFT] =   (GPIOPinRead(L_BTN_PORT_BASE, L_BTN_PIN) == L_BTN_PIN);
     btn_value[RIGHT] =  (GPIOPinRead(R_BTN_PORT_BASE, R_BTN_PIN) == R_BTN_PIN);
+
     // Iterate through the buttons, updating button variables as required
     for (i = 0; i < NUM_BTNS; i++)
     {
@@ -160,10 +173,18 @@ updateButtons(void)
     }
 }
 
-// *******************************************************
-// checkButton: Function returns the new button logical state if the button
-// logical state (PUSHED or RELEASED) has changed since the last call,
-// otherwise returns NO_CHANGE.
+/*
+ * Function:    checkButton
+ * ---------------------
+ * Function that returns if the logic state of a button has
+ * changed since last called.
+ *
+ * @params:
+ *      - uint8_t btnName - the button being checked
+ * @return:
+ *      - uint8_t btnState - The chance in the button's state
+ * ---------------------
+ */
 uint8_t
 checkButton(uint8_t btnName)
 {
@@ -179,7 +200,16 @@ checkButton(uint8_t btnName)
 }
 
 /*
- * Increment the altitude by 10% if the up button has been pushed
+ * Function:    upButtonPush
+ * ---------------------
+ * Handler for the up button.
+ * Increments the helicopter's desired altitude by 10%
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
  */
 void
 upButtonPush(void)
@@ -200,7 +230,16 @@ upButtonPush(void)
 }
 
 /*
- * Decrement the desired altitude by 10% if the down button has been pushed
+ * Function:    downButtonPush
+ * ---------------------
+ * Handler for the down button.
+ * Decrements the helicopter's desired altitude by 10%
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
  */
 void
 downButtonPush(void)
@@ -220,7 +259,16 @@ downButtonPush(void)
 }
 
 /*
- * Decrement the desired yaw by 15 degrees if the left button has been pushed
+ * Function:    rightButtonPush
+ * ---------------------
+ * Handler for the right button.
+ * Increments the helicopter's desired altitude by 10%
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
  */
 void
 rightButtonPush(void)
@@ -240,7 +288,16 @@ rightButtonPush(void)
 }
 
 /*
- * Increment the desired yaw by 15 degrees if the left button has been pushed
+ * Function:    leftButtonPush
+ * ---------------------
+ * Handler for the left button.
+ * decrements the helicopter's desired altitude by 10%
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
  */
 void
 leftButtonPush(void)
@@ -260,6 +317,8 @@ leftButtonPush(void)
 }
 
 /*
+ * Function:    ButtonsCheck
+ * ---------------------
  * FreeRTOS task which polls the buttons to check for button presses
  * For each button the following procedure is run:
  *
@@ -267,7 +326,13 @@ leftButtonPush(void)
  *      Update Target Altitude/Yaw accordingly
  *      If Target Alt/Yaw is now beyond the limits:
  *          Update targets to be at limit (0->100 for Alt, -180->179 for Yaw).
-*/
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
+ */
 void
 ButtonsCheck(void *pvParameters)
 {
@@ -355,7 +420,16 @@ ButtonsCheck(void *pvParameters)
 }
 
 /*
- * FreeRTOS task which polls the switches
+ * Function:    SwitchesCheck
+ * ---------------------
+ * FreeRTOS task which polls the switches to check for switch pushes
+ * For each button the following procedure is run:
+ *
+ * @params:
+ *      - NULL
+ * @return:
+ *      - NULL
+ * ---------------------
  */
 void
 SwitchesCheck(void *pvParameters)
