@@ -125,7 +125,7 @@ initControllers(void);
  *      - NULL
  * ---------------------
  */
-void setRotorPWM (uint32_t ui32Duty, bool SET_MAIN);
+void setRotorPWM(uint32_t ui32Duty, bool SET_MAIN);
 
 /*
  * Function:    turnOnMainPWM

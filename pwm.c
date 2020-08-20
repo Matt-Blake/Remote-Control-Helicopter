@@ -83,7 +83,6 @@ initPWM (void)
     // Disable the output.  Repeat this call with 'true' to turn output on.
     PWMOutputState(PWM_MAIN_BASE, PWM_MAIN_OUTBIT, true);
     PWMOutputState(PWM_TAIL_BASE, PWM_TAIL_OUTBIT, true);
-
 }
 
 /*
