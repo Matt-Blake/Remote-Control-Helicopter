@@ -91,7 +91,7 @@ main(void)
     initSystem();
     createTasks();
     createQueues();
-    initControllers();          // Initalaize the PWM duty controllers
+    initControllers();
     createSemaphores();
     createTimers();
     UARTSend("Starting...\n");

@@ -55,7 +55,6 @@ vDblBtnTimerCallback( TimerHandle_t xTimer )
 
     /* Increment the count, then test to see if the timer has expired
     ulMaxExpiryCountBeforeStopping yet. */
-    //ulCount++;
 
     /* If the timer has expired stop it from running. */
     if( ulCount >= TIMER_EXPIRY )
@@ -163,6 +162,7 @@ updateButtons(void)
     // Iterate through the buttons, updating button variables as required
     for (i = 0; i < NUM_BTNS; i++)
     {
+        // Check if the button value has changed
         if (btn_value[i] != btn_state[i])
         {
             btn_count[i]++;
@@ -173,8 +173,9 @@ updateButtons(void)
                 btn_count[i] = 0;
             }
         }
-        else
+        else { // If button value is unchanged since the last check
             btn_count[i] = 0;
+        }
     }
 }
 
@@ -224,7 +225,7 @@ upButtonPush(void)
     UARTSend ("Up\n");
     xQueuePeek(xAltDesQueue, &alt_desired, TICKS_TO_WAIT); // Retrieve desired altitude data from the RTOS queue
 
-    alt_desired += ALT_CHANGE;
+    alt_desired += ALT_CHANGE; // Increment altitude
 
     // Check upper limits of the altitude when left button is pressed
     if (alt_desired > MAX_ALT)
@@ -253,7 +254,7 @@ downButtonPush(void)
 
     UARTSend ("Down\n");
     xQueuePeek(xAltDesQueue, &alt_desired, TICKS_TO_WAIT); // Retrieve desired altitude data from the RTOS queue
-    alt_desired -= ALT_CHANGE;
+    alt_desired -= ALT_CHANGE;  // Decrement altitude
 
     // Check lower limits of the altitude when left button is pressed
     if (alt_desired < MIN_ALT)
@@ -285,9 +286,9 @@ rightButtonPush(void)
 
     // Check upper limits of the yaw when left button is pressed
     if (yaw_desired <= (MAX_YAW - YAW_CHANGE)) {
-    yaw_desired = yaw_desired + YAW_CHANGE;
+    yaw_desired = yaw_desired + YAW_CHANGE; // Increment yaw
     } else {
-        yaw_desired = -DEGREES_CIRCLE + YAW_CHANGE + yaw_desired;
+        yaw_desired = -DEGREES_CIRCLE + YAW_CHANGE + yaw_desired; // Increment yaw
     }
     xQueueOverwrite(xYawDesQueue, &yaw_desired); // Update the RTOS yaw reference queue
 }
@@ -314,9 +315,9 @@ leftButtonPush(void)
 
     // Check upper limits of the yaw if right button is pressed
     if (yaw_desired >= (MIN_YAW + YAW_CHANGE)) {
-        yaw_desired = yaw_desired - YAW_CHANGE;
+        yaw_desired = yaw_desired - YAW_CHANGE; // Decrement yaw
     } else {
-        yaw_desired = DEGREES_CIRCLE - YAW_CHANGE + yaw_desired;
+        yaw_desired = DEGREES_CIRCLE - YAW_CHANGE + yaw_desired; // Decrement yaw
     }
     xQueueOverwrite(xYawDesQueue, &yaw_desired); // Update the RTOS yaw reference queue
 }
