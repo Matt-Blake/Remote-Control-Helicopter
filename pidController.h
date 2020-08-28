@@ -101,7 +101,7 @@ void initController(controller_t* controllerPointer, bool isYAw);
  *      controller is for altitude.
  * @return:
  *      - int32_t dutyCycle: Appropriate duty cycle for the relevant
- *      PWM output as calculated by the control system
+ *      PWM output as calculated by the control system.
  * ---------------------
  */
 int32_t getControlSignal(controller_t *piController, int32_t reference, int32_t measurement, bool isYaw);
