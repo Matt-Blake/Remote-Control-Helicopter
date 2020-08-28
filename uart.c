@@ -106,7 +106,7 @@ UARTDisplay (void *pvParameters)
     int32_t    act_yaw;         // Actual yaw
     uint32_t   state;           // Current state in the FSM
 
-    char UARTstring[20];            // String to be sent over UART
+    char UARTstring[20];        // String to be sent over UART
     char* states[4] = {"Landed", "Take Off", "Flying", "Landing"};
     while(1)
     {
