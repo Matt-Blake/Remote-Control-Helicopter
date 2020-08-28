@@ -26,7 +26,7 @@
 #include "event_groups.h"
 #include "FreeRTOSCreate.h"
 
-#define HUNDRED_PERCENT     100         // 100 percent value used for percentage calculations
+#define HUNDRED_PERCENT     100         // Value used for percentage calculations
 
 /*
  * Function:    Mean_ADC
