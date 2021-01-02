@@ -34,6 +34,6 @@ Real time measured and target values of the altitude and yaw are displayed on th
 ## Known Issues
 There are currently no known issues
 
-### Contact
+## Contact
 If you encounter any issues or questions with the preprocessing, please contact 
 Matt Blake by email at matt.blake.mb@gmail.com
