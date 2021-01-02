@@ -376,7 +376,7 @@ ButtonsCheck(void *pvParameters)
                 xSemaphoreTake(xUpBtnSemaphore, TICKS_TO_WAIT);
                 desired_alt = MODE_1_ALT;
                 xQueueOverwrite(xAltDesQueue, &desired_alt);
-            }else { // If a single button press is recorded
+            } else { // If a single button press is recorded
                 upButtonPush();
             }
         }
@@ -400,7 +400,7 @@ ButtonsCheck(void *pvParameters)
                 desired_alt += ALT_CHANGE;
                 xQueueOverwrite(xYawDesQueue, &desired_yaw);
                 xQueueOverwrite(xAltDesQueue, &desired_alt);
-            }else { // If a single button press is recorded
+            } else { // If a single button press is recorded
                 downButtonPush();
             }
         }
@@ -448,7 +448,7 @@ SwitchesCheck(void *pvParameters)
                 UARTSend ("R_SW High\n\r");
                 state = TAKEOFF;
 
-            }else{
+            } else{
                 UARTSend ("R_SW Low\n\r");
                 if(state == FLYING){
                     state = LANDING;
@@ -462,7 +462,7 @@ SwitchesCheck(void *pvParameters)
             L_PREV = GPIOPinRead(SW_PORT_BASE, L_SW_PIN);
             if(L_PREV == L_SW_PIN){
                 UARTSend ("L_SW High\n\r");
-            }else{
+            } else{
                 UARTSend ("L_SW Low\n\r");
             }
         }
